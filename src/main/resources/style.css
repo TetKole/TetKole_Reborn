@@ -1,0 +1,137 @@
+.buttons {
+    -fx-background-color: grey;
+    -fx-text-fill: #000000;
+    -fx-border-color: white;
+    -fx-font-family: Futura;
+    -fx-font-weight: bold ;
+    -fx-border-width: 2;
+    -fx-wrap-text: true;
+    -fx-text-alignment: center;
+    -fx-border-radius: 15;
+    -fx-background-radius: 16;
+}
+
+.topBarButtons {
+    -fx-background-color: #3f4152;
+    -fx-text-fill: white;
+    -fx-border-color: #676980;
+    -fx-font-family: Futura;
+    -fx-font-weight: bold ;
+    -fx-border-width: 2;
+    -fx-wrap-text: true;
+    -fx-text-alignment: center;
+    -fx-border-radius: 15;
+    -fx-background-radius: 16;
+}
+
+.topBarButton:hover{
+    -fx-background-color: derive( #3f4152 , 20% );
+}
+
+.textLabel {
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-font-family: Futura;
+}
+
+.errorLabel {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: red;
+    -fx-font-family: Futura;
+}
+
+.textField {
+    -fx-font-weight: bold;
+    -fx-text-fill: black;
+    -fx-font-family: Futura;
+}
+
+.selected{
+    -fx-background-color: white;
+    -fx-text-fill: white;
+    -fx-border-color: red;
+    -fx-font-family: Futura;
+    -fx-font-weight: bold ;
+    -fx-border-width: 2;
+    -fx-wrap-text: true;
+    -fx-text-alignment: center;
+    -fx-border-radius: 15;
+    -fx-background-radius: 16;
+}
+
+/* ------------------------------------------ COLORS ------------------------------------------- */
+.color_white {
+    -fx-color: #000000;
+}
+
+.green{
+    -fx-background-color: #57ae3a;
+}
+.green:hover{
+    -fx-background-color: derive( #57ae3a, 20% );
+}
+
+.yellow{
+    -fx-background-color: #ffff64;
+}
+.yellow:hover{
+    -fx-background-color: derive( #ffff64, 20% );
+}
+
+.orange{
+    -fx-background-color: #ffa969;
+}
+.orange:hover{
+    -fx-background-color: derive( #ffa969, 20% );
+}
+
+.rose{
+    -fx-background-color: #ff7fa1;
+}
+.rose:hover{
+    -fx-background-color: derive( #ff7fa1, 20% );
+}
+
+.red{
+    -fx-background-color: crimson;
+}
+.red:hover{
+    -fx-background-color: derive(crimson, 20%);
+}
+
+.purple{
+    -fx-background-color: #c07fff;
+}
+.purple:hover {
+    -fx-background-color: derive( #c07fff , 20% );
+}
+
+.blue{
+    -fx-background-color: #5fb8ff;
+}
+.blue:hover {
+    -fx-background-color: derive( #5fb8ff , 20% );
+}
+
+.grey{
+    -fx-background-color: #969696;
+}
+.grey:hover {
+    -fx-background-color: derive( #969696 , 20% );
+}
+
+.white{
+    -fx-background-color: white;
+}
+.white:hover {
+    -fx-background-color: derive(white, 20%);
+}
+
+.noColor {
+    -fx-background-color: transparent;
+}
+
+.play_graphic {
+    -fx-graphic: url("images/play.png");
+}

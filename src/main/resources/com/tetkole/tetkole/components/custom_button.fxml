@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+
+<?import javafx.scene.image.ImageView?>
+
+<fx:root xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.control.Button"
+         prefHeight="50.0" prefWidth="300.0" styleClass="buttons, blue">
+    <graphic>
+        <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
+    </graphic>
+</fx:root>

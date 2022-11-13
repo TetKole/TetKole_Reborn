@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fx:root xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"
+         type="javafx.scene.canvas.Canvas"
+         fx:controller="com.tetkole.tetkole.controllers.components.AudiowaveEditorCanvas">
+
+</fx:root>

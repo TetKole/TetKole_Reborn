@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.tetkole.tetkole.controllers.AudioEditScene"
+            prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #282e35;">
+    <top>
+        <Button onAction="#onBackButtonClick" styleClass="buttons, grey">
+            <graphic>
+                <ImageView fitWidth="82.5" fitHeight="82.5">
+                    <Image url="@../../../images/back.png"/>
+                </ImageView>
+            </graphic>
+        </Button>
+    </top>
+
+    <center>
+        <Slider fx:id="audioSlider"/>
+        <!-- <AudiowaveEditorCanvas fx:id="canvasSlider"/> -->
+    </center>
+
+
+    <bottom>
+        <HBox spacing="5" alignment="CENTER">
+            <Button onAction="#onPlayPauseButtonClick" styleClass="buttons, blue" contentDisplay="TOP" prefHeight="60" prefWidth="150">Toggle play/pause
+                <graphic>
+                    <ImageView fitWidth="82.5" fitHeight="82.5">
+                        <Image url="@../../../images/play.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button onAction="#onRecordButtonClick" styleClass="buttons, blue" contentDisplay="TOP" prefHeight="60" prefWidth="150">Toggle record
+                <graphic>
+                    <ImageView fitWidth="82.5" fitHeight="82.5">
+                        <Image url="@../../../images/record.png"/>
+                    </ImageView>
+                </graphic>
+            </Button>
+        </HBox>
+    </bottom>
+
+
+</BorderPane>
