@@ -5,6 +5,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
 
+<?import com.tetkole.tetkole.utils.wave.WaveVisualization?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.tetkole.tetkole.controllers.AudioEditScene"
@@ -20,12 +21,12 @@
     </top>
 
     <center>
-        <Slider fx:id="audioSlider"/>
-        <!-- <AudiowaveEditorCanvas fx:id="canvasSlider"/> -->
+        <WaveVisualization fx:id="waveVisualization"/>
     </center>
 
 
     <bottom>
+        <Slider fx:id="audioSlider"/>
         <HBox spacing="5" alignment="CENTER">
             <Button onAction="#onPlayPauseButtonClick" styleClass="buttons, blue" contentDisplay="TOP" prefHeight="60" prefWidth="150">Toggle play/pause
                 <graphic>

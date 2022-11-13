@@ -2,6 +2,8 @@ package com.tetkole.tetkole.controllers;
 
 import com.tetkole.tetkole.utils.RecordManager;
 import com.tetkole.tetkole.utils.SceneManager;
+import com.tetkole.tetkole.utils.wave.WaveFormService;
+import com.tetkole.tetkole.utils.wave.WaveVisualization;
 import javafx.beans.InvalidationListener;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -17,6 +19,8 @@ public class AudioEditScene {
 
     @FXML
     Slider audioSlider;
+    @FXML
+    WaveVisualization waveVisualization;
 
     private boolean audioSliderDragged = false;
     // private String audioFileName;
@@ -65,6 +69,9 @@ public class AudioEditScene {
                 }
             });
         });
+
+
+        waveVisualization.getWaveService().startService(audioFile.getAbsolutePath(), WaveFormService.WaveFormJob.AMPLITUDES_AND_WAVEFORM);
     }
 
     @FXML
