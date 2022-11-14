@@ -29,7 +29,19 @@ public class MainMenu {
     }
 
     @FXML
+    protected void onImageButtonClick() {
+        //SceneManager.getSceneManager().changeScene("audio_edit_scene.fxml");
+        System.out.println("todo");
+    }
+
+    @FXML
+    protected void onVideoButtonClick() {
+        //SceneManager.getSceneManager().changeScene("audio_edit_scene.fxml");
+        System.out.println("todo");
+    }
+
+    @FXML
     protected void onSettingsButtonClick() {
-        SceneManager.getSceneManager().changeLocale(new Locale("en", "EN"));
+        SceneManager.getSceneManager().changeScene("setting.fxml");
     }
 }

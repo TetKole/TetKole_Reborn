@@ -13,7 +13,7 @@ public class SceneManager {
     private static SceneManager sceneManagerInstance;
 
     private final Stage stage;
-    private Locale current_locale;
+    private Locale currentLocale;
     private String currentResourceName;
     private Map<String, Object> sceneArguments;
     private final Map<String, Object> wantedArguments;
@@ -22,7 +22,7 @@ public class SceneManager {
         this.stage = stage;
         this.sceneArguments = new HashMap<>();
         this.wantedArguments = new HashMap<>();
-        current_locale = new Locale("fr", "FR");
+        currentLocale = new Locale("fr", "FR");
     }
 
     /**
@@ -34,7 +34,7 @@ public class SceneManager {
      */
     private void loadScene(String resourceName, double width, double height) {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource(resourceName));
-        fxmlLoader.setResources(ResourceBundle.getBundle("languages", current_locale));
+        fxmlLoader.setResources(ResourceBundle.getBundle("languages", currentLocale));
         Scene scene;
         try {
             scene = new Scene(fxmlLoader.load(Objects.requireNonNull(Main.class.getResource(resourceName)).openStream()), width, height);
@@ -75,7 +75,7 @@ public class SceneManager {
     }
 
     public void changeLocale(Locale locale) {
-        current_locale = locale;
+        currentLocale = locale;
         loadScene(currentResourceName, stage.getScene().getWidth(), stage.getScene().getHeight());
     }
 }
