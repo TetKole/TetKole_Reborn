@@ -78,4 +78,8 @@ public class SceneManager {
         currentLocale = locale;
         loadScene(currentResourceName, stage.getScene().getWidth(), stage.getScene().getHeight());
     }
+
+    public Locale getCurrentLocale() {
+        return this.currentLocale;
+    }
 }

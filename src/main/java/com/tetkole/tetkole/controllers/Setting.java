@@ -40,9 +40,4 @@ public class Setting implements Initializable {
             }
         });
     }
-
-    @FXML
-    private void onReturn() {
-        SceneManager.getSceneManager().changeScene("main_menu.fxml");
-    }
 }

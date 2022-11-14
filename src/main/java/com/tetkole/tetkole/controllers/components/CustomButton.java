@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.URL;
 
 public class CustomButton extends Button {
+
     @FXML private ImageView imageView;
     private final String imageUrl;
     @FXML
@@ -21,6 +22,7 @@ public class CustomButton extends Button {
     }
 
     public CustomButton(@NamedArg("graphicUrl") String graphicUrl) {
+        System.out.println(graphicUrl);
         URL url = getClass().getResource("custom_button.fxml");
         FXMLLoader loader = new FXMLLoader(url);
         loader.setRoot(this);

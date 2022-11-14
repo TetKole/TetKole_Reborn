@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.HBox" alignment="CENTER_RIGHT" spacing="5">
+
+    <Button fx:id="btnReturn" styleClass="buttons, blue" contentDisplay="TOP" prefHeight="30" prefWidth="30">
+        <graphic>
+            <ImageView fitWidth="40" fitHeight="40">
+                <Image url="@../../../../images/back.png"/>
+            </ImageView>
+        </graphic>
+    </Button>
+
+    <Button fx:id="btnHome" styleClass="buttons, blue" contentDisplay="TOP" prefHeight="30" prefWidth="30">
+        <graphic>
+            <ImageView fitWidth="40" fitHeight="40">
+                <Image url="@../../../../images/home.png"/>
+            </ImageView>
+        </graphic>
+    </Button>
+
+</fx:root>
+
+

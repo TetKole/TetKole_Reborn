@@ -44,4 +44,10 @@ public class MainMenu {
     protected void onSettingsButtonClick() {
         SceneManager.getSceneManager().changeScene("setting.fxml");
     }
+
+    @FXML
+    protected void onDoSomething() {
+        System.out.println("click");
+    }
+
 }
