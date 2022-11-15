@@ -13,12 +13,10 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import ws.schild.jave.Encoder;
-import ws.schild.jave.EncoderException;
 import ws.schild.jave.MultimediaObject;
 import ws.schild.jave.encode.AudioAttributes;
 import ws.schild.jave.encode.EncodingAttributes;
@@ -37,7 +35,7 @@ public class WaveFormService extends Service<Boolean> {
 	private File temp1;
 	private File temp2;
 	private Encoder encoder;
-	private ConvertProgressListener listener = new ConvertProgressListener();
+	private final ConvertProgressListener listener = new ConvertProgressListener();
 	private WaveFormJob waveFormJob;
 	
 	/**
@@ -47,7 +45,7 @@ public class WaveFormService extends Service<Boolean> {
 	 *
 	 */
 	public enum WaveFormJob {
-		AMPLITUDES_AND_WAVEFORM, WAVEFORM;
+		AMPLITUDES_AND_WAVEFORM, WAVEFORM
 	}
 	
 	/**
@@ -63,8 +61,6 @@ public class WaveFormService extends Service<Boolean> {
 	
 	/**
 	 * Start the external Service Thread.
-	 *
-	 * 
 	 */
 	public void startService(String fileAbsolutePath , WaveFormJob waveFormJob) {
 		if (waveFormJob == WaveFormJob.WAVEFORM)
@@ -112,16 +108,14 @@ public class WaveFormService extends Service<Boolean> {
 	
 	@Override
 	protected Task<Boolean> createTask() {
-		return new Task<Boolean>() {
+		return new Task<>() {
 			
 			@Override
-			protected Boolean call() throws Exception {
+			protected Boolean call() {
 				
 				try {
-					
 					//Calculate 
 					if (waveFormJob == WaveFormJob.AMPLITUDES_AND_WAVEFORM) { //AMPLITUDES_AND_AMPLITUDES
-						//System.out.println("AMPLITUDES_AND_AMPLITUDES");
 						String fileFormat = "mp3";
 						resultingWaveform = processFromNoWavFile(fileFormat);
 						
@@ -140,21 +134,13 @@ public class WaveFormService extends Service<Boolean> {
 				
 			}
 			
-			//			private float[] processFromWavFile() throws IOException , UnsupportedAudioFileException {
-			//				File trackFile = new File(trackToAnalyze.getFileFolder(), trackToAnalyze.getFileName());
-			//				return processAmplitudes(getWavAmplitudes(trackFile));
-			//			}
-			
 			/**
 			 * Try to process a Non Wav File
 			 * 
 			 * @param fileFormat
-			 * @return
-			 * @throws IOException
-			 * @throws UnsupportedAudioFileException
-			 * @throws EncoderException
+			 * @return float[]
 			 */
-			private float[] processFromNoWavFile(String fileFormat) throws IOException , UnsupportedAudioFileException , EncoderException {
+			private float[] processFromNoWavFile(String fileFormat) throws IOException {
 				int randomN = random.nextInt(99999);
 				
 				//Create temporary files
@@ -189,10 +175,8 @@ public class WaveFormService extends Service<Boolean> {
 			 * 
 			 * @param sourceFile
 			 * @param destinationFile
-			 * @throws EncoderException
 			 */
-			private void transcodeToWav(File sourceFile , File destinationFile) throws EncoderException {
-				//Attributes atters = DefaultAttributes.WAV_PCM_S16LE_STEREO_44KHZ.getAttributes()
+			private void transcodeToWav(File sourceFile , File destinationFile) {
 				try {
 					
 					//Set Audio Attributes
@@ -218,13 +202,9 @@ public class WaveFormService extends Service<Boolean> {
 			 * Get Wav Amplitudes
 			 * 
 			 * @param file
-			 * @return
-			 * @throws UnsupportedAudioFileException
-			 * @throws IOException
+			 * @return int[]
 			 */
-			private int[] getWavAmplitudes(File file) throws UnsupportedAudioFileException , IOException {
-				//System.out.println("Calculting WAV amplitudes");
-				
+			private int[] getWavAmplitudes(File file) {
 				//Get Audio input stream
 				try (AudioInputStream input = AudioSystem.getAudioInputStream(file)) {
 					AudioFormat baseFormat = input.getFormat();
@@ -255,7 +235,7 @@ public class WaveFormService extends Service<Boolean> {
 						float currentCellValue = 0.0f;
 						
 						//Variables for the loop
-						int arrayCellValue = 0;
+						int arrayCellValue;
 						
 						//Read all the available data on chunks
 						while (pcmDecodedInput.readNBytes(buffer, 0, BUFFER_SIZE) > 0)
@@ -300,8 +280,6 @@ public class WaveFormService extends Service<Boolean> {
 			 * @return An array with amplitudes
 			 */
 			private float[] processAmplitudes(int[] sourcePcmData) {
-				//System.out.println("Processing WAV amplitudes");
-				
 				//The width of the resulting waveform panel
 				int width = waveVisualization.width;
 				float[] waveData = new float[width];
@@ -323,8 +301,6 @@ public class WaveFormService extends Service<Boolean> {
 					//Set WaveData
 					waveData[w] = nValue / samplesPerPixel;
 				}
-				
-				//System.out.println("Finished Processing amplitudes");
 				return waveData;
 			}
 		};
@@ -332,18 +308,15 @@ public class WaveFormService extends Service<Boolean> {
 	
 	public class ConvertProgressListener implements EncoderProgressListener {
 		int current = 1;
-		
+
 		public ConvertProgressListener() {
 		}
-		
+
 		public void message(String m) {
 		}
-		
+
 		public void progress(int p) {
-			
 			double progress = p / 1000.00;
-			System.out.println(progress);
-			
 		}
 		
 		public void sourceInfo(MultimediaInfo m) {

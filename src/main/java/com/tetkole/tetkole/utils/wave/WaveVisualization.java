@@ -5,7 +5,6 @@ package com.tetkole.tetkole.utils.wave;
 
 import com.tetkole.tetkole.utils.wave.WaveFormService.WaveFormJob;
 import javafx.animation.AnimationTimer;
-import javafx.beans.property.SimpleBooleanProperty;
 
 /**
  * The Class Visualizer.
@@ -19,18 +18,19 @@ public class WaveVisualization extends WaveFormPane {
 	
 	/*** This Service is creating the wave data for the painter */
 	private final WaveFormService waveService;
-	
-	private boolean recalculateWaveData;
+
+	private double totalTime;
 	
 	/**
 	 * Constructor
 	 */
 	public WaveVisualization() {
 		super(500, 500);
-		super.setWaveVisualization(this);
 		waveService = new WaveFormService(this);
 		animationService = new PaintService();
-		
+
+
+
 		// ----------
 		widthProperty().addListener((observable , oldValue , newValue) -> {
 			//System.out.println("New Visualizer Width is:" + newValue);
@@ -39,7 +39,8 @@ public class WaveVisualization extends WaveFormPane {
 			this.width = Math.round(newValue.floatValue());
 			
 			//Draw single line :)
-			recalculateWaveData = true;
+			if (getWaveService().getResultingWaveform() != null)
+				getWaveService().startService(getWaveService().getFileAbsolutePath(), WaveFormJob.WAVEFORM);
 			clear();
 			
 		});
@@ -51,7 +52,8 @@ public class WaveVisualization extends WaveFormPane {
 			this.height = Math.round(newValue.floatValue());
 			
 			//Draw single line :)
-			recalculateWaveData = true;
+			if (getWaveService().getResultingWaveform() != null)
+				getWaveService().startService(getWaveService().getFileAbsolutePath(), WaveFormJob.WAVEFORM);
 			clear();
 		});
 		
@@ -59,15 +61,6 @@ public class WaveVisualization extends WaveFormPane {
 		setOnMouseMoved(m -> this.setMouseXPosition((int) m.getX()));
 		setOnMouseDragged(m -> this.setMouseXPosition((int) m.getX()));
 		setOnMouseExited(m -> this.setMouseXPosition(-1));
-		
-	}
-	//--------------------------------------------------------------------------------------//
-	
-	/**
-	 * @return the animationService
-	 */
-	public PaintService getAnimationService() {
-		return animationService;
 	}
 	
 	public WaveFormService getWaveService() {
@@ -90,14 +83,15 @@ public class WaveVisualization extends WaveFormPane {
 		animationService.stop();
 		clear();
 	}
-	
-	/**
-	 * @return True if AnimationTimer of Visualiser is Running
-	 */
-	public boolean isPainterServiceRunning() {
-		return animationService.isRunning();
+
+	public void setCursorTime(double seconds) {
+		setTimerXPosition((int) ((seconds * this.width) / totalTime));
 	}
-	
+
+	public void setTotalTime(double seconds) {
+		this.totalTime = seconds;
+	}
+
 	/*-----------------------------------------------------------------------
 	 * 
 	 * -----------------------------------------------------------------------
@@ -115,12 +109,7 @@ public class WaveVisualization extends WaveFormPane {
 	 * @author GOXR3PLUS
 	 */
 	public class PaintService extends AnimationTimer {
-		
-		/*** When this property is <b>true</b> the AnimationTimer is running */
-		private volatile SimpleBooleanProperty running = new SimpleBooleanProperty(false);
-		
-		private long previousNanos = 0;
-		
+
 		@Override
 		public void start() {
 			// Values must be >0
@@ -128,57 +117,18 @@ public class WaveVisualization extends WaveFormPane {
 				width = height = 1;
 			
 			super.start();
-			running.set(true);
-		}
-		
-		public WaveVisualization getWaveVisualization() {
-			return WaveVisualization.this;
 		}
 		
 		@Override
 		public void handle(long nanos) {
-			//System.out.println("Running...")
-			
-			//Every 300 millis update
-			if (nanos >= previousNanos + 100000 * 1000) { //
-				previousNanos = nanos;
-				setTimerXPosition(getTimerXPosition() + 1);
-			}
-			
-			//If resulting wave is not calculated
-			if (getWaveService().getResultingWaveform() == null || recalculateWaveData) {
-				
-				//Start the Service
-				getWaveService().startService(getWaveService().getFileAbsolutePath(), WaveFormJob.WAVEFORM);
-				recalculateWaveData = false;
-				
-				return;
-			}
-			
-			//Paint			
+			//Paint
 			paintWaveForm();
 		}
 		
 		@Override
 		public void stop() {
 			super.stop();
-			running.set(false);
 		}
-		
-		/**
-		 * @return True if AnimationTimer is running
-		 */
-		public boolean isRunning() {
-			return running.get();
-		}
-		
-		/**
-		 * @return Running Property
-		 */
-		public SimpleBooleanProperty runningProperty() {
-			return running;
-		}
-		
 	}
 	
 }

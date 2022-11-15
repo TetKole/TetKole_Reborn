@@ -29,12 +29,12 @@ public class ResizableCanvas extends Canvas {
     }
 
     @Override
-    public double minHeight(double width) {
+    public double minHeight(double height) {
         return 1;
     }
 
     @Override
-    public double minWidth(double height) {
+    public double minWidth(double width) {
         return 1;
     }
 
@@ -44,17 +44,17 @@ public class ResizableCanvas extends Canvas {
     }
 
     @Override
-    public double prefHeight(double width) {
-        return minHeight(width);
+    public double prefHeight(double height) {
+        return minHeight(height);
     }
 
     @Override
-    public double maxWidth(double height) {
+    public double maxWidth(double width) {
         return Double.MAX_VALUE;
     }
 
     @Override
-    public double maxHeight(double width) {
+    public double maxHeight(double height) {
         return 500;
     }
 
@@ -67,10 +67,5 @@ public class ResizableCanvas extends Canvas {
     public void resize(double width, double height) {
         super.setWidth(width);
         super.setHeight(height);
-
-        // This is for testing...
-        // draw()
-
-        // System.out.println("Resize method called...")
     }
 }

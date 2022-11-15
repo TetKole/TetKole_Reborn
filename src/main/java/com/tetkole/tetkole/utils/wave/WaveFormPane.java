@@ -1,5 +1,6 @@
 package com.tetkole.tetkole.utils.wave;
 
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
 /**
@@ -14,12 +15,12 @@ public class WaveFormPane extends ResizableCanvas {
 	private Color backgroundColor;
 	private Color foregroundColor;
 	private Color transparentForeground;
-	private Color mouseXColor = Color.rgb(255, 255, 255, 0.7);
+	private final Color mouseXColor = Color.rgb(255, 255, 255, 0.7);
 	int width;
 	int height;
 	private int timerXPosition = 0;
 	private int mouseXPosition = -1;
-	private WaveVisualization waveVisualization;
+	private final GraphicsContext gc = getGraphicsContext2D();
 	
 	/**
 	 * Constructor
@@ -57,11 +58,7 @@ public class WaveFormPane extends ResizableCanvas {
 		this.foregroundColor = color;
 		transparentForeground = Color.rgb((int) ( foregroundColor.getRed() * 255 ), (int) ( foregroundColor.getGreen() * 255 ), (int) ( foregroundColor.getBlue() * 255 ), 0.3);
 	}
-	
-	public void setBackgroundColor(Color color) {
-		this.backgroundColor = color;
-	}
-	
+
 	public int getTimerXPosition() {
 		return timerXPosition;
 	}
@@ -86,7 +83,7 @@ public class WaveFormPane extends ResizableCanvas {
 		
 		//Paint a line
 		gc.setStroke(foregroundColor);
-		gc.strokeLine(0, height / 2, width, height / 2);
+		gc.strokeLine(0, height / 2.0, width, height / 2.0);
 	}
 	
 	/**
@@ -102,10 +99,6 @@ public class WaveFormPane extends ResizableCanvas {
 		gc.setStroke(foregroundColor);
 		if (waveData != null)
 			for (int i = 0; i < waveData.length; i++) {
-				if (!waveVisualization.getAnimationService().isRunning()) {
-					clear();
-					break;
-				}
 				int value = (int) ( waveData[i] * height );
 				int y1 = ( height - 2 * value ) / 2;
 				int y2 = y1 + 2 * value;
@@ -125,14 +118,6 @@ public class WaveFormPane extends ResizableCanvas {
 			gc.setFill(mouseXColor);
 			gc.fillRect(mouseXPosition, 0, 3, height);
 		}
-	}
-	
-	public WaveVisualization getWaveVisualization() {
-		return waveVisualization;
-	}
-	
-	public void setWaveVisualization(WaveVisualization waveVisualization) {
-		this.waveVisualization = waveVisualization;
 	}
 	
 }
