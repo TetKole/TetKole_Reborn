@@ -15,7 +15,7 @@ import javafx.util.Duration;
 
 import java.io.File;
 
-public class AudioEditScene {
+public class AudioEditSceneController {
 
     @FXML
     Slider audioSlider;
@@ -82,12 +82,13 @@ public class AudioEditScene {
         }
     }
 
-    @FXML
+    // TODO Make the mediaplayer and recordManager stop when clicking in the return button in the header
+    /* @FXML
     protected void onBackButtonClick() {
         mediaPlayer.stop();
         this.recordManager.stopRecording();
-        SceneManager.getSceneManager().changeScene("main_menu.fxml");
-    }
+        SceneManager.getSceneManager().changeScene("MainMenuScene.fxml");
+    } */
 
     @FXML
     protected void onRecordButtonClick() {

@@ -7,9 +7,8 @@ import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
 
 import java.io.File;
-import java.util.Locale;
 
-public class MainMenu {
+public class MainMenuSceneController {
 
     @FXML
     protected void onAudioButtonClick() {
@@ -20,7 +19,7 @@ public class MainMenu {
             File fileAudio = fileChooserAudio.showOpenDialog(null);
             if (fileAudio != null){
                 SceneManager.getSceneManager().addArgument("loaded_file_audio", fileAudio);
-                SceneManager.getSceneManager().changeScene("audio_edit_scene.fxml");
+                SceneManager.getSceneManager().changeScene("AudioEditScene.fxml");
             } else {
                 Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
                 Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
@@ -30,24 +29,19 @@ public class MainMenu {
 
     @FXML
     protected void onImageButtonClick() {
-        //SceneManager.getSceneManager().changeScene("audio_edit_scene.fxml");
+        //SceneManager.getSceneManager().changeScene("AudioEditScene.fxml");
         System.out.println("todo");
     }
 
     @FXML
     protected void onVideoButtonClick() {
-        //SceneManager.getSceneManager().changeScene("audio_edit_scene.fxml");
+        //SceneManager.getSceneManager().changeScene("AudioEditScene.fxml");
         System.out.println("todo");
     }
 
     @FXML
     protected void onSettingsButtonClick() {
-        SceneManager.getSceneManager().changeScene("setting.fxml");
-    }
-
-    @FXML
-    protected void onDoSomething() {
-        System.out.println("click");
+        SceneManager.getSceneManager().changeScene("SettingsScene.fxml");
     }
 
 }

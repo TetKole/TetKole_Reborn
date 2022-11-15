@@ -14,7 +14,7 @@ public class Main extends Application {
 
         stage.setTitle("TètKole");
         SceneManager.setSceneManager(stage);
-        SceneManager.getSceneManager().changeScene("main_menu.fxml", (int) (dimension.width * 0.8),  (int) (dimension.height * 0.8));
+        SceneManager.getSceneManager().changeScene("MainMenuScene.fxml", (int) (dimension.width * 0.8),  (int) (dimension.height * 0.8));
 
         stage.show();
     }
