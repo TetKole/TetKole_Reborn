@@ -9,7 +9,8 @@
 <HBox alignment="TOP_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       stylesheets="@../../../../style.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.tetkole.tetkole.controllers.components.HeaderController">
-   <Button mnemonicParsing="false">
+
+   <Button mnemonicParsing="false" disable="true">
       <styleClass>
          <String fx:value="blue"/>
          <String fx:value="buttons"/>
@@ -20,6 +21,7 @@
          </ImageView>
       </graphic>
    </Button>
+
    <Button mnemonicParsing="false" onAction="#onHomeButtonClick">
       <styleClass>
          <String fx:value="blue"/>

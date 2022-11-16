@@ -15,6 +15,7 @@ public class SettingsSceneController implements Initializable {
     private final Locale frLocal = new Locale("fr", "FR");
     private final Locale enLocal = new Locale("en", "EN");
 
+
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
         // add items to ComboBox
