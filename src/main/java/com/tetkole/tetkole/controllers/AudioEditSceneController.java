@@ -8,10 +8,12 @@ import javafx.fxml.FXML;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-
+import javafx.util.Duration;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 
-public class AudioEditSceneController {
+public class AudioEditSceneController implements PropertyChangeListener {
 
     @FXML
     WaveVisualization waveVisualization;
@@ -19,6 +21,8 @@ public class AudioEditSceneController {
     // private String audioFileName;
     private MediaPlayer mediaPlayer;
     private RecordManager recordManager;
+
+    private double totalTime;
 
 
     @FXML
@@ -32,18 +36,30 @@ public class AudioEditSceneController {
 
 
         mediaPlayer.setOnReady(() -> {
+            totalTime = mediaPlayer.getTotalDuration().toSeconds();
+
             waveVisualization.setTotalTime(mediaPlayer.getTotalDuration().toSeconds());
-            mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> waveVisualization.setCursorTime(newValue.toSeconds()));
+
+            mediaPlayer.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+                waveVisualization.setCursorTime(newValue.toSeconds());
+            });
+
+            mediaPlayer.setOnEndOfMedia(() -> {
+                mediaPlayer.seek(Duration.ZERO);
+                mediaPlayer.stop();
+            });
         });
 
         waveVisualization.getWaveService().startService(audioFile.getAbsolutePath(), WaveFormService.WaveFormJob.AMPLITUDES_AND_WAVEFORM);
+
+        waveVisualization.addPropertyChangeListener(this);
     }
 
     @FXML
     protected void onPlayPauseButtonClick() {
         switch (mediaPlayer.getStatus()) {
             case PLAYING -> mediaPlayer.pause();
-            case PAUSED, READY -> mediaPlayer.play();
+            case PAUSED, READY, STOPPED -> mediaPlayer.play();
         }
     }
 
@@ -66,5 +82,22 @@ public class AudioEditSceneController {
 
     public void onScroll(ScrollEvent scrollEvent) {
         // TODO Zoom
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        mediaPlayer.stop();
+
+        // set current X in media player aka start time
+        double newCurrentX = (double) evt.getNewValue();
+        double widthWave =  waveVisualization.widthProperty().getValue();
+
+        double newStart = newCurrentX * totalTime / widthWave;
+        mediaPlayer.setStartTime(new Duration(newStart * 1000));
+
+        // set stop time (with right border)
+        double rightBorderXPosition = waveVisualization.getRightBorderXPosition() + 10;
+        double newStop = rightBorderXPosition * totalTime / widthWave;
+        mediaPlayer.setStopTime(new Duration(newStop * 1000));
     }
 }

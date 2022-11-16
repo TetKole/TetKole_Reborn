@@ -20,6 +20,8 @@ public class WaveVisualization extends WaveFormPane {
 	private final WaveFormService waveService;
 
 	private double totalTime;
+
+
 	
 	/**
 	 * Constructor
@@ -56,11 +58,6 @@ public class WaveVisualization extends WaveFormPane {
 				getWaveService().startService(getWaveService().getFileAbsolutePath(), WaveFormJob.WAVEFORM);
 			clear();
 		});
-		
-		//Tricky mouse events
-		setOnMouseMoved(m -> this.setMouseXPosition((int) m.getX()));
-		setOnMouseDragged(m -> this.setMouseXPosition((int) m.getX()));
-		setOnMouseExited(m -> this.setMouseXPosition(-1));
 	}
 	
 	public WaveFormService getWaveService() {
@@ -85,7 +82,7 @@ public class WaveVisualization extends WaveFormPane {
 	}
 
 	public void setCursorTime(double seconds) {
-		setTimerXPosition((int) ((seconds * this.width) / totalTime));
+		setCurrentXPosition((seconds * this.width) / totalTime);
 	}
 
 	public void setTotalTime(double seconds) {
