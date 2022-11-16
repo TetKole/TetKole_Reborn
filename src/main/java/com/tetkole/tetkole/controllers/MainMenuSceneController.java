@@ -36,7 +36,7 @@ public class MainMenuSceneController {
         File fileImage = fileChooserImage.showOpenDialog(null);
         if (fileImage != null){
             SceneManager.getSceneManager().addArgument("loaded_file_image", fileImage);
-            SceneManager.getSceneManager().changeScene("ImageRecordSceneController.fxml");
+            SceneManager.getSceneManager().changeScene("ImageRecordScene.fxml");
         } else {
             Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
             Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
@@ -47,8 +47,19 @@ public class MainMenuSceneController {
 
     @FXML
     protected void onVideoButtonClick() {
-        //SceneManager.getSceneManager().changeScene("AudioEditScene.fxml");
-        System.out.println("todo");
+        FileChooser fileChooserImage = new FileChooser();
+        fileChooserImage.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("ImageFile", "*.mp4")
+        );
+        File fileImage = fileChooserImage.showOpenDialog(null);
+        if (fileImage != null){
+            SceneManager.getSceneManager().addArgument("loaded_file_video", fileImage);
+            SceneManager.getSceneManager().changeScene("VideoRecordScene.fxml");
+        } else {
+            Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
+            Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
+            alert.showAndWait();
+        }
     }
 
     @FXML
