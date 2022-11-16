@@ -76,11 +76,11 @@ public class WaveFormPane extends ResizableCanvas {
 			setMouseXPosition((int) event.getX());
 
 			if (rightBorderDragged) {
-				rightBorderXPosition = Math.max(event.getX(), leftBorderXPosition + 10);
+				rightBorderXPosition = Math.min(Math.max(event.getX(), leftBorderXPosition + 10),  getWidth() - 10);
 			}
 
 			if (leftBorderDragged) {
-				leftBorderXPosition = Math.min(event.getX(), rightBorderXPosition - 10);
+				leftBorderXPosition = Math.max(Math.min(event.getX(), rightBorderXPosition - 10), 0);
 			}
 		});
 
