@@ -29,7 +29,19 @@ public class MainMenuSceneController {
 
     @FXML
     protected void onImageButtonClick() {
-        //SceneManager.getSceneManager().changeScene("AudioEditScene.fxml");
+        FileChooser fileChooserImage = new FileChooser();
+        fileChooserImage.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("ImageFile", "*.jpg", "*.jpeg", "*.png")
+        );
+        File fileImage = fileChooserImage.showOpenDialog(null);
+        if (fileImage != null){
+            SceneManager.getSceneManager().addArgument("loaded_file_image", fileImage);
+            SceneManager.getSceneManager().changeScene("ImageRecordSceneController.fxml");
+        } else {
+            Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
+            Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
+            alert.showAndWait();
+        }
         System.out.println("todo");
     }
 
