@@ -35,7 +35,7 @@
       </graphic>
    </Button>
 
-   <Button id="btnHome" mnemonicParsing="false"><!--onAction="#onHomeButtonClick">-->
+   <Button id="btnHome" mnemonicParsing="false">
       <styleClass>
          <String fx:value="blue"/>
          <String fx:value="buttons"/>

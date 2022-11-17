@@ -9,7 +9,6 @@ import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.HBox;
 
-import javax.swing.filechooser.FileSystemView;
 import java.net.URL;
 import java.util.*;
 
