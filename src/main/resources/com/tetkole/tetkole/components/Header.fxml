@@ -10,6 +10,19 @@
       stylesheets="@../../../../style.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.tetkole.tetkole.controllers.components.HeaderController">
 
+   <Button mnemonicParsing="false" onAction="#onOpenFolderClick">
+      <styleClass>
+         <String fx:value="blue"/>
+         <String fx:value="buttons"/>
+      </styleClass>
+      <graphic>
+         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true">
+            <Image url="@../../../../images/folder.png"/>
+         </ImageView>
+      </graphic>
+   </Button>
+
+
    <Button mnemonicParsing="false" disable="true">
       <styleClass>
          <String fx:value="blue"/>

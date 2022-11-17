@@ -1,6 +1,7 @@
 package com.tetkole.tetkole.utils;
 
 import javax.sound.sampled.*;
+import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,9 +18,9 @@ public class RecordManager {
         this.os = System.getProperty("os.name").toLowerCase();
         String userName = System.getProperty("user.name");
         if (this.os.contains("nux") || this.os.contains("mac")){
-            this.folderPath = "/home/" + userName + "/TètKole";
+            this.folderPath = "/home/" + userName + "/TetKole";
         }else {
-            this.folderPath = "C:\\Users\\" + userName + "\\Documents\\TètKole";
+            this.folderPath = FileSystemView.getFileSystemView().getDefaultDirectory().getPath() + "\\TetKole";
         }
         try {
             Files.createDirectories(Path.of(this.folderPath));
