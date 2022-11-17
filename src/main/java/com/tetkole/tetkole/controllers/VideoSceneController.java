@@ -2,13 +2,18 @@ package com.tetkole.tetkole.controllers;
 import com.tetkole.tetkole.utils.SceneManager;
 
 import javafx.beans.InvalidationListener;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import com.tetkole.tetkole.utils.RecordManager;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -17,9 +22,11 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class VideoSceneController implements Initializable {
+
     private RecordManager recordManager;
 
     private MediaPlayer mediaPlayer;
@@ -32,14 +39,33 @@ public class VideoSceneController implements Initializable {
 
     @FXML
     private Button btnPlayPause;
+    @FXML
+    private Button btnRecord;
 
     private boolean isDragged = false;
 
     private ResourceBundle resources;
 
+    @FXML
+    private HBox header;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        // get the children of header component
+        ObservableList<Node> childrenOfHeader = this.header.getChildren();
+        // search for the btnHome and add a new onMouseClickListener
+        for (var child : childrenOfHeader) {
+            if (child.getId() != null && child.getId().equals("btnHome")) {
+                child.setOnMouseClicked(event -> {
+                    // free all mediaPlayer resources and change scene
+                    this.mediaPlayer.dispose();
+                    SceneManager.getSceneManager().changeScene("MainMenuScene.fxml");
+                });
+            }
+        }
+
         this.resources = resources;
 
         File videoFile = (File) SceneManager.getSceneManager().getArgument("loaded_file_video");
@@ -91,13 +117,12 @@ public class VideoSceneController implements Initializable {
             case PLAYING -> {
                 mediaPlayer.pause();
                 btnPlayPause.setText(resources.getString("Play"));
-                //TODO find images URL for buttons
-                //((ImageView) btnPlayPause.getGraphic()).setImage(new Image("@../../../../../resources/images/play.png"));
+                ((ImageView) btnPlayPause.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()));
             }
             case PAUSED, READY, STOPPED -> {
                 mediaPlayer.play();
                 btnPlayPause.setText(resources.getString("Pause"));
-                //((ImageView) btnPlayPause.getGraphic()).setImage(new Image("@../../../../../resources/images/pause.png"));
+                ((ImageView) btnPlayPause.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/pause.png")).toExternalForm()));
             }
         }
     }
@@ -107,8 +132,10 @@ public class VideoSceneController implements Initializable {
     protected void onRecordButtonClick() {
         if(recordManager.isRecording()) {
             this.recordManager.stopRecording();
+            ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/record.png")).toExternalForm()));
         } else {
             this.recordManager.startRecording();
+            ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm()));
         }
     }
 }

@@ -10,7 +10,7 @@
 
     <top>
         <AnchorPane>
-            <fx:include source="components/Header.fxml" AnchorPane.rightAnchor="0.0"/>
+            <fx:include fx:id="header" source="components/Header.fxml" AnchorPane.rightAnchor="0.0"/>
         </AnchorPane>
     </top>
 
@@ -27,12 +27,12 @@
             <Button fx:id="btnPlayPause" contentDisplay="TOP" onAction="#playPauseVideo" prefHeight="60" prefWidth="150" styleClass="buttons, blue" text="%Play">
                 <graphic>
                     <ImageView fitHeight="82.5" fitWidth="82.5">
-                        <Image url="@../../../images/record.png" />
+                        <Image url="@../../../images/play.png" />
                     </ImageView>
                 </graphic>
             </Button>
 
-            <Button contentDisplay="TOP" onAction="#onRecordButtonClick" prefHeight="60" prefWidth="150" styleClass="buttons, blue">
+            <Button fx:id="btnRecord" contentDisplay="TOP" onAction="#onRecordButtonClick" prefHeight="60" prefWidth="150" styleClass="buttons, blue">
                 Toggle record
                 <graphic>
                     <ImageView fitHeight="82.5" fitWidth="82.5">

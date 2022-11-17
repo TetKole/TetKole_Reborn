@@ -2,11 +2,14 @@ package com.tetkole.tetkole.controllers;
 
 import com.tetkole.tetkole.utils.SceneManager;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import com.tetkole.tetkole.utils.RecordManager;
+import javafx.scene.layout.HBox;
 
 
 import java.io.File;
@@ -22,8 +25,24 @@ public class ImageSceneController implements Initializable {
 
     private ResourceBundle resources;
 
+    @FXML
+    private HBox header;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        // get the children of header component
+        ObservableList<Node> childrenOfHeader = this.header.getChildren();
+        // search for the btnHome and add a new onMouseClickListener
+        for (var child : childrenOfHeader) {
+            if (child.getId() != null && child.getId().equals("btnHome")) {
+                child.setOnMouseClicked(event -> {
+                    this.imageView.setImage(null);
+                    SceneManager.getSceneManager().changeScene("MainMenuScene.fxml");
+                });
+            }
+        }
+
         this.resources = resources;
         this.recordManager = new RecordManager();
 

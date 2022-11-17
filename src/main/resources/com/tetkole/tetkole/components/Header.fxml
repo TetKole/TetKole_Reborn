@@ -22,7 +22,7 @@
       </graphic>
    </Button>
 
-   <Button mnemonicParsing="false" onAction="#onHomeButtonClick">
+   <Button id="btnHome" mnemonicParsing="false"><!--onAction="#onHomeButtonClick">-->
       <styleClass>
          <String fx:value="blue"/>
          <String fx:value="buttons"/>

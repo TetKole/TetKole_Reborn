@@ -9,7 +9,7 @@
 
     <top>
         <AnchorPane>
-            <fx:include source="components/Header.fxml" AnchorPane.rightAnchor="0.0"/>
+            <fx:include fx:id="header" source="components/Header.fxml" AnchorPane.rightAnchor="0.0"/>
         </AnchorPane>
     </top>
 

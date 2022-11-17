@@ -42,7 +42,6 @@ public class MainMenuSceneController {
             Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
             alert.showAndWait();
         }
-        System.out.println("todo");
     }
 
     @FXML
