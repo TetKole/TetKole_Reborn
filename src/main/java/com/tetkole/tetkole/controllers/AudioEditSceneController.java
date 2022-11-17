@@ -36,7 +36,7 @@ public class AudioEditSceneController implements PropertyChangeListener {
 
 
         mediaPlayer.setOnReady(() -> {
-            totalTime = mediaPlayer.getTotalDuration().toSeconds();
+            totalTime = mediaPlayer.getMedia().getDuration().toSeconds();
 
             waveVisualization.setTotalTime(mediaPlayer.getTotalDuration().toSeconds());
 
@@ -50,7 +50,7 @@ public class AudioEditSceneController implements PropertyChangeListener {
             });
         });
 
-        waveVisualization.getWaveService().startService(audioFile.getAbsolutePath(), WaveFormService.WaveFormJob.AMPLITUDES_AND_WAVEFORM);
+        waveVisualization.startVisualization(audioFile.getAbsolutePath(), WaveFormService.WaveFormJob.AMPLITUDES_AND_WAVEFORM);
 
         waveVisualization.addPropertyChangeListener(this);
     }

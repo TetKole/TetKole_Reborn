@@ -32,7 +32,6 @@ public class WaveVisualization extends WaveFormPane {
 		animationService = new PaintService();
 
 
-
 		// ----------
 		widthProperty().addListener((observable , oldValue , newValue) -> {
 			//System.out.println("New Visualizer Width is:" + newValue);
@@ -59,8 +58,12 @@ public class WaveVisualization extends WaveFormPane {
 			clear();
 		});
 	}
+
+	public void startVisualization(String fileAbsolutePath, WaveFormJob waveFormJob) {
+		getWaveService().startService(fileAbsolutePath, waveFormJob);
+	}
 	
-	public WaveFormService getWaveService() {
+	private WaveFormService getWaveService() {
 		return waveService;
 	}
 	
@@ -106,15 +109,6 @@ public class WaveVisualization extends WaveFormPane {
 	 * @author GOXR3PLUS
 	 */
 	public class PaintService extends AnimationTimer {
-
-		@Override
-		public void start() {
-			// Values must be >0
-			if (width <= 0 || height <= 0)
-				width = height = 1;
-			
-			super.start();
-		}
 		
 		@Override
 		public void handle(long nanos) {

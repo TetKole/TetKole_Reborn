@@ -137,7 +137,7 @@ public class WaveFormService extends Service<Boolean> {
 			/**
 			 * Try to process a Non Wav File
 			 * 
-			 * @param fileFormat
+			 * @param fileFormat Extension of the Non WAV File
 			 * @return float[]
 			 */
 			private float[] processFromNoWavFile(String fileFormat) throws IOException {
