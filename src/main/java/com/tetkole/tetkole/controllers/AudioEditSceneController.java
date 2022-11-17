@@ -4,8 +4,11 @@ import com.tetkole.tetkole.utils.RecordManager;
 import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.wave.WaveFormService;
 import com.tetkole.tetkole.utils.wave.WaveVisualization;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
@@ -24,9 +27,24 @@ public class AudioEditSceneController implements PropertyChangeListener {
 
     private double totalTime;
 
+    @FXML
+    private HBox header;
 
     @FXML
     protected void initialize() {
+        // get the children of header component
+        ObservableList<Node> childrenOfHeader = this.header.getChildren();
+        // search for the btnHome and add a new onMouseClickListener
+        for (var child : childrenOfHeader) {
+            if (child.getId() != null && child.getId().equals("btnHome")) {
+                child.setOnMouseClicked(event -> {
+                    // free all mediaPlayer resources and change scene
+                    this.mediaPlayer.dispose();
+                    SceneManager.getSceneManager().changeScene("MainMenuScene.fxml");
+                });
+            }
+        }
+
         this.recordManager = new RecordManager();
 
         File audioFile = (File) SceneManager.getSceneManager().getArgument("loaded_file_audio");

@@ -11,7 +11,7 @@
 <BorderPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #282e35;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.AudioEditSceneController">
    <top>
        <AnchorPane>
-           <fx:include source="components/Header.fxml" AnchorPane.rightAnchor="0.0"/>
+           <fx:include fx:id="header" source="components/Header.fxml" AnchorPane.rightAnchor="0.0"/>
        </AnchorPane>
    </top>
 

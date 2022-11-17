@@ -2,9 +2,14 @@ package com.tetkole.tetkole.controllers;
 
 import com.tetkole.tetkole.utils.SceneManager;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import javafx.scene.layout.HBox;
+
+import javax.swing.filechooser.FileSystemView;
 import java.net.URL;
 import java.util.*;
 
@@ -16,7 +21,21 @@ public class SettingsSceneController implements Initializable {
     private final Locale enLocal = new Locale("en", "EN");
 
     @FXML
+    private HBox header;
+
+    @FXML
     public void initialize(URL location, ResourceBundle resources) {
+
+        // get the children of header component
+        ObservableList<Node> childrenOfHeader = this.header.getChildren();
+        // search for the btnHome and add a new onMouseClickListener
+        for (var child : childrenOfHeader) {
+            if (child.getId() != null && child.getId().equals("btnHome")) {
+                child.setOnMouseClicked(event -> SceneManager.getSceneManager().changeScene("MainMenuScene.fxml"));
+            }
+        }
+
+
         // add items to ComboBox
         languagesComboBox.getItems().add(resources.getString("French"));
         languagesComboBox.getItems().add(resources.getString("English"));
