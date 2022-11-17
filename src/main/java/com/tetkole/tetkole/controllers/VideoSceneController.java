@@ -132,9 +132,11 @@ public class VideoSceneController implements Initializable {
     protected void onRecordButtonClick() {
         if(recordManager.isRecording()) {
             this.recordManager.stopRecording();
+            btnRecord.setText(resources.getString("StartRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/record.png")).toExternalForm()));
         } else {
             this.recordManager.startRecording();
+            btnRecord.setText(resources.getString("StopRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm()));
         }
     }
