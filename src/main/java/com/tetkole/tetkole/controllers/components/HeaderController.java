@@ -10,23 +10,17 @@ import java.io.IOException;
 
 public class HeaderController {
 
-    /*
-    @FXML
-    public onHomeButtonClick() {
-        //SceneManager.getSceneManager().changeScene("MainMenuScene.fxml");
-    }*/
-
     @FXML
     public void onOpenFolderClick() throws IOException {
         String os = System.getProperty("os.name").toLowerCase();
         System.out.println(os);
         if (os.contains("windows")) {
             Desktop.getDesktop().open(new File(FileSystemView.getFileSystemView().getDefaultDirectory().getPath() + "\\TetKole"));
-        }else if(os.contains("linux")){
+        } else if(os.contains("linux")) {
             new Thread(() -> {
                 try {
                     Desktop.getDesktop().open(new File("/home/" + System.getProperty("user.name") + "/TetKole/"));
-                }catch (Exception e){
+                } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
             }).start();

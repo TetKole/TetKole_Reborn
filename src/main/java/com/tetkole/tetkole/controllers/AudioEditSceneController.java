@@ -6,7 +6,11 @@ import com.tetkole.tetkole.utils.wave.WaveFormService;
 import com.tetkole.tetkole.utils.wave.WaveVisualization;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.media.Media;
@@ -15,8 +19,11 @@ import javafx.util.Duration;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.net.URL;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
-public class AudioEditSceneController implements PropertyChangeListener {
+public class AudioEditSceneController implements PropertyChangeListener, Initializable {
 
     @FXML
     WaveVisualization waveVisualization;
@@ -28,10 +35,19 @@ public class AudioEditSceneController implements PropertyChangeListener {
     private double totalTime;
 
     @FXML
-    private HBox header;
+    private Button btnRecord;
+    @FXML
+    private Button btnPlayPause;
+
+    private ResourceBundle resources;
 
     @FXML
-    protected void initialize() {
+    private HBox header;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        this.resources = resources;
+
         // get the children of header component
         ObservableList<Node> childrenOfHeader = this.header.getChildren();
         // search for the btnHome and add a new onMouseClickListener
@@ -80,8 +96,14 @@ public class AudioEditSceneController implements PropertyChangeListener {
                 double widthWave =  waveVisualization.widthProperty().getValue();
                 mediaPlayer.setStartTime(new Duration((waveVisualization.getCurrentXPosition() * totalTime / widthWave) * 1000));
                 mediaPlayer.pause();
+                btnPlayPause.setText(resources.getString("Play"));
+                ((ImageView) btnPlayPause.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()));
             }
-            case PAUSED, READY, STOPPED -> mediaPlayer.play();
+            case PAUSED, READY, STOPPED -> {
+                mediaPlayer.play();
+                btnPlayPause.setText(resources.getString("Pause"));
+                ((ImageView) btnPlayPause.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/pause.png")).toExternalForm()));
+            }
         }
     }
 
@@ -97,8 +119,12 @@ public class AudioEditSceneController implements PropertyChangeListener {
     protected void onRecordButtonClick() {
         if(recordManager.isRecording()) {
             this.recordManager.stopRecording();
+            btnRecord.setText(resources.getString("StartRecord"));
+            ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/record.png")).toExternalForm()));
         } else {
             this.recordManager.startRecording();
+            btnRecord.setText(resources.getString("StopRecord"));
+            ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm()));
         }
     }
 

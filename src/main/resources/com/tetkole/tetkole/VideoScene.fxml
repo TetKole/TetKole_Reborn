@@ -32,8 +32,7 @@
                 </graphic>
             </Button>
 
-            <Button fx:id="btnRecord" contentDisplay="TOP" onAction="#onRecordButtonClick" prefHeight="60" prefWidth="150" styleClass="buttons, blue">
-                Toggle record
+            <Button fx:id="btnRecord" text="%StartRecord" contentDisplay="TOP" onAction="#onRecordButtonClick" prefHeight="60" prefWidth="150" styleClass="buttons, blue">
                 <graphic>
                     <ImageView fitHeight="82.5" fitWidth="82.5">
                         <Image url="@../../../images/record.png" />
