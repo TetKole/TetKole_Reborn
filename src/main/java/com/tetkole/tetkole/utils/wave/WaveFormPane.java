@@ -28,6 +28,7 @@ public class WaveFormPane extends ResizableCanvas {
 	private boolean leftBorderDragged = false;
 	private double rightBorderXPosition;
 	private boolean rightBorderDragged = false;
+	protected double totalTime;
 
 	private PropertyChangeSupport support;
 
@@ -186,13 +187,13 @@ public class WaveFormPane extends ResizableCanvas {
 		// Draw Left Border
 		gc.setFill(Color.WHITE);
 		gc.fillRect(this.leftBorderXPosition, 0, 10, height);
-		// Write the time at top of the border
-		//gc.strokeText(this.calculTimeLeftBorder(), this.posLeftStrokeText(), this.adjustPosYStrokeText(), 500);
+		// Write the time at top of the border left border
+		gc.strokeText(this.getTimeLeftBorderInString(), this.posLeftStrokeText(), adjustPosYStrokeText(), 500);
 
 		// Draw Right Border
 		gc.fillRect(this.rightBorderXPosition, 0, 10, height);
-		// Write the time at top of the border
-		//gc.strokeText(this.calculTimeRightBorder(), this.posRightStrokeText(), 15, 500);
+		// Write the time at top of the right border
+		gc.strokeText(this.getTimeRightBorderInString(), this.posRightStrokeText(), 15, 500);
 
 		// Draw Transparent Rect for borders
 		gc.setFill(transparentForeground);
@@ -208,6 +209,78 @@ public class WaveFormPane extends ResizableCanvas {
 		if (mouseXPosition != -1) {
 			gc.setFill(mouseXColor);
 			gc.fillRect(mouseXPosition, 0, 3, height);
+		}
+	}
+
+
+
+	/* the following function are used to manage text timestamp on border */
+
+	public String getTimeLeftBorderInString() {
+		double time = this.leftBorderXPosition / (getWidth() / totalTime); //waveFormService.getRatioAudio();
+		double milliTime = Math.round(time * 100.0) / 100.0;
+
+		double hoursLeftBorderTime = time / 3600;
+		double minutesLeftBorderTime = (time % 3600) / 60;
+		double secondsLeftBorderTime = time % 60;
+
+		String hours = String.valueOf(hoursLeftBorderTime);
+		String onlyHours = hours.split("\\.")[0];
+		String minutes = String.valueOf(minutesLeftBorderTime);
+		String onlyMinutes = minutes.split("\\.")[0];
+		String seconds = String.valueOf(secondsLeftBorderTime);
+		String onlySeconds = seconds.split("\\.")[0];
+		String milliSeconds = String.valueOf(milliTime);
+		String onlyMilliSeconds = milliSeconds.substring(milliSeconds.indexOf(".")).substring(1);
+
+		return onlyHours + "h:" + onlyMinutes + "min:" + onlySeconds + "s:" + onlyMilliSeconds + "ms";
+	}
+
+	public String getTimeRightBorderInString() {
+		double time = this.rightBorderXPosition / (getWidth() / totalTime);
+		double milliTime = Math.round((this.rightBorderXPosition / (getWidth() / totalTime)) * 100.0) / 100.0;
+
+		double hoursRightBorderTime = time / 3600;
+		double minutesRightBorderTime = (time % 3600) / 60;
+		double secondsRightBorderTime = time % 60;
+
+		String hours = String.valueOf(hoursRightBorderTime);
+		String onlyHours = hours.split("\\.")[0];
+		String minutes = String.valueOf(minutesRightBorderTime);
+		String onlyMinutes = minutes.split("\\.")[0];
+		String seconds = String.valueOf(secondsRightBorderTime);
+		String onlySeconds = seconds.split("\\.")[0];
+		String milliSeconds = String.valueOf(milliTime);
+		String onlyMilliSeconds = milliSeconds.substring(milliSeconds.indexOf(".")).substring(1);
+
+		return onlyHours + "h:" + onlyMinutes + "min:" + onlySeconds + "s:" + onlyMilliSeconds + "ms";
+	}
+
+	public double posLeftStrokeText() {
+		if (this.leftBorderXPosition < (getWidth() / 4)) {
+			return this.leftBorderXPosition + 25;
+		} else {
+			return this.leftBorderXPosition - 110;
+		}
+	}
+
+	public double posRightStrokeText() {
+		if (this.rightBorderXPosition > ((getWidth() / 4) * 3)) {
+			return this.rightBorderXPosition - 110;
+		} else {
+			return this.rightBorderXPosition + 25;
+		}
+	}
+
+	/**
+	 * This function is used to lower the Y position of left border's text when it collide with right border's text
+	 * @return
+	 */
+	public int adjustPosYStrokeText() {
+		if ((this.rightBorderXPosition - this.leftBorderXPosition) < 100.0) {
+			return 30;
+		} else {
+			return 15;
 		}
 	}
 	

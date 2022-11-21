@@ -19,9 +19,6 @@ public class WaveVisualization extends WaveFormPane {
 	/*** This Service is creating the wave data for the painter */
 	private final WaveFormService waveService;
 
-	private double totalTime;
-
-
 	
 	/**
 	 * Constructor
