@@ -76,7 +76,11 @@ public class AudioEditSceneController implements PropertyChangeListener {
     @FXML
     protected void onPlayPauseButtonClick() {
         switch (mediaPlayer.getStatus()) {
-            case PLAYING -> mediaPlayer.pause();
+            case PLAYING -> {
+                double widthWave =  waveVisualization.widthProperty().getValue();
+                mediaPlayer.setStartTime(new Duration((waveVisualization.getCurrentXPosition() * totalTime / widthWave) * 1000));
+                mediaPlayer.pause();
+            }
             case PAUSED, READY, STOPPED -> mediaPlayer.play();
         }
     }
@@ -116,6 +120,7 @@ public class AudioEditSceneController implements PropertyChangeListener {
         // set stop time (with right border)
         double rightBorderXPosition = waveVisualization.getRightBorderXPosition() + 10;
         double newStop = rightBorderXPosition * totalTime / widthWave;
+
         mediaPlayer.setStopTime(new Duration(newStop * 1000));
     }
 }
