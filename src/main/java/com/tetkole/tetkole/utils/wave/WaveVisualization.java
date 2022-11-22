@@ -5,6 +5,7 @@ package com.tetkole.tetkole.utils.wave;
 
 import com.tetkole.tetkole.utils.wave.WaveFormService.WaveFormJob;
 import javafx.animation.AnimationTimer;
+import javafx.scene.input.ScrollEvent;
 
 /**
  * The Class Visualizer.
@@ -54,6 +55,7 @@ public class WaveVisualization extends WaveFormPane {
 				getWaveService().startService(getWaveService().getFileAbsolutePath(), WaveFormJob.WAVEFORM);
 			clear();
 		});
+
 	}
 
 	public void startVisualization(String fileAbsolutePath, WaveFormJob waveFormJob) {
@@ -85,8 +87,24 @@ public class WaveVisualization extends WaveFormPane {
 		setCurrentXPosition((seconds * this.width) / totalTime);
 	}
 
+	public void setRangeZoom(ScrollEvent scrollEvent) {
+		// we zoom the wave when we scroll
+		if (scrollEvent.getDeltaY() > 0) {
+			this.waveService.setWaveRange(this.getLeftBorderXPosition(), this.getRightBorderXPosition(), this.width);
+			this.setAudioRange();
+		} else {
+			this.waveService.resetWaveRange();
+			this.resetAudioRange();
+		}
+		getWaveService().startService(getWaveService().getFileAbsolutePath(), WaveFormJob.WAVEFORM);
+		clear();
+	}
+
 	public void setTotalTime(double seconds) {
 		this.totalTime = seconds;
+		this.setEndAudio(seconds);
+		// set up number of wave for the audio, 200 wave per seconds
+		this.waveService.setArrayWaveLength((int)this.totalTime * 200);
 	}
 
 	/*-----------------------------------------------------------------------

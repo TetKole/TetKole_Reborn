@@ -27,20 +27,15 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
     @FXML
     WaveVisualization waveVisualization;
-
     // private String audioFileName;
     private MediaPlayer mediaPlayer;
     private RecordManager recordManager;
-
     private double totalTime;
-
     @FXML
     private Button btnRecord;
     @FXML
     private Button btnPlayPause;
-
     private ResourceBundle resources;
-
     @FXML
     private HBox header;
 
@@ -121,7 +116,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     }
 
     public void onScroll(ScrollEvent scrollEvent) {
-        // TODO Zoom
+        this.waveVisualization.setRangeZoom(scrollEvent);
     }
 
     @Override
