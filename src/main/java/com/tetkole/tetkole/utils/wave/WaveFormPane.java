@@ -88,10 +88,10 @@ public class WaveFormPane extends ResizableCanvas {
 		setOnMouseReleased(event -> {
 			// if one of the border is dragged --> set current to left border
 			if (leftBorderDragged || rightBorderDragged) {
-				setCurrentXPositionMediaPlayer(leftBorderXPosition);
+				this.setCurrentXPositionMediaPlayer(leftBorderXPosition);
 			} else { // else set current to click position
 				if (event.getX() > leftBorderXPosition + 10 && event.getX() < rightBorderXPosition) {
-					setCurrentXPositionMediaPlayer(mouseXPosition);
+					this.setCurrentXPositionMediaPlayer(mouseXPosition);
 				}
 			}
 
@@ -185,7 +185,7 @@ public class WaveFormPane extends ResizableCanvas {
 		this.beginAudio = Math.max(0 , newBeginAudio);
 		this.endAudio = Math.min(newEndAudio, this.totalTime);
 		this.leftBorderXPosition = this.width * 0.1;
-		this.rightBorderXPosition = this.width *0.9;
+		this.rightBorderXPosition = this.width * 0.9;
 		//waveService.startTimeMediaPlayer((right - left) * 0.1);
 	}
 

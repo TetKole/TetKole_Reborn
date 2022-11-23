@@ -84,7 +84,7 @@ public class WaveVisualization extends WaveFormPane {
 	}
 
 	public void setCursorTime(double seconds) {
-		setCurrentXPosition((seconds * this.width) / totalTime);
+		setCurrentXPosition((seconds) * this.getRatioAudio());
 	}
 
 	public void setRangeZoom(ScrollEvent scrollEvent) {
@@ -106,6 +106,8 @@ public class WaveVisualization extends WaveFormPane {
 		// set up number of wave for the audio, 200 wave per seconds
 		this.waveService.setArrayWaveLength((int)this.totalTime * 200);
 	}
+
+
 
 	/*-----------------------------------------------------------------------
 	 * 

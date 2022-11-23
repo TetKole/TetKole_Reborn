@@ -30,7 +30,6 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     // private String audioFileName;
     private MediaPlayer mediaPlayer;
     private RecordManager recordManager;
-    private double totalTime;
     @FXML
     private Button btnRecord;
     @FXML
@@ -65,7 +64,6 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
 
         mediaPlayer.setOnReady(() -> {
-            totalTime = mediaPlayer.getMedia().getDuration().toSeconds();
 
             waveVisualization.setTotalTime(mediaPlayer.getTotalDuration().toSeconds());
 
@@ -88,8 +86,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     protected void onPlayPauseButtonClick() {
         switch (mediaPlayer.getStatus()) {
             case PLAYING -> {
-                double widthWave =  waveVisualization.widthProperty().getValue();
-                mediaPlayer.setStartTime(new Duration((waveVisualization.getCurrentXPosition() * totalTime / widthWave) * 1000));
+                mediaPlayer.setStartTime(new Duration((waveVisualization.getCurrentXPosition() / waveVisualization.getRatioAudio()) * 1000));
                 mediaPlayer.pause();
                 btnPlayPause.setText(resources.getString("Play"));
                 ((ImageView) btnPlayPause.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()));
@@ -116,6 +113,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     }
 
     public void onScroll(ScrollEvent scrollEvent) {
+        mediaPlayer.stop();
         this.waveVisualization.setRangeZoom(scrollEvent);
     }
 
@@ -127,15 +125,11 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
         // set current X in media player aka start time
         double newCurrentX = (double) evt.getNewValue();
-        double widthWave =  waveVisualization.widthProperty().getValue();
-
-        double newStart = newCurrentX * totalTime / widthWave;
-        mediaPlayer.setStartTime(new Duration(newStart * 1000));
-
+        double newStart = newCurrentX / waveVisualization.getRatioAudio() + waveVisualization.getBeginAudio();
+        mediaPlayer.setStartTime(new Duration((newStart) * 1000));
         // set stop time (with right border)
         double rightBorderXPosition = waveVisualization.getRightBorderXPosition() + 10;
-        double newStop = rightBorderXPosition * totalTime / widthWave;
-
-        mediaPlayer.setStopTime(new Duration(newStop * 1000));
+        double newStop = rightBorderXPosition / waveVisualization.getRatioAudio() + waveVisualization.getBeginAudio();
+        mediaPlayer.setStopTime(new Duration((newStop) * 1000));
     }
 }
