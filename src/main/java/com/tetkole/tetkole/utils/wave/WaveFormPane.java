@@ -189,6 +189,8 @@ public class WaveFormPane extends ResizableCanvas {
 		this.endAudio = seconds;
 		this.leftBorderXPosition = (seconds * 0.1) * this.getRatioAudio();
 		this.rightBorderXPosition = (seconds * 0.9) * this.getRatioAudio();
+		this.setLeftBorderTime(seconds * 0.1);
+		this.setRightBorderTime(seconds * 0.9);
 		this.setCurrentXPositionMediaPlayer(leftBorderXPosition);
 	}
 
