@@ -27,6 +27,7 @@ import java.util.ResourceBundle;
 
 public class VideoSceneController implements Initializable {
 
+    private String videoFileName;
     private RecordManager recordManager;
 
     private MediaPlayer mediaPlayer;
@@ -107,6 +108,9 @@ public class VideoSceneController implements Initializable {
             });
         });
 
+        this.videoFileName = videoFile.getName();
+
+
         this.recordManager = new RecordManager();
     }
 
@@ -135,7 +139,7 @@ public class VideoSceneController implements Initializable {
             btnRecord.setText(resources.getString("StartRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/record.png")).toExternalForm()));
         } else {
-            this.recordManager.startRecording();
+            this.recordManager.startRecording(videoFileName);
             btnRecord.setText(resources.getString("StopRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm()));
         }

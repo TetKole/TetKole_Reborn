@@ -28,7 +28,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     @FXML
     WaveVisualization waveVisualization;
 
-    // private String audioFileName;
+    private String audioFileName;
     private MediaPlayer mediaPlayer;
     private RecordManager recordManager;
 
@@ -64,7 +64,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         this.recordManager = new RecordManager();
 
         File audioFile = (File) SceneManager.getSceneManager().getArgument("loaded_file_audio");
-        //this.audioFileName = audioFile.getName();
+        this.audioFileName = audioFile.getName();
         Media audioMedia = new Media(audioFile.toURI().toString());
         mediaPlayer = new MediaPlayer(audioMedia);
 
@@ -114,7 +114,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             btnRecord.setText(resources.getString("StartRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/record.png")).toExternalForm()));
         } else {
-            this.recordManager.startRecording();
+            this.recordManager.startRecording(audioFileName);
             btnRecord.setText(resources.getString("StopRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm()));
         }

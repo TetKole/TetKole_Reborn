@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class RecordManager {
     private final String os;
@@ -33,7 +35,7 @@ public class RecordManager {
         return isRecording;
     }
 
-    public void startRecording(){
+    public void startRecording(String fileName){
         if(!isRecording) {
             this.isRecording = true;
             System.out.println("Record started");
@@ -51,7 +53,7 @@ public class RecordManager {
                     audioRecordThread = new Thread(() -> {
                         AudioInputStream recordStream = new AudioInputStream(targetLine);
                         try {
-                            AudioSystem.write(recordStream, AudioFileFormat.Type.WAVE, this.getWavOutputFile());
+                            AudioSystem.write(recordStream, AudioFileFormat.Type.WAVE, this.getWavOutputFile(fileName));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -85,11 +87,15 @@ public class RecordManager {
         return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
     }
 
-    public File getWavOutputFile(){
+    public File getWavOutputFile(String fileName){
+        Long localDateEpoch =  LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
         if (this.os.contains("nux") || this.os.contains("mac")){
-            return new File(this.folderPath + "/Record.wav");
+            new File(this.folderPath+"/"+fileName);
+            return new File(this.folderPath +"/"+fileName+ "/record-"+localDateEpoch+".wav");
         }else{
-            return new File(this.folderPath + "\\Record.wav");
+            //create the folder if it doesn't exist
+            new File(this.folderPath+"\\"+fileName);
+            return new File(this.folderPath + "\\"+fileName+"/record-"+localDateEpoch+".wa");
         }
     }
 }

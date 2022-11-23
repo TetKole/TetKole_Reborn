@@ -19,6 +19,8 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class ImageSceneController implements Initializable {
+
+    private String imageFileName;
     Image image;
     @FXML
     ImageView imageView;
@@ -49,10 +51,14 @@ public class ImageSceneController implements Initializable {
         }
 
         this.resources = resources;
+
+
+
         this.recordManager = new RecordManager();
 
         // Get the file from the arguments and into image to show them in fxml
         File imageFile = (File) SceneManager.getSceneManager().getArgument("loaded_file_image");
+        this.imageFileName = imageFile.getName();
         image = new Image(imageFile.toURI().toString());
         imageView.setImage(image);
     }
@@ -64,7 +70,7 @@ public class ImageSceneController implements Initializable {
             btnRecord.setText(resources.getString("StartRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/record.png")).toExternalForm()));
         } else {
-            this.recordManager.startRecording();
+            this.recordManager.startRecording(imageFileName);
             btnRecord.setText(resources.getString("StopRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm()));
         }
