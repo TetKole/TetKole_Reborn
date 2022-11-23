@@ -356,22 +356,6 @@ public class WaveFormService extends Service<Boolean> {
 		this.endArrayWaveLength = arrayWaveLength;
 	}
 
-	public int getBeginArrayWaveLength() {
-		return beginArrayWaveLength;
-	}
-
-	public void setBeginArrayWaveLength(int beginArrayWaveLength) {
-		this.beginArrayWaveLength = beginArrayWaveLength;
-	}
-
-	public int getEndArrayWaveLength() {
-		return endArrayWaveLength;
-	}
-
-	public void setEndArrayWaveLength(int endArrayWaveLength) {
-		this.endArrayWaveLength = endArrayWaveLength;
-	}
-
 	public void setWaveRange(double leftBorderXPosition, double rightBorderXPosition, double width){
 		int waveSize = this.endArrayWaveLength - this.beginArrayWaveLength;
 		double newBeginArrayWaveLength = leftBorderXPosition * waveSize / width + this.beginArrayWaveLength;

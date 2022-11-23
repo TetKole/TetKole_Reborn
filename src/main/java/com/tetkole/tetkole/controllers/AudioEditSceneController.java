@@ -86,7 +86,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     protected void onPlayPauseButtonClick() {
         switch (mediaPlayer.getStatus()) {
             case PLAYING -> {
-                mediaPlayer.setStartTime(new Duration((waveVisualization.getCurrentXPosition() / waveVisualization.getRatioAudio()) * 1000));
+                mediaPlayer.setStartTime(new Duration((waveVisualization.getCurrentXPosition() / waveVisualization.getRatioAudio() + waveVisualization.getBeginAudio()) * 1000));
                 mediaPlayer.pause();
                 btnPlayPause.setText(resources.getString("Play"));
                 ((ImageView) btnPlayPause.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()));

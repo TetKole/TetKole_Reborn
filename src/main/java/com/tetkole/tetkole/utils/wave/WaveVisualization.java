@@ -84,7 +84,7 @@ public class WaveVisualization extends WaveFormPane {
 	}
 
 	public void setCursorTime(double seconds) {
-		setCurrentXPosition((seconds) * this.getRatioAudio());
+		setCurrentXPosition((seconds - this.getBeginAudio()) * this.getRatioAudio());
 	}
 
 	public void setRangeZoom(ScrollEvent scrollEvent) {
