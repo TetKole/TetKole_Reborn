@@ -39,6 +39,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
     implementation 'ws.schild:jave-all-deps:3.3.1'
     implementation 'org.json:json:20220924'
+
 }
 
 test {

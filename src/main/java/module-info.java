@@ -5,6 +5,7 @@ module com.tetkole.tetkole {
     requires java.datatransfer;
     requires java.desktop;
     requires jave.core;
+    requires org.json;
 
 
     opens com.tetkole.tetkole to javafx.fxml;
