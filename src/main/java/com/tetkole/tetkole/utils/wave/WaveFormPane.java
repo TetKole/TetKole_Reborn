@@ -12,7 +12,7 @@ import java.beans.PropertyChangeSupport;
  * @author GOXR3PLUS STUDIO
  */
 public class WaveFormPane extends ResizableCanvas {
-	
+
 	private final float[] defaultWave;
 	private float[] waveData;
 	private Color backgroundColor;
@@ -23,20 +23,21 @@ public class WaveFormPane extends ResizableCanvas {
 	int height;
 	private double currentXPosition = 0;
 	private double mouseXPosition = -1;
-
 	private double leftBorderXPosition;
 	private boolean leftBorderDragged = false;
+	private double leftBorderTime;
 	private double rightBorderXPosition;
 	private boolean rightBorderDragged = false;
+	private double rightBorderTime;
 	protected double totalTime;
-
 	private PropertyChangeSupport support;
-
 	private final GraphicsContext gc = getGraphicsContext2D();
-	
+	private double beginAudio = 0;
+	private double endAudio;
+
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 */
@@ -54,7 +55,7 @@ public class WaveFormPane extends ResizableCanvas {
 		for (int i = 0; i < width; i++)
 			defaultWave[i] = 0.28802148f;
 		waveData = defaultWave;
-		
+
 		backgroundColor = Color.web("#252525");
 		setForeground(Color.ORANGE);
 
@@ -78,10 +79,12 @@ public class WaveFormPane extends ResizableCanvas {
 
 			if (rightBorderDragged) {
 				rightBorderXPosition = Math.min(Math.max(event.getX(), leftBorderXPosition + 10),  getWidth() - 10);
+				this.setRightBorderTime(rightBorderXPosition * this.getRatioAudio() + this.beginAudio);
 			}
 
 			if (leftBorderDragged) {
 				leftBorderXPosition = Math.max(Math.min(event.getX(), rightBorderXPosition - 10), 0);
+				this.setLeftBorderTime(leftBorderXPosition * this.getRatioAudio() + this.beginAudio);
 			}
 		});
 
@@ -89,10 +92,10 @@ public class WaveFormPane extends ResizableCanvas {
 		setOnMouseReleased(event -> {
 			// if one of the border is dragged --> set current to left border
 			if (leftBorderDragged || rightBorderDragged) {
-				setCurrentXPositionMediaPlayer(leftBorderXPosition);
+				this.setCurrentXPositionMediaPlayer(leftBorderXPosition);
 			} else { // else set current to click position
 				if (event.getX() > leftBorderXPosition + 10 && event.getX() < rightBorderXPosition) {
-					setCurrentXPositionMediaPlayer(mouseXPosition);
+					this.setCurrentXPositionMediaPlayer(mouseXPosition);
 				}
 			}
 
@@ -122,16 +125,16 @@ public class WaveFormPane extends ResizableCanvas {
 	public double getRightBorderXPosition() {
 		return rightBorderXPosition;
 	}
-	
+
 	/**
 	 * Set the WaveData
-	 * 
+	 *
 	 * @param waveData
 	 */
 	public void setWaveData(float[] waveData) {
 		this.waveData = waveData;
 	}
-	
+
 	public void setForeground(Color color) {
 		this.foregroundColor = color;
 		transparentForeground = Color.rgb((int) ( foregroundColor.getRed() * 255 ), (int) ( foregroundColor.getGreen() * 255 ), (int) ( foregroundColor.getBlue() * 255 ), 0.3);
@@ -140,39 +143,103 @@ public class WaveFormPane extends ResizableCanvas {
 	public double getCurrentXPosition() {
 		return currentXPosition;
 	}
-	
+
 	public void setCurrentXPosition(double currentXPosition) {
 		this.currentXPosition = currentXPosition;
 	}
-	
+
 	public void setMouseXPosition(double mouseXPosition) {
 		this.mouseXPosition = mouseXPosition;
 	}
-	
+
+	public double getLeftBorderXPosition() {
+		return leftBorderXPosition;
+	}
+
+	public double getBeginAudio() {
+		return beginAudio;
+	}
+
+	public double getLeftBorderTime() {
+		return leftBorderTime;
+	}
+
+	public void setLeftBorderTime(double leftBorderTime) {
+		this.leftBorderTime = leftBorderTime;
+	}
+
+	public double getRightBorderTime() {
+		return rightBorderTime;
+	}
+
+	public void setRightBorderTime(double rightBorderTime) {
+		this.rightBorderTime = rightBorderTime;
+	}
+
+	public void setEndAudio(double endAudio) {
+		this.endAudio = endAudio;
+	}
+
+	public double getRatioAudio(){
+		return this.getWidth() / (this.endAudio - this.beginAudio);
+	}
+
+	public void initTotalTime(double seconds){
+		this.totalTime = seconds;
+		this.endAudio = seconds;
+		this.leftBorderXPosition = (seconds * 0.1) * this.getRatioAudio();
+		this.rightBorderXPosition = (seconds * 0.9) * this.getRatioAudio();
+		this.setLeftBorderTime(seconds * 0.1);
+		this.setRightBorderTime(seconds * 0.9);
+		this.setCurrentXPositionMediaPlayer(leftBorderXPosition);
+	}
+
+	public void setAudioRange(){
+		double newBeginAudio = this.leftBorderXPosition / this.getRatioAudio() + this.beginAudio;
+		double newEndAudio = this.rightBorderXPosition / this.getRatioAudio() + this.beginAudio;
+
+		this.setLeftBorderTime((newEndAudio - newBeginAudio) * 0.1 + newBeginAudio);
+		this.setRightBorderTime((newEndAudio - newBeginAudio) * 0.9 + newBeginAudio);
+
+		this.beginAudio = Math.max(0 , newBeginAudio);
+		this.endAudio = Math.min(newEndAudio, this.totalTime);
+		this.leftBorderXPosition = this.getWidth() * 0.1;
+		this.rightBorderXPosition = this.getWidth() * 0.9;
+		this.setCurrentXPositionMediaPlayer(leftBorderXPosition);
+	}
+
+	public void resetAudioRange(){
+		this.beginAudio = 0;
+		this.endAudio = this.totalTime;
+		this.leftBorderXPosition = this.getLeftBorderTime() * this.getRatioAudio();
+		this.rightBorderXPosition = this.getRightBorderTime() * this.getRatioAudio();
+		this.setCurrentXPositionMediaPlayer(leftBorderXPosition);
+	}
+
 	/**
 	 * Clear the waveform
 	 */
 	public void clear() {
 		waveData = defaultWave;
-		
+
 		//Draw a Background Rectangle
 		gc.setFill(backgroundColor);
 		gc.fillRect(0, 0, width, height);
-		
+
 		//Paint a line
 		gc.setStroke(foregroundColor);
 		gc.strokeLine(0, height / 2.0, width, height / 2.0);
 	}
-	
+
 	/**
 	 * Paint the WaveForm
 	 */
 	public void paintWaveForm() {
-		
+
 		//Draw a Background Rectangle
 		gc.setFill(backgroundColor);
 		gc.fillRect(0, 0, width, height);
-		
+
 		//Draw the waveform
 		gc.setStroke(foregroundColor);
 		if (waveData != null) {
@@ -204,7 +271,7 @@ public class WaveFormPane extends ResizableCanvas {
 		// Draw currentXPosition
 		gc.setFill(Color.RED);
 		gc.fillRect(currentXPosition, 0, 3, height);
-		
+
 		//Draw mouseXPositon
 		if (mouseXPosition != -1) {
 			gc.setFill(mouseXColor);
@@ -217,7 +284,7 @@ public class WaveFormPane extends ResizableCanvas {
 	/* the following function are used to manage text timestamp on border */
 
 	public String getTimeLeftBorderInString() {
-		double time = this.leftBorderXPosition / (getWidth() / totalTime); //waveFormService.getRatioAudio();
+		double time = this.leftBorderXPosition / (this.getRatioAudio()) + this.beginAudio; //waveFormService.getRatioAudio();
 		double milliTime = Math.round(time * 100.0) / 100.0;
 
 		double hoursLeftBorderTime = time / 3600;
@@ -237,8 +304,8 @@ public class WaveFormPane extends ResizableCanvas {
 	}
 
 	public String getTimeRightBorderInString() {
-		double time = this.rightBorderXPosition / (getWidth() / totalTime);
-		double milliTime = Math.round((this.rightBorderXPosition / (getWidth() / totalTime)) * 100.0) / 100.0;
+		double time = this.rightBorderXPosition / this.getRatioAudio() + this.beginAudio;
+		double milliTime = Math.round((this.rightBorderXPosition / this.getRatioAudio()) * 100.0) / 100.0;
 
 		double hoursRightBorderTime = time / 3600;
 		double minutesRightBorderTime = (time % 3600) / 60;
@@ -283,5 +350,5 @@ public class WaveFormPane extends ResizableCanvas {
 			return 15;
 		}
 	}
-	
+
 }

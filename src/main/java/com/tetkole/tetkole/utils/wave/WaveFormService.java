@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Random;
 
 import javax.sound.sampled.AudioFormat;
@@ -37,6 +38,9 @@ public class WaveFormService extends Service<Boolean> {
 	private Encoder encoder;
 	private final ConvertProgressListener listener = new ConvertProgressListener();
 	private WaveFormJob waveFormJob;
+	private int arrayWaveLength;
+	private int beginArrayWaveLength = 0;
+	private int endArrayWaveLength;
 	
 	/**
 	 * Wave Service type of Job ( not boob job ... )
@@ -120,7 +124,8 @@ public class WaveFormService extends Service<Boolean> {
 						resultingWaveform = processFromNoWavFile(fileFormat);
 						
 					} else if (waveFormJob == WaveFormJob.WAVEFORM) { //WAVEFORM
-						resultingWaveform = processAmplitudes(wavAmplitudes);
+						int newArr[] = Arrays.copyOfRange(wavAmplitudes, beginArrayWaveLength, endArrayWaveLength);
+						resultingWaveform = processAmplitudes(newArr);
 					}
 				} catch (Exception ex) {
 					ex.printStackTrace();
@@ -225,9 +230,8 @@ public class WaveFormService extends Service<Boolean> {
 						byte[] buffer = new byte[BUFFER_SIZE];
 						
 						//Now get the average to a smaller array
-						int maximumArrayLength = 100000;
-						int[] finalAmplitudes = new int[maximumArrayLength];
-						int samplesPerPixel = available / maximumArrayLength;
+						int[] finalAmplitudes = new int[arrayWaveLength];
+						int samplesPerPixel = available / arrayWaveLength;
 						
 						//Variables to calculate finalAmplitudes array
 						int currentSampleCounter = 0;
@@ -250,7 +254,7 @@ public class WaveFormService extends Service<Boolean> {
 									currentCellValue += Math.abs(arrayCellValue);
 								} else {
 									//Avoid ArrayIndexOutOfBoundsException
-									if (arrayCellPosition != maximumArrayLength)
+									if (arrayCellPosition != arrayWaveLength)
 										finalAmplitudes[arrayCellPosition] = finalAmplitudes[arrayCellPosition + 1] = (int) currentCellValue / samplesPerPixel;
 									
 									//Fix the variables
@@ -342,5 +346,28 @@ public class WaveFormService extends Service<Boolean> {
 	public void setResultingWaveform(float[] resultingWaveform) {
 		this.resultingWaveform = resultingWaveform;
 	}
-	
+
+	public int getArrayWaveLength() {
+		return arrayWaveLength;
+	}
+
+	public void setArrayWaveLength(int arrayWaveLength) {
+		this.arrayWaveLength = arrayWaveLength;
+		this.endArrayWaveLength = arrayWaveLength;
+	}
+
+	public void setWaveRange(double leftBorderXPosition, double rightBorderXPosition, double width){
+		int waveSize = this.endArrayWaveLength - this.beginArrayWaveLength;
+		double newBeginArrayWaveLength = leftBorderXPosition * waveSize / width + this.beginArrayWaveLength;
+		double newEndArrayWaveLength = rightBorderXPosition * waveSize / width + this.beginArrayWaveLength;
+		//double ten_percent = (right - left) * augmentationRationZoom;
+		this.beginArrayWaveLength = (int)Math.max(newBeginArrayWaveLength, 0);
+		this.endArrayWaveLength = (int)Math.min(newEndArrayWaveLength, this.arrayWaveLength);
+	}
+
+	public void resetWaveRange(){
+		this.beginArrayWaveLength = 0;
+		this.endArrayWaveLength = this.arrayWaveLength;
+	}
+
 }
