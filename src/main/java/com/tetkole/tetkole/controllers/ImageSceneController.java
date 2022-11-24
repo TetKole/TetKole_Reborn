@@ -15,6 +15,8 @@ import javafx.scene.layout.HBox;
 
 import java.io.File;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -65,12 +67,19 @@ public class ImageSceneController implements Initializable {
 
     @FXML
     protected void onRecordButtonClick() {
+        //Date with specific format
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("(dd-MM-YYYY_HH'h'mm'm'ss's')");
+        String formattedDateTime = currentDateTime.format(formatter);
+        String recordName = "record"+formattedDateTime+".wav";
+        System.out.println("Formatted LocalDateTime : " + formattedDateTime);
+
         if(recordManager.isRecording()) {
             this.recordManager.stopRecording();
             btnRecord.setText(resources.getString("StartRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/record.png")).toExternalForm()));
         } else {
-            this.recordManager.startRecording(imageFileName);
+            this.recordManager.startRecording(imageFileName,recordName);
             btnRecord.setText(resources.getString("StopRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm()));
         }

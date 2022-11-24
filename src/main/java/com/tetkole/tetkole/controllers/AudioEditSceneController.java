@@ -1,5 +1,6 @@
 package com.tetkole.tetkole.controllers;
 
+import com.tetkole.tetkole.utils.JsonManager;
 import com.tetkole.tetkole.utils.RecordManager;
 import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.wave.WaveFormService;
@@ -16,10 +17,15 @@ import javafx.scene.layout.HBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
+import javafx.util.converter.LocalDateTimeStringConverter;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -27,6 +33,8 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
     @FXML
     WaveVisualization waveVisualization;
+
+    JsonManager jsonManager;
 
     private String audioFileName;
 
@@ -58,6 +66,8 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         }
 
         this.recordManager = new RecordManager();
+
+        this.jsonManager = new JsonManager();
 
         File audioFile = (File) SceneManager.getSceneManager().getArgument("loaded_file_audio");
         this.audioFileName = audioFile.getName();
@@ -103,12 +113,20 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
     @FXML
     protected void onRecordButtonClick() {
+        //Date with specific format
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("(dd-MM-YYYY_HH'h'mm'm'ss's')");
+        String formattedDateTime = currentDateTime.format(formatter);
+        String recordName = "record"+formattedDateTime+".wav";
+        System.out.println("Formatted LocalDateTime : " + formattedDateTime);
+
         if(recordManager.isRecording()) {
+            this.jsonManager.saveJson(audioFileName,recordName,waveVisualization.getLeftBorderTime(),waveVisualization.getRightBorderTime());
             this.recordManager.stopRecording();
             btnRecord.setText(resources.getString("StartRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/record.png")).toExternalForm()));
         } else {
-            this.recordManager.startRecording(audioFileName);
+            this.recordManager.startRecording(audioFileName,recordName);
             btnRecord.setText(resources.getString("StopRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm()));
         }

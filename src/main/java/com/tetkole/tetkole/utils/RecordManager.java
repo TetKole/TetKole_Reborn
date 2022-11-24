@@ -6,8 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+
 
 public class RecordManager {
     private final String os;
@@ -35,7 +34,7 @@ public class RecordManager {
         return isRecording;
     }
 
-    public void startRecording(String fileName){
+    public void startRecording(String fileName,String recordName){
         if(!isRecording) {
             this.isRecording = true;
             System.out.println("Record started");
@@ -53,7 +52,7 @@ public class RecordManager {
                     audioRecordThread = new Thread(() -> {
                         AudioInputStream recordStream = new AudioInputStream(targetLine);
                         try {
-                            AudioSystem.write(recordStream, AudioFileFormat.Type.WAVE, this.getWavOutputFile(fileName));
+                            AudioSystem.write(recordStream, AudioFileFormat.Type.WAVE, this.getWavOutputFile(fileName,recordName));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -87,15 +86,14 @@ public class RecordManager {
         return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
     }
 
-    public File getWavOutputFile(String fileName){
-        Long localDateEpoch =  LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+    public File getWavOutputFile(String fileName, String recordName){
         if (this.os.contains("nux") || this.os.contains("mac")){
             new File(this.folderPath+"/"+fileName);
-            return new File(this.folderPath +"/"+fileName+ "/record-"+localDateEpoch+".wav");
+            return new File(this.folderPath +"/"+fileName+ "/"+recordName);
         }else{
             //create the folder if it doesn't exist
-            new File(this.folderPath+"\\"+fileName);
-            return new File(this.folderPath + "\\"+fileName+"/record-"+localDateEpoch+".wa");
+            new File(this.folderPath+"\\"+fileName).mkdir();
+            return new File(this.folderPath + "\\"+fileName+"/"+recordName);
         }
     }
 }
