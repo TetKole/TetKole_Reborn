@@ -22,19 +22,6 @@
       </graphic>
    </Button>
 
-
-   <Button mnemonicParsing="false" disable="true">
-      <styleClass>
-         <String fx:value="blue"/>
-         <String fx:value="buttons"/>
-      </styleClass>
-      <graphic>
-         <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true">
-            <Image url="@../../../../images/back.png"/>
-         </ImageView>
-      </graphic>
-   </Button>
-
    <Button id="btnHome" mnemonicParsing="false">
       <styleClass>
          <String fx:value="blue"/>

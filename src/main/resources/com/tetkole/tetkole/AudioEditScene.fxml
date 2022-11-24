@@ -8,7 +8,10 @@
 <?import javafx.scene.layout.HBox?>
 
 <?import com.tetkole.tetkole.utils.wave.WaveVisualization?>
-<BorderPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #282e35;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.AudioEditSceneController">
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.VBox?>
+<BorderPane prefHeight="400.0" prefWidth="600.0" styleClass="background_color" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.AudioEditSceneController">
    <top>
        <AnchorPane>
            <fx:include fx:id="header" source="components/Header.fxml" AnchorPane.rightAnchor="0.0"/>
@@ -16,7 +19,31 @@
    </top>
 
     <center>
-        <WaveVisualization fx:id="waveVisualization" onScroll="#onScroll"/>
+
+
+
+        <AnchorPane VBox.vgrow="ALWAYS">
+
+            <!-- placer ici tous les élements de la fenetre -->
+            <WaveVisualization fx:id="waveVisualization" onScroll="#onScroll"
+                AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0"
+            />
+
+
+            <!-- side panel -->
+            <AnchorPane fx:id="pane" prefHeight="460.0" prefWidth="239.0" style="-fx-background-color: #495461;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+                <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #495461;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <VBox fx:id="vBoxPane" alignment="TOP_CENTER" prefHeight="361.0" prefWidth="166.0" style="-fx-background-color: #495461; -fx-padding: 30 0 50 0;">
+                        <Label text="Mes enregistrements" textFill="WHITE" style="-fx-font-size: 16;"/>
+                    </VBox>
+                </ScrollPane>
+
+            </AnchorPane>
+            <!-- end of side panel -->
+
+        </AnchorPane>
+
     </center>
 
     <bottom>
@@ -32,6 +59,13 @@
                 <graphic>
                     <ImageView fitHeight="82.5" fitWidth="82.5">
                         <Image url="@../../../images/record.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+            <Button fx:id="btnDisplaySidePane" contentDisplay="TOP" text="%ShowRecords" prefHeight="60" prefWidth="150" styleClass="buttons, blue">
+                <graphic>
+                    <ImageView fitHeight="82.5" fitWidth="82.5">
+                        <Image url="@../../../images/music.png" />
                     </ImageView>
                 </graphic>
             </Button>

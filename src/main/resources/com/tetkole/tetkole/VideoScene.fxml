@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.scene.media.MediaView?>
-<BorderPane prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #282e35;" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.VideoSceneController">
+<BorderPane prefHeight="400.0" prefWidth="600.0" styleClass="background_color" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.VideoSceneController">
 
     <top>
         <AnchorPane>
