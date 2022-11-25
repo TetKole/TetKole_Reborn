@@ -140,3 +140,7 @@
     /*-fx-background-color: #282e35;*/
     -fx-background-color: #757d72;
 }
+
+.scroll-bar {
+    -fx-background-color: #495461;
+}
