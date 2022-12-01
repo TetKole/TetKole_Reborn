@@ -79,12 +79,12 @@ public class WaveFormPane extends ResizableCanvas {
 
 			if (rightBorderDragged) {
 				rightBorderXPosition = Math.min(Math.max(event.getX(), leftBorderXPosition + 10),  getWidth() - 10);
-				this.setRightBorderTime(rightBorderXPosition * this.getRatioAudio() + this.beginAudio);
+				this.setRightBorderTime(rightBorderXPosition / this.getRatioAudio() + this.beginAudio);
 			}
 
 			if (leftBorderDragged) {
 				leftBorderXPosition = Math.max(Math.min(event.getX(), rightBorderXPosition - 10), 0);
-				this.setLeftBorderTime(leftBorderXPosition * this.getRatioAudio() + this.beginAudio);
+				this.setLeftBorderTime(leftBorderXPosition / this.getRatioAudio() + this.beginAudio);
 			}
 		});
 
