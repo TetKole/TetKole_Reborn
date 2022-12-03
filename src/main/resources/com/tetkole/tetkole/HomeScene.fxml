@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="TOP_CENTER" spacing="100.0" styleClass="background_color" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tetkole.tetkole.controllers.HomeSceneController">
+
+    <Label text="TètKole" style="-fx-text-fill: white; -fx-font-size: 100px" />
+
+    <HBox alignment="CENTER" spacing="100.0">
+
+        <VBox alignment="CENTER" spacing="30.0">
+            <Label prefWidth="150.0" style="-fx-font-size: 16;" text="%CreateACorpus" textFill="WHITE" alignment="CENTER" />
+            <TextField fx:id="corpusNameInput" />
+            <Button onAction="#onCreateCorpus" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%CreateCorpus" />
+        </VBox>
+
+        <ScrollPane style="-fx-background-color: #495461;">
+                <VBox fx:id="vBoxCorpus" alignment="TOP_CENTER" prefHeight="361.0" prefWidth="166.0" style="-fx-background-color: #495461; -fx-padding: 30 0 50 0;" spacing="5" />
+        </ScrollPane>
+
+    </HBox>
+</VBox>

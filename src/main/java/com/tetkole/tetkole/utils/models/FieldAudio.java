@@ -1,6 +1,7 @@
 package com.tetkole.tetkole.utils.models;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FieldAudio {
@@ -9,9 +10,14 @@ public class FieldAudio {
 
     private List<Annotation> annotations;
 
-    public FieldAudio(String Path) {
-        //TODO FieldAudio Constructor
-
-        // manage annotation GOOD LUCK
+    public FieldAudio(File file) {
+        this.file = file;
+        this.annotations = new ArrayList<>();
     }
+
+    public String getName() {
+        return this.file.getName();
+    }
+
+
 }

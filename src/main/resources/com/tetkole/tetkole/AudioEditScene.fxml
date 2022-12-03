@@ -35,7 +35,7 @@
 
                 <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #495461;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <VBox fx:id="vBoxPane" alignment="TOP_CENTER" prefHeight="361.0" prefWidth="166.0" style="-fx-background-color: #495461; -fx-padding: 30 0 50 0;">
-                        <Label text="Mes enregistrements" textFill="WHITE" style="-fx-font-size: 16;"/>
+                        <Label text="%Records" textFill="WHITE" style="-fx-font-size: 16;"/>
                     </VBox>
                 </ScrollPane>
 
