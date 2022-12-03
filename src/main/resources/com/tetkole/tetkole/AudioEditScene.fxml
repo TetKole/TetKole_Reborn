@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.layout.GridPane?>
-<BorderPane prefHeight="400.0" prefWidth="600.0" styleClass="background_color" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.AudioEditSceneController">
+<BorderPane fx:id="container" prefHeight="400.0" prefWidth="600.0" styleClass="background_color" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.AudioEditSceneController">
    <top>
        <AnchorPane>
            <fx:include fx:id="header" source="components/Header.fxml" AnchorPane.rightAnchor="0.0"/>
@@ -25,16 +25,15 @@
 
 
 
-        <AnchorPane VBox.vgrow="ALWAYS">
-
+        <AnchorPane fx:id="centerAnchorPane" VBox.vgrow="ALWAYS">
             <!-- placer ici tous les élements de la fenetre -->
-            <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0">
-                <WaveVisualization fx:id="waveVisualization" onScroll="#onScroll" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                <AnnotationsVisualization fx:id="annotationsVisualization" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-            </GridPane>
+            <WaveVisualization fx:id="waveVisualization" onScroll="#onScroll"
+                               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0"/>
+            <AnnotationsVisualization fx:id="annotationsVisualization"
+                                      AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"/>
 
             <!-- side panel -->
-            <AnchorPane fx:id="pane" prefHeight="460.0" prefWidth="239.0" style="-fx-background-color: #495461;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <AnchorPane fx:id="recordAnchorPane" prefHeight="460.0" prefWidth="239.0" style="-fx-background-color: #495461;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
 
                 <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #495461;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <VBox fx:id="vBoxPane" alignment="TOP_CENTER" prefHeight="361.0" prefWidth="166.0" style="-fx-background-color: #495461; -fx-padding: 30 0 50 0;">

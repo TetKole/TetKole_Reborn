@@ -20,6 +20,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
@@ -42,14 +43,10 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
     @FXML
     WaveVisualization waveVisualization;
-
     @FXML
     AnnotationsVisualization annotationsVisualization;
-
     JsonManager jsonManager;
-
     private String audioFileName;
-
     private MediaPlayer mediaPlayer;
     private RecordManager recordManager;
     @FXML
@@ -59,12 +56,14 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     private ResourceBundle resources;
     @FXML
     private HBox header;
-
-
     @FXML
     private Button btnDisplaySidePane;
     @FXML
-    private AnchorPane pane;
+    private AnchorPane recordAnchorPane;
+    @FXML
+    private AnchorPane centerAnchorPane;
+    @FXML
+    private BorderPane container;
     @FXML
     private VBox vBoxPane;
 
@@ -113,14 +112,29 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             annotations.add(new Annotation(0,5));
             annotations.add(new Annotation(10,20));
             annotations.add(new Annotation(30,60));
-            annotationsVisualization.setAnnotations(annotations);
-            annotationsVisualization.setRatioAudio(waveVisualization.getRatioAudio());
-            annotationsVisualization.drawAnnotations();
+            this.annotationsVisualization.setAnnotations(annotations);
+            this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
+                    this.waveVisualization.getBeginAudio(),
+                    this.waveVisualization.getEndAudio());
+            this.annotationsVisualization.drawAnnotations();
         });
 
-        waveVisualization.startVisualization(audioFile.getAbsolutePath(), WaveFormService.WaveFormJob.AMPLITUDES_AND_WAVEFORM);
+        this.waveVisualization.startVisualization(audioFile.getAbsolutePath(), WaveFormService.WaveFormJob.AMPLITUDES_AND_WAVEFORM);
+        this.waveVisualization.addPropertyChangeListener(this);
 
-        waveVisualization.addPropertyChangeListener(this);
+        //We set the annotationsVisualization width when the screen size change
+        this.container.widthProperty().addListener((observable, oldValue, newValue) -> {
+            this.annotationsVisualization.setWidth((double)newValue);
+            this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
+                    this.waveVisualization.getBeginAudio(),
+                    this.waveVisualization.getEndAudio());
+        });
+
+        //We set the annotationsVisualization height to handle 30% of the screen height
+        this.centerAnchorPane.heightProperty().addListener((observable, oldValue, newValue) -> {
+            AnchorPane.setBottomAnchor(this.waveVisualization, this.centerAnchorPane.getHeight() * 0.1);
+            this.annotationsVisualization.setHeight(this.centerAnchorPane.getHeight() * 0.1);
+        });
     }
 
     @FXML
@@ -162,8 +176,12 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     }
 
     public void onScroll(ScrollEvent scrollEvent) {
-        mediaPlayer.stop();
+        this.mediaPlayer.stop();
         this.waveVisualization.setRangeZoom(scrollEvent);
+        this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
+                this.waveVisualization.getBeginAudio(),
+                this.waveVisualization.getEndAudio());
+        this.annotationsVisualization.drawAnnotations();
     }
 
     @Override
@@ -181,7 +199,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         double newStop = rightBorderXPosition / waveVisualization.getRatioAudio() + waveVisualization.getBeginAudio();
         mediaPlayer.setStopTime(new Duration((newStop) * 1000));
 
-        annotationsVisualization.setRatioAudio(waveVisualization.getRatioAudio());
+        //annotationsVisualization.setRatioAudio(waveVisualization.getRatioAudio());
     }
 
     private void settingUpSidePane() {
@@ -257,27 +275,29 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
 
 
-        ChangeListener listener = (observable, oldValue, newValue) -> pane.setTranslateX(-pane.getWidth());
+        ChangeListener listener = (observable, oldValue, newValue) -> {
+            recordAnchorPane.setTranslateX(-recordAnchorPane.getWidth());
+        };
 
-        pane.widthProperty().addListener(listener);
-        pane.setPrefWidth(Screen.getPrimary().getBounds().getWidth() / 4);
+        recordAnchorPane.widthProperty().addListener(listener);
+        recordAnchorPane.setPrefWidth(Screen.getPrimary().getBounds().getWidth() / 4);
 
 
 
         // animated transitions
-        TranslateTransition openNav = new TranslateTransition(new Duration(350), pane);
+        TranslateTransition openNav = new TranslateTransition(new Duration(350), recordAnchorPane);
         openNav.setToX(0);
-        TranslateTransition closeNav = new TranslateTransition(new Duration(350), pane);
+        TranslateTransition closeNav = new TranslateTransition(new Duration(350), recordAnchorPane);
 
         // on button click
         btnDisplaySidePane.setOnAction(e -> {
-            if (pane.getTranslateX() != 0) {
+            if (recordAnchorPane.getTranslateX() != 0) {
                 openNav.play();
             } else {
                 // delete listener on the first close (called every times java doesn't cares)
-                pane.widthProperty().removeListener(listener);
+                recordAnchorPane.widthProperty().removeListener(listener);
 
-                closeNav.setToX(-(pane.getWidth()));
+                closeNav.setToX(-(recordAnchorPane.getWidth()));
                 closeNav.play();
             }
         });

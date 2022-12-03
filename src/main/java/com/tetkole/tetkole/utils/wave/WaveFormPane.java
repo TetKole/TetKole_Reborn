@@ -160,6 +160,10 @@ public class WaveFormPane extends ResizableCanvas {
 		return beginAudio;
 	}
 
+	public double getEndAudio() {
+		return endAudio;
+	}
+
 	public double getLeftBorderTime() {
 		return leftBorderTime;
 	}
@@ -211,9 +215,13 @@ public class WaveFormPane extends ResizableCanvas {
 	public void resetAudioRange(){
 		this.beginAudio = 0;
 		this.endAudio = this.totalTime;
-		this.leftBorderXPosition = this.getLeftBorderTime() * this.getRatioAudio();
-		this.rightBorderXPosition = this.getRightBorderTime() * this.getRatioAudio();
+		this.setPositionBorderWithTime();
 		this.setCurrentXPositionMediaPlayer(leftBorderXPosition);
+	}
+
+	public void setPositionBorderWithTime(){
+		this.leftBorderXPosition = (this.getLeftBorderTime() - this.getBeginAudio()) * this.getRatioAudio();
+		this.rightBorderXPosition = (this.getRightBorderTime() - this.getBeginAudio()) * this.getRatioAudio();
 	}
 
 	/**
