@@ -3,6 +3,8 @@ package com.tetkole.tetkole.controllers;
 import com.tetkole.tetkole.utils.JsonManager;
 import com.tetkole.tetkole.utils.RecordManager;
 import com.tetkole.tetkole.utils.SceneManager;
+import com.tetkole.tetkole.utils.annotations.AnnotationsVisualization;
+import com.tetkole.tetkole.utils.models.Annotation;
 import com.tetkole.tetkole.utils.wave.WaveFormService;
 import com.tetkole.tetkole.utils.wave.WaveVisualization;
 import javafx.animation.TranslateTransition;
@@ -31,6 +33,8 @@ import java.io.File;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -38,6 +42,9 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
     @FXML
     WaveVisualization waveVisualization;
+
+    @FXML
+    AnnotationsVisualization annotationsVisualization;
 
     JsonManager jsonManager;
 
@@ -87,7 +94,6 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         Media audioMedia = new Media(audioFile.toURI().toString());
         mediaPlayer = new MediaPlayer(audioMedia);
 
-
         mediaPlayer.setOnReady(() -> {
 
             waveVisualization.setTotalTime(mediaPlayer.getTotalDuration().toSeconds());
@@ -102,6 +108,14 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             });
 
             this.settingUpSidePane();
+            //TODO Vrai liste
+            List<Annotation> annotations = new ArrayList<>();
+            annotations.add(new Annotation(0,5));
+            annotations.add(new Annotation(10,20));
+            annotations.add(new Annotation(30,60));
+            annotationsVisualization.setAnnotations(annotations);
+            annotationsVisualization.setRatioAudio(waveVisualization.getRatioAudio());
+            annotationsVisualization.drawAnnotations();
         });
 
         waveVisualization.startVisualization(audioFile.getAbsolutePath(), WaveFormService.WaveFormJob.AMPLITUDES_AND_WAVEFORM);
@@ -166,6 +180,8 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         double rightBorderXPosition = waveVisualization.getRightBorderXPosition() + 10;
         double newStop = rightBorderXPosition / waveVisualization.getRatioAudio() + waveVisualization.getBeginAudio();
         mediaPlayer.setStopTime(new Duration((newStop) * 1000));
+
+        annotationsVisualization.setRatioAudio(waveVisualization.getRatioAudio());
     }
 
     private void settingUpSidePane() {

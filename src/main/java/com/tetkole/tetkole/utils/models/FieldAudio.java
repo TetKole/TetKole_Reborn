@@ -10,8 +10,14 @@ public class FieldAudio {
     private List<Annotation> annotations;
 
     public FieldAudio(String Path) {
-        //TODO FieldAudio Constructor
 
-        // manage annotation GOOD LUCK
+    }
+
+    public List<Annotation> getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(List<Annotation> annotations) {
+        this.annotations = annotations;
     }
 }

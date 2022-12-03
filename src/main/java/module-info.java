@@ -13,5 +13,7 @@ module com.tetkole.tetkole {
     exports com.tetkole.tetkole.controllers;
     exports com.tetkole.tetkole.controllers.components;
     exports com.tetkole.tetkole.utils.wave;
+    exports com.tetkole.tetkole.utils.annotations;
+    exports com.tetkole.tetkole.utils.models;
     opens com.tetkole.tetkole.controllers to javafx.fxml;
 }
