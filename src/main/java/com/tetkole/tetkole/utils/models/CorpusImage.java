@@ -8,4 +8,8 @@ public class CorpusImage {
     public CorpusImage(String pathFile) {
         //TODO CorpusImage Constructor
     }
+
+    public String getName() {
+        return this.file.getName();
+    }
 }

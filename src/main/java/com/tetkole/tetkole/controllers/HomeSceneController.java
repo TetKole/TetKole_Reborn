@@ -37,22 +37,24 @@ public class HomeSceneController implements Initializable {
     }
 
     private void UpdateCorpusList() {
-        vBoxCorpus.getChildren().clear();
+        this.vBoxCorpus.getChildren().clear();
 
         Label labelTitle = new Label("Corpus");
-        labelTitle.setStyle("-fx-font-size: 16; -fx-text-fill: white;");
-
-        vBoxCorpus.getChildren().add(labelTitle);
+        labelTitle.setStyle("-fx-font-size: 20; -fx-text-fill: white; ");
+        this.vBoxCorpus.getChildren().add(labelTitle);
 
         this.corpusList = Corpus.getAllCorpus();
 
-        for(Corpus corpus : corpusList) {
+        for(Corpus corpus : this.corpusList) {
 
             // add the Label
             Button btn = new Button(corpus.getName());
             btn.getStyleClass().add("buttons");
             btn.getStyleClass().add("grey");
+            btn.setPrefWidth(140);
+            btn.setPrefHeight(50);
 
+            // onClick on corpus
             btn.setOnMouseClicked(event -> {
                 SceneManager.getSceneManager().addArgument("corpus", corpus);
                 SceneManager.getSceneManager().changeScene("MainMenuScene.fxml");

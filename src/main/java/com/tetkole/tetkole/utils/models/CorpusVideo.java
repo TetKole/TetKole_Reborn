@@ -8,4 +8,8 @@ public class CorpusVideo {
     public CorpusVideo(String pathFile) {
         //TODO CorpusVideo Constructor
     }
+
+    public String getName() {
+        return this.file.getName();
+    }
 }

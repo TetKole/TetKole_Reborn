@@ -3,6 +3,8 @@ package com.tetkole.tetkole.controllers;
 import com.tetkole.tetkole.utils.JsonManager;
 import com.tetkole.tetkole.utils.RecordManager;
 import com.tetkole.tetkole.utils.SceneManager;
+import com.tetkole.tetkole.utils.models.Corpus;
+import com.tetkole.tetkole.utils.models.FieldAudio;
 import com.tetkole.tetkole.utils.wave.WaveFormService;
 import com.tetkole.tetkole.utils.wave.WaveVisualization;
 import javafx.animation.TranslateTransition;
@@ -61,6 +63,9 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     @FXML
     private VBox vBoxPane;
 
+    private FieldAudio fieldAudio;
+    private Corpus corpus;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resources = resources;
@@ -73,6 +78,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
                 child.setOnMouseClicked(event -> {
                     // free all mediaPlayer resources and change scene
                     this.mediaPlayer.dispose();
+                    SceneManager.getSceneManager().addArgument("corpus", this.corpus);
                     SceneManager.getSceneManager().changeScene("MainMenuScene.fxml");
                 });
             }
@@ -82,7 +88,10 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
         this.jsonManager = new JsonManager();
 
-        File audioFile = (File) SceneManager.getSceneManager().getArgument("loaded_file_audio");
+        this.corpus = (Corpus) SceneManager.getSceneManager().getArgument("corpus");
+        this.fieldAudio = (FieldAudio) SceneManager.getSceneManager().getArgument("fieldAudio");
+        File audioFile = this.fieldAudio.getFile();
+
         this.audioFileName = audioFile.getName();
         Media audioMedia = new Media(audioFile.toURI().toString());
         mediaPlayer = new MediaPlayer(audioMedia);

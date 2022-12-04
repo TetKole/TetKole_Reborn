@@ -1,12 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
- 
-<?import javafx.geometry.Insets?>
+
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Button?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.tetkole.tetkole.controllers.MainMenuSceneController" styleClass="background_color">
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.MainMenuSceneController" styleClass="background_color">
+
+    <top>
+        <AnchorPane>
+            <fx:include fx:id="header" source="components/Header.fxml" AnchorPane.rightAnchor="0.0"/>
+        </AnchorPane>
+    </top>
+
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="100.0" >
+
+            <Label fx:id="corpusName" style="-fx-text-fill: white; -fx-font-size: 50px"/>
+
+            <HBox alignment="TOP_CENTER" spacing="100.0" >
+
+                <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true">
+                    <VBox fx:id="vBoxFieldAudios" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="250.0" style="-fx-background-color: #495461;" spacing="20" />
+                </ScrollPane>
+
+                <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true">
+                    <VBox fx:id="vBoxImages" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="250.0" style="-fx-background-color: #495461;" spacing="20" />
+                </ScrollPane>
+
+                <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true">
+                    <VBox fx:id="vBoxVideos" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="250.0" style="-fx-background-color: #495461;" spacing="20" />
+                </ScrollPane>
+
+            </HBox>
+        </VBox>
+    </center>
+
+
+    <!--
     <Label text="TètKole" style="-fx-text-fill: white; -fx-font-size: 100px"/>
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
@@ -16,5 +49,5 @@
     <Button text="%Image" onAction="#onImageButtonClick" styleClass="buttons, grey" prefHeight="60" prefWidth="150" />
     <Button text="%Video" onAction="#onVideoButtonClick" styleClass="buttons, grey" prefHeight="60" prefWidth="150" />
     <Button text="%Settings" onAction="#onSettingsButtonClick" styleClass="buttons, grey" prefHeight="60" prefWidth="150" />
-
-</VBox>
+    -->
+</BorderPane>

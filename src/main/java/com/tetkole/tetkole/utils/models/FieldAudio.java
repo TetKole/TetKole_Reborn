@@ -19,5 +19,9 @@ public class FieldAudio {
         return this.file.getName();
     }
 
+    public File getFile() {
+        return this.file;
+    }
+
 
 }

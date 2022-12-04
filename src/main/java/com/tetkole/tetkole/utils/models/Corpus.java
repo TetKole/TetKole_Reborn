@@ -112,4 +112,12 @@ public class Corpus {
     public List<FieldAudio> getFieldAudios() {
         return this.fieldAudios;
     }
+
+    public List<CorpusImage> getCorpusImages() {
+        return this.corpusImages;
+    }
+
+    public List<CorpusVideo> getCorpusVideos() {
+        return this.corpusVideos;
+    }
 }
