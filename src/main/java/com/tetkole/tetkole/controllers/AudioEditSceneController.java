@@ -144,15 +144,24 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         String recordName = "record"+formattedDateTime+".wav";
         System.out.println("Formatted LocalDateTime : " + formattedDateTime);
 
-        if(recordManager.isRecording()) {
-            this.jsonManager.saveJson(audioFileName,recordName,waveVisualization.getLeftBorderTime(),waveVisualization.getRightBorderTime());
+        if (recordManager.isRecording()) {
+            this.jsonManager.saveJson(
+                    audioFileName,
+                    recordName,
+                    waveVisualization.getLeftBorderTime(),
+                    waveVisualization.getRightBorderTime()
+            );
             this.recordManager.stopRecording();
             btnRecord.setText(resources.getString("StartRecord"));
-            ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/record.png")).toExternalForm()));
+            ((ImageView) btnRecord.getGraphic()).setImage(
+                    new Image(Objects.requireNonNull(getClass().getResource("/images/record.png")).toExternalForm())
+            );
         } else {
-            this.recordManager.startRecording(audioFileName,recordName);
+            this.recordManager.startRecording(audioFileName, recordName);
             btnRecord.setText(resources.getString("StopRecord"));
-            ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm()));
+            ((ImageView) btnRecord.getGraphic()).setImage(
+                    new Image(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm())
+            );
         }
     }
 
