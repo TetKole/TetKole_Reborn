@@ -17,7 +17,7 @@ import javafx.scene.layout.VBox;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class MainMenuSceneController implements Initializable {
+public class CorpusMenuSceneController implements Initializable {
 
     @FXML
     private HBox header;
@@ -45,9 +45,7 @@ public class MainMenuSceneController implements Initializable {
         // search for the btnHome and add a new onMouseClickListener
         for (var child : childrenOfHeader) {
             if (child.getId() != null && child.getId().equals("btnHome")) {
-                child.setOnMouseClicked(event -> {
-                    SceneManager.getSceneManager().changeScene("HomeScene.fxml");
-                });
+                child.setOnMouseClicked(event -> SceneManager.getSceneManager().changeScene("HomeScene.fxml"));
             }
         }
 
@@ -73,7 +71,7 @@ public class MainMenuSceneController implements Initializable {
 
         for(FieldAudio fa : this.corpus.getFieldAudios()) {
 
-            // add the Label
+            // add the field audio
             Button btn = new Button(fa.getName());
             btn.getStyleClass().add("buttons");
             btn.getStyleClass().add("grey");
@@ -89,6 +87,20 @@ public class MainMenuSceneController implements Initializable {
 
             this.vBoxFieldAudios.getChildren().add(btn);
         }
+
+        Button btn = new Button(resources.getString("AddFieldAudio"));
+        btn.getStyleClass().add("buttons");
+        btn.getStyleClass().add("blue");
+        btn.setPrefWidth(140);
+        btn.setPrefHeight(50);
+
+        // onClick on add field audio
+        btn.setOnMouseClicked(event -> {
+            this.corpus.createFieldAudio();
+            UpdateFieldAudioList();
+        });
+
+        this.vBoxFieldAudios.getChildren().add(btn);
     }
 
 
@@ -116,6 +128,17 @@ public class MainMenuSceneController implements Initializable {
 
             this.vBoxImages.getChildren().add(btn);
         }
+
+        Button btn = new Button(resources.getString("AddFieldAudio"));
+        btn.getStyleClass().add("buttons");
+        btn.getStyleClass().add("blue");
+        btn.setPrefWidth(140);
+        btn.setPrefHeight(50);
+
+        // onClick on add corpus image
+        btn.setOnMouseClicked(event -> System.out.println("add image to corpus : TODO"));
+
+        this.vBoxImages.getChildren().add(btn);
     }
 
 
@@ -143,6 +166,17 @@ public class MainMenuSceneController implements Initializable {
 
             this.vBoxVideos.getChildren().add(btn);
         }
+
+        Button btn = new Button(resources.getString("AddFieldAudio"));
+        btn.getStyleClass().add("buttons");
+        btn.getStyleClass().add("blue");
+        btn.setPrefWidth(140);
+        btn.setPrefHeight(50);
+
+        // onClick on add corpus video
+        btn.setOnMouseClicked(event -> System.out.println("add video to corpus : TODO"));
+
+        this.vBoxVideos.getChildren().add(btn);
     }
 
     /*

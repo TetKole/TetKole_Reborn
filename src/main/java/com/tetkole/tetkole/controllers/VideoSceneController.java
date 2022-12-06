@@ -64,7 +64,7 @@ public class VideoSceneController implements Initializable {
                 child.setOnMouseClicked(event -> {
                     // free all mediaPlayer resources and change scene
                     this.mediaPlayer.dispose();
-                    SceneManager.getSceneManager().changeScene("MainMenuScene.fxml");
+                    SceneManager.getSceneManager().changeScene("CorpusMenuScene.fxml");
                 });
             }
         }

@@ -30,7 +30,7 @@ public class SettingsSceneController implements Initializable {
         // search for the btnHome and add a new onMouseClickListener
         for (var child : childrenOfHeader) {
             if (child.getId() != null && child.getId().equals("btnHome")) {
-                child.setOnMouseClicked(event -> SceneManager.getSceneManager().changeScene("MainMenuScene.fxml"));
+                child.setOnMouseClicked(event -> SceneManager.getSceneManager().changeScene("CorpusMenuScene.fxml"));
             }
         }
 

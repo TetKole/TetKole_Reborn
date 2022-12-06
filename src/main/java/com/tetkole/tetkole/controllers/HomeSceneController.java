@@ -57,7 +57,7 @@ public class HomeSceneController implements Initializable {
             // onClick on corpus
             btn.setOnMouseClicked(event -> {
                 SceneManager.getSceneManager().addArgument("corpus", corpus);
-                SceneManager.getSceneManager().changeScene("MainMenuScene.fxml");
+                SceneManager.getSceneManager().changeScene("CorpusMenuScene.fxml");
             });
 
             vBoxCorpus.getChildren().add(btn);

@@ -79,7 +79,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
                     // free all mediaPlayer resources and change scene
                     this.mediaPlayer.dispose();
                     SceneManager.getSceneManager().addArgument("corpus", this.corpus);
-                    SceneManager.getSceneManager().changeScene("MainMenuScene.fxml");
+                    SceneManager.getSceneManager().changeScene("CorpusMenuScene.fxml");
                 });
             }
         }

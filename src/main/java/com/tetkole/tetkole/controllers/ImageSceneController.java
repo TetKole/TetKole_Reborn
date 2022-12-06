@@ -47,7 +47,7 @@ public class ImageSceneController implements Initializable {
             if (child.getId() != null && child.getId().equals("btnHome")) {
                 child.setOnMouseClicked(event -> {
                     this.imageView.setImage(null);
-                    SceneManager.getSceneManager().changeScene("MainMenuScene.fxml");
+                    SceneManager.getSceneManager().changeScene("CorpusMenuScene.fxml");
                 });
             }
         }
