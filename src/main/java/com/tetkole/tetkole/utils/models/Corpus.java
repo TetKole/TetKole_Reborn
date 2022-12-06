@@ -99,6 +99,7 @@ public class Corpus {
             alert.showAndWait();
         } else {
             FieldAudio fa = new FieldAudio(FileManager.getFileManager().copyFile(file, this.name + "/" + folderNameFieldAudio));
+            FileManager.getFileManager().createFolder("/" + this.name + "/" + folderNameAnnotation, fa.getName());
             this.fieldAudios.add(fa);
         }
     }

@@ -9,14 +9,13 @@ public class JsonManager {
 
     public JsonManager() { }
 
-    public void saveJson(String fileName, String recordName, Double start, Double end) {
+    public void saveJson(String fileName, String recordName, Double start, Double end, String corpusPath) {
         JSONObject json = createObject(fileName, recordName, start, end);
 
-        FileManager.getFileManager().createFolder(fileName);
         FileManager.getFileManager().createFile(fileName, recordName);
 
         try {
-            FileWriter file = new FileWriter(FileManager.getFileManager().getFolderPath() + "/" + fileName + "/" + recordName + ".json");
+            FileWriter file = new FileWriter(FileManager.getFileManager().getFolderPath() + corpusPath + "/" + recordName + "/" + recordName + ".json");
             file.write(json.toString());
             file.close();
         } catch (IOException e) {

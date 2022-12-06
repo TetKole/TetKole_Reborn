@@ -66,6 +66,8 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     private FieldAudio fieldAudio;
     private Corpus corpus;
 
+    private String recordName; // appeler Remi pour savoir ce que c'est que cette merde
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resources = resources;
@@ -137,19 +139,13 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
     @FXML
     protected void onRecordButtonClick() {
-        //Date with specific format
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("(dd-MM-YYYY_HH'h'mm'm'ss's')");
-        String formattedDateTime = currentDateTime.format(formatter);
-        String recordName = "record"+formattedDateTime+".wav";
-        System.out.println("Formatted LocalDateTime : " + formattedDateTime);
-
         if (recordManager.isRecording()) {
             this.jsonManager.saveJson(
                     audioFileName,
-                    recordName,
+                    this.recordName,
                     waveVisualization.getLeftBorderTime(),
-                    waveVisualization.getRightBorderTime()
+                    waveVisualization.getRightBorderTime(),
+                    "/" + this.corpus.getName() + "/" + Corpus.folderNameAnnotation + "/" + this.fieldAudio.getName()
             );
             this.recordManager.stopRecording();
             btnRecord.setText(resources.getString("StartRecord"));
@@ -157,7 +153,15 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
                     new Image(Objects.requireNonNull(getClass().getResource("/images/record.png")).toExternalForm())
             );
         } else {
-            this.recordManager.startRecording(audioFileName, recordName);
+            //Date with specific format
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("(dd-MM-YYYY_HH'h'mm'm'ss's')");
+            String formattedDateTime = currentDateTime.format(formatter);
+            String recordName = "record"+formattedDateTime+".wav";
+            System.out.println("Formatted LocalDateTime : " + formattedDateTime);
+            this.recordName = recordName;
+
+            this.recordManager.startRecording(audioFileName, this.recordName, "/" + this.corpus.getName() + "/" + Corpus.folderNameAnnotation + "/" + this.fieldAudio.getName());
             btnRecord.setText(resources.getString("StopRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(
                     new Image(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm())

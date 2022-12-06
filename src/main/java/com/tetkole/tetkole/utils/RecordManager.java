@@ -4,7 +4,6 @@ import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 
-
 public class RecordManager {
     private boolean isRecording = false;
     private TargetDataLine targetLine;
@@ -16,7 +15,12 @@ public class RecordManager {
         return isRecording;
     }
 
-    public void startRecording(String fileName,String recordName) {
+    // we will delete this method once corpus is implemented in image and video
+    public void startRecording(String fileName, String recordName) {
+        startRecording(fileName, recordName, "");
+    }
+
+    public void startRecording(String fileName, String recordName, String corpusPath) {
         if (!isRecording) {
             this.isRecording = true;
             System.out.println("Record started");
@@ -34,7 +38,7 @@ public class RecordManager {
                     audioRecordThread = new Thread(() -> {
                         AudioInputStream recordStream = new AudioInputStream(targetLine);
                         try {
-                            AudioSystem.write(recordStream, AudioFileFormat.Type.WAVE, this.getWavOutputFile(fileName, recordName));
+                            AudioSystem.write(recordStream, AudioFileFormat.Type.WAVE, this.getWavOutputFile(corpusPath, recordName));
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -58,7 +62,7 @@ public class RecordManager {
         }
     }
 
-    public AudioFormat getAudioFormat(){
+    public AudioFormat getAudioFormat() {
         float sampleRate = 16000;
         int sampleSizeInBits = 16;
         int channels = 1;
@@ -72,8 +76,8 @@ public class RecordManager {
      * Create a folder named as the fileName
      * then create an audio file inside and return it
      */
-    public File getWavOutputFile(String fileName, String recordName) {
-        FileManager.getFileManager().createFolder(fileName);
-        return FileManager.getFileManager().createFile(fileName , recordName);
+    public File getWavOutputFile(String corpusPath, String recordName) {
+        FileManager.getFileManager().createFolder(corpusPath, recordName);
+        return FileManager.getFileManager().createFile(corpusPath + "/" + recordName, recordName);
     }
 }
