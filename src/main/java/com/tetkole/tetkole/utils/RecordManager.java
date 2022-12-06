@@ -1,5 +1,8 @@
 package com.tetkole.tetkole.utils;
 
+import com.tetkole.tetkole.utils.models.Annotation;
+import com.tetkole.tetkole.utils.models.FieldAudio;
+
 import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
@@ -7,7 +10,14 @@ import java.io.IOException;
 public class RecordManager {
     private boolean isRecording = false;
     private TargetDataLine targetLine;
-    Thread audioRecordThread;
+    private Thread audioRecordThread;
+
+    private String fileName;
+    private String recordName;
+    private String corpusPath;
+    private double rightBorderValue;
+    private double leftBorderValue;
+    private File file;
 
     public RecordManager() { }
 
@@ -15,12 +25,18 @@ public class RecordManager {
         return isRecording;
     }
 
-    // we will delete this method once corpus is implemented in image and video
+    // TODO we will delete this method once corpus is implemented in image and video
     public void startRecording(String fileName, String recordName) {
-        startRecording(fileName, recordName, "");
+        startRecording(fileName, recordName, "", 0, 0);
     }
 
-    public void startRecording(String fileName, String recordName, String corpusPath) {
+    public void startRecording(String fileName, String recordName, String corpusPath, double rightBorderValue, double leftBorderValue) {
+        this.fileName = fileName;
+        this.recordName = recordName;
+        this.corpusPath = corpusPath;
+        this.rightBorderValue = rightBorderValue;
+        this.leftBorderValue = leftBorderValue;
+
         if (!isRecording) {
             this.isRecording = true;
             System.out.println("Record started");
@@ -38,7 +54,8 @@ public class RecordManager {
                     audioRecordThread = new Thread(() -> {
                         AudioInputStream recordStream = new AudioInputStream(targetLine);
                         try {
-                            AudioSystem.write(recordStream, AudioFileFormat.Type.WAVE, this.getWavOutputFile(corpusPath, recordName));
+                            this.file = this.getWavOutputFile(corpusPath, recordName);
+                            AudioSystem.write(recordStream, AudioFileFormat.Type.WAVE, this.file);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -52,13 +69,28 @@ public class RecordManager {
         }
     }
 
+    // TODO we will delete this method once corpus is implemented in image and video
     public void stopRecording() {
+        stopRecording(null);
+    }
+    public void stopRecording(FieldAudio fieldAudio) {
         if (this.isRecording) {
             this.isRecording = false;
             System.out.println("Record stopped");
             audioRecordThread.stop();
             targetLine.stop();
             targetLine.close();
+
+            // JSON file is created here !
+            FileManager.getFileManager().createJSONFile(
+                    this.fileName,
+                    this.recordName,
+                    this.leftBorderValue,
+                    this.rightBorderValue,
+                    this.corpusPath
+            );
+
+            fieldAudio.addAnnotation(new Annotation(this.file, this.leftBorderValue, this.rightBorderValue));
         }
     }
 

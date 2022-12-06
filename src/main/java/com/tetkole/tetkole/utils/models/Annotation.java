@@ -9,7 +9,13 @@ public class Annotation {
 
     private double end;
 
-    public Annotation(String pathFile) {
-        //TODO Annotation Constructor
+    public Annotation(File file, double start, double end) {
+        this.file = file;
+        this.start = start;
+        this.end = end;
+    }
+
+    public String getName() {
+        return this.file.getName();
     }
 }

@@ -23,5 +23,10 @@ public class FieldAudio {
         return this.file;
     }
 
-
+    public List<Annotation> getAnnotations() {
+        return this.annotations;
+    }
+    public void addAnnotation(Annotation annotation) {
+        this.annotations.add(annotation);
+    }
 }

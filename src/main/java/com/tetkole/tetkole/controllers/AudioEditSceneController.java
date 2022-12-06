@@ -1,8 +1,8 @@
 package com.tetkole.tetkole.controllers;
 
-import com.tetkole.tetkole.utils.JsonManager;
 import com.tetkole.tetkole.utils.RecordManager;
 import com.tetkole.tetkole.utils.SceneManager;
+import com.tetkole.tetkole.utils.models.Annotation;
 import com.tetkole.tetkole.utils.models.Corpus;
 import com.tetkole.tetkole.utils.models.FieldAudio;
 import com.tetkole.tetkole.utils.wave.WaveFormService;
@@ -38,24 +38,22 @@ import java.util.ResourceBundle;
 
 public class AudioEditSceneController implements PropertyChangeListener, Initializable {
 
-    @FXML
-    WaveVisualization waveVisualization;
-
-    JsonManager jsonManager;
-
-    private String audioFileName;
-
+    private ResourceBundle resources;
+    private FieldAudio fieldAudio;
+    private Corpus corpus;
     private MediaPlayer mediaPlayer;
     private RecordManager recordManager;
+
+
+    // Graphics
+    @FXML
+    WaveVisualization waveVisualization;
     @FXML
     private Button btnRecord;
     @FXML
     private Button btnPlayPause;
-    private ResourceBundle resources;
     @FXML
     private HBox header;
-
-
     @FXML
     private Button btnDisplaySidePane;
     @FXML
@@ -63,10 +61,6 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     @FXML
     private VBox vBoxPane;
 
-    private FieldAudio fieldAudio;
-    private Corpus corpus;
-
-    private String recordName; // appeler Remi pour savoir ce que c'est que cette merde
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -87,17 +81,13 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         }
 
         this.recordManager = new RecordManager();
-
-        this.jsonManager = new JsonManager();
-
         this.corpus = (Corpus) SceneManager.getSceneManager().getArgument("corpus");
         this.fieldAudio = (FieldAudio) SceneManager.getSceneManager().getArgument("fieldAudio");
+
         File audioFile = this.fieldAudio.getFile();
-
-        this.audioFileName = audioFile.getName();
         Media audioMedia = new Media(audioFile.toURI().toString());
-        mediaPlayer = new MediaPlayer(audioMedia);
 
+        mediaPlayer = new MediaPlayer(audioMedia);
 
         mediaPlayer.setOnReady(() -> {
 
@@ -116,7 +106,6 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         });
 
         waveVisualization.startVisualization(audioFile.getAbsolutePath(), WaveFormService.WaveFormJob.AMPLITUDES_AND_WAVEFORM);
-
         waveVisualization.addPropertyChangeListener(this);
     }
 
@@ -139,32 +128,28 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
     @FXML
     protected void onRecordButtonClick() {
-        if (recordManager.isRecording()) {
-            this.jsonManager.saveJson(
-                    audioFileName,
-                    this.recordName,
-                    waveVisualization.getLeftBorderTime(),
-                    waveVisualization.getRightBorderTime(),
-                    "/" + this.corpus.getName() + "/" + Corpus.folderNameAnnotation + "/" + this.fieldAudio.getName()
-            );
-            this.recordManager.stopRecording();
-            btnRecord.setText(resources.getString("StartRecord"));
-            ((ImageView) btnRecord.getGraphic()).setImage(
-                    new Image(Objects.requireNonNull(getClass().getResource("/images/record.png")).toExternalForm())
-            );
-        } else {
-            //Date with specific format
-            LocalDateTime currentDateTime = LocalDateTime.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("(dd-MM-YYYY_HH'h'mm'm'ss's')");
-            String formattedDateTime = currentDateTime.format(formatter);
-            String recordName = "record"+formattedDateTime+".wav";
-            System.out.println("Formatted LocalDateTime : " + formattedDateTime);
-            this.recordName = recordName;
+        if (!recordManager.isRecording()) {
+            // get the date for the record name
+            String formattedDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("(dd-MM-YYYY_HH'h'mm'm'ss's')"));
+            formattedDateTime = formattedDateTime.substring(1, formattedDateTime.length()-1);
+            String recordName = "annotation_" + formattedDateTime + ".wav";
 
-            this.recordManager.startRecording(audioFileName, this.recordName, "/" + this.corpus.getName() + "/" + Corpus.folderNameAnnotation + "/" + this.fieldAudio.getName());
+            String corpusPath = "/" + this.corpus.getName() + "/" + Corpus.folderNameAnnotation + "/" + this.fieldAudio.getName();
+            this.recordManager.startRecording(fieldAudio.getName(), recordName, corpusPath, waveVisualization.getRightBorderTime(), waveVisualization.getLeftBorderTime());
+
             btnRecord.setText(resources.getString("StopRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(
                     new Image(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm())
+            );
+        }
+        else
+        {
+            this.recordManager.stopRecording(this.fieldAudio);
+            this.settingUpSidePane();
+
+            btnRecord.setText(resources.getString("StartRecord"));
+            ((ImageView) btnRecord.getGraphic()).setImage(
+                    new Image(Objects.requireNonNull(getClass().getResource("/images/record.png")).toExternalForm())
             );
         }
     }
@@ -191,50 +176,11 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     }
 
     private void settingUpSidePane() {
-        // test values */
-        String[] values = {
-                "record-1-14.15",
-                "record-2-16.17",
-                "record-3-19.45",
-                "record-4-20.52",
-                "record-5-34.08",
-                "record-1-14.15",
-                "record-2-16.17",
-                "record-3-19.45",
-                "record-4-20.52",
-                "record-5-34.08",
-                "record-1-14.15",
-                "record-2-16.17",
-                "record-3-19.45",
-                "record-4-20.52",
-                "record-5-34.08",
-                "record-1-14.15",
-                "record-2-16.17",
-                "record-3-19.45",
-                "record-4-20.52",
-                "record-5-34.08",
-                "record-1-14.15",
-                "record-2-16.17",
-                "record-3-19.45",
-                "record-4-20.52",
-                "record-5-34.08",
-                "record-1-14.15",
-                "record-2-16.17",
-                "record-3-19.45",
-                "record-4-20.52",
-                "record-5-34.08",
-                "record-1-14.15",
-                "record-2-16.17",
-                "record-3-19.45",
-                "record-4-20.52",
-                "record-5-34.08"
-        };
-        //*************/
-
         vBoxPane.setSpacing(50);
 
+        vBoxPane.getChildren().clear();
 
-        for(String value : values) {
+        for(Annotation annotation : this.fieldAudio.getAnnotations()) {
             // prepare the HBox
             HBox line = new HBox();
             line.setAlignment(Pos.CENTER);
@@ -247,7 +193,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             line.getChildren().add(btnDelete);
 
             // add the Label
-            Label label = new Label(value);
+            Label label = new Label(annotation.getName());
             label.setStyle("-fx-text-fill: white;");
             line.getChildren().add(label);
 

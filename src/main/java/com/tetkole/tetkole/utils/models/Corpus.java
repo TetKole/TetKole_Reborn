@@ -4,6 +4,7 @@ import com.tetkole.tetkole.utils.FileManager;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -39,22 +40,54 @@ public class Corpus {
     public static List<Corpus> getAllCorpus() {
         List<Corpus> corpusList = new ArrayList<>();
 
-        // Loop on every file in Tetkole Fodler
+        // Loop on every file in Tetkole Fodler, which means on every Corpus
         for (File corpusFolder : Objects.requireNonNull(new File(FileManager.getFileManager().getFolderPath()).listFiles())) {
 
             Corpus corpus = new Corpus(corpusFolder.getName());
 
-            // Loop on every file in a Corpus Folder
-            for (File folder : Objects.requireNonNull(corpusFolder.listFiles())) {
+            /* Manage fieldAudios in FieldAudios Folder */
+            File fieldAudiosFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + corpus.getName() + "/" + folderNameFieldAudio);
 
-                // Manage FieldAudio folder and his content
-                if (folder.getName().equals(folderNameFieldAudio)) {
-                    for (File file : Objects.requireNonNull(folder.listFiles())) {
-                        corpus.fieldAudios.add(new FieldAudio(file));
-                    }
-                }
-
+            for (File file : Objects.requireNonNull(fieldAudiosFolder.listFiles())) {
+                corpus.fieldAudios.add(new FieldAudio(file));
             }
+
+
+            /* Manage annotations in Annotations Folder */
+            File annotationsFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + corpus.getName() + "/" + folderNameAnnotation);
+
+            for (File folderFieldAudio : Objects.requireNonNull(annotationsFolder.listFiles())) {
+                // we get the field audio corresponding to the folder
+                FieldAudio fieldAudio = corpus.getFieldAudioByName(folderFieldAudio.getName());
+                System.out.println(fieldAudio == null);
+
+                // Loop on every annotation in the folder
+                for (File annotationFolder : Objects.requireNonNull(folderFieldAudio.listFiles())) {
+
+                    // Search for json and wave files for each annotation
+                    File jsonFile = null;
+                    File audioFile = null;
+                    // this for only loop twice, we can't predict file names here, so we need a for :(
+                    for (File file : Objects.requireNonNull(annotationFolder.listFiles())) {
+                        if (file.getName().endsWith(".json")) {
+                            jsonFile = file;
+                        }
+                        if (file.getName().endsWith(".wav")) {
+                            audioFile = file;
+                        }
+                    }
+
+                    // Read JSON
+                    JSONObject jsonObject = FileManager.getFileManager().readJSONFile(Objects.requireNonNull(jsonFile));
+                    double start = jsonObject.getDouble("start");
+                    double end = jsonObject.getDouble("end");
+
+                    // Create annotation
+                    Objects.requireNonNull(fieldAudio).addAnnotation(new Annotation(audioFile, start, end));
+
+                }
+            }
+
 
             corpusList.add(corpus);
         }
@@ -62,6 +95,7 @@ public class Corpus {
 
         return corpusList;
     }
+
 
 
     /* NON STATIC SECTION */
@@ -120,5 +154,15 @@ public class Corpus {
 
     public List<CorpusVideo> getCorpusVideos() {
         return this.corpusVideos;
+    }
+
+    private FieldAudio getFieldAudioByName(String name) {
+        for (FieldAudio fa : this.fieldAudios) {
+            System.out.println(fa.getName() + " = " + name);
+            if (fa.getName().equals(name)) {
+                return fa;
+            }
+        }
+        return null;
     }
 }

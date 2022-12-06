@@ -1,7 +1,10 @@
 package com.tetkole.tetkole.utils;
 
+import org.json.JSONObject;
+
 import javax.swing.filechooser.FileSystemView;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -116,5 +119,40 @@ public class FileManager {
         }
     }
 
+
+    /**
+     * Create a json file
+     * this method should be used only when adding a new annotation
+     */
+    public void createJSONFile(String fileName, String recordName, Double start, Double end, String corpusPath) {
+        JSONObject json = new JSONObject();
+        json.put("fileName", fileName);
+        json.put("recordName", recordName);
+        json.put("start", start);
+        json.put("end", end);
+
+        FileManager.getFileManager().createFile(fileName, recordName);
+
+        try {
+            FileWriter file = new FileWriter(FileManager.getFileManager().getFolderPath() + corpusPath + "/" + recordName + "/" + recordName + ".json");
+            file.write(json.toString());
+            file.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Read json file's content
+     * this method should be used only to create Annotation object from json file
+     */
+    public JSONObject readJSONFile(File file) {
+        try {
+            String data = Files.readString(Path.of(file.getPath()));
+            return new JSONObject(data);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
