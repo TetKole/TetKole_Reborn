@@ -2,14 +2,9 @@ package com.tetkole.tetkole.utils.models;
 
 import java.io.File;
 
-public class CorpusImage {
-    private File file;
+public class CorpusImage extends Media {
 
-    public CorpusImage(String pathFile) {
-        //TODO CorpusImage Constructor
-    }
-
-    public String getName() {
-        return this.file.getName();
+    public CorpusImage(File file) {
+        super(file);
     }
 }

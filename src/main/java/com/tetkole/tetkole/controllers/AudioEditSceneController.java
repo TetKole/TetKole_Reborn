@@ -130,12 +130,12 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     protected void onRecordButtonClick() {
         if (!recordManager.isRecording()) {
             // get the date for the record name
-            String formattedDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("(dd-MM-YYYY_HH'h'mm'm'ss's')"));
+            String formattedDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("(dd-MM-yyyy_HH'h'mm'm'ss's')"));
             formattedDateTime = formattedDateTime.substring(1, formattedDateTime.length()-1);
             String recordName = "annotation_" + formattedDateTime + ".wav";
 
             String corpusPath = "/" + this.corpus.getName() + "/" + Corpus.folderNameAnnotation + "/" + this.fieldAudio.getName();
-            this.recordManager.startRecording(fieldAudio.getName(), recordName, corpusPath, waveVisualization.getRightBorderTime(), waveVisualization.getLeftBorderTime());
+            this.recordManager.startRecording(this.fieldAudio.getName(), recordName, corpusPath, this.waveVisualization.getRightBorderTime(), this.waveVisualization.getLeftBorderTime());
 
             btnRecord.setText(resources.getString("StopRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(

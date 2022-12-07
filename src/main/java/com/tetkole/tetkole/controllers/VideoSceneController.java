@@ -1,6 +1,8 @@
 package com.tetkole.tetkole.controllers;
 import com.tetkole.tetkole.utils.SceneManager;
 
+import com.tetkole.tetkole.utils.models.Corpus;
+import com.tetkole.tetkole.utils.models.CorpusVideo;
 import javafx.beans.InvalidationListener;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
@@ -31,30 +33,29 @@ public class VideoSceneController implements Initializable {
 
     private String videoFileName;
     private RecordManager recordManager;
-
     private MediaPlayer mediaPlayer;
+    private CorpusVideo video;
+    private Corpus corpus;
+    private boolean isDragged = false;
+    private ResourceBundle resources;
 
+
+    // Graphics
     @FXML
     private MediaView mediaView;
-
     @FXML
     private Slider slider;
-
     @FXML
     private Button btnPlayPause;
     @FXML
     private Button btnRecord;
-
-    private boolean isDragged = false;
-
-    private ResourceBundle resources;
-
     @FXML
     private HBox header;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        this.resources = resources;
 
         // get the children of header component
         ObservableList<Node> childrenOfHeader = this.header.getChildren();
@@ -64,14 +65,16 @@ public class VideoSceneController implements Initializable {
                 child.setOnMouseClicked(event -> {
                     // free all mediaPlayer resources and change scene
                     this.mediaPlayer.dispose();
+                    SceneManager.getSceneManager().addArgument("corpus", this.corpus);
                     SceneManager.getSceneManager().changeScene("CorpusMenuScene.fxml");
                 });
             }
         }
 
-        this.resources = resources;
 
-        File videoFile = (File) SceneManager.getSceneManager().getArgument("loaded_file_video");
+        this.corpus = (Corpus) SceneManager.getSceneManager().getArgument("corpus");
+        this.video = (CorpusVideo) SceneManager.getSceneManager().getArgument("video");
+        File videoFile = this.video.getFile();
 
         Media media = new Media(videoFile.toURI().toString());
         this.mediaPlayer = new MediaPlayer(media);
@@ -111,8 +114,6 @@ public class VideoSceneController implements Initializable {
         });
 
         this.videoFileName = videoFile.getName();
-
-
         this.recordManager = new RecordManager();
     }
 
@@ -136,21 +137,28 @@ public class VideoSceneController implements Initializable {
 
     @FXML
     protected void onRecordButtonClick() {
-        //Date with specific format
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("(dd-MM-YYYY_HH'h'mm'm'ss's')");
-        String formattedDateTime = currentDateTime.format(formatter);
-        String recordName = "record"+formattedDateTime+".wav";
-        System.out.println("Formatted LocalDateTime : " + formattedDateTime);
+        if (!recordManager.isRecording()) {
+            // get the date for the record name
+            String formattedDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("(dd-MM-yyyy_HH'h'mm'm'ss's')"));
+            formattedDateTime = formattedDateTime.substring(1, formattedDateTime.length()-1);
+            String recordName = "annotation_" + formattedDateTime + ".wav";
 
-        if(recordManager.isRecording()) {
-            this.recordManager.stopRecording();
-            btnRecord.setText(resources.getString("StartRecord"));
-            ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/record.png")).toExternalForm()));
-        } else {
-            this.recordManager.startRecording(videoFileName,recordName);
+            String corpusPath = "/" + this.corpus.getName() + "/" + Corpus.folderNameAnnotation + "/" + this.video.getName();
+            this.recordManager.startRecording(this.video.getName(), recordName, corpusPath, this.mediaPlayer.getCurrentTime().toSeconds(), this.mediaPlayer.getTotalDuration().toSeconds());
+
             btnRecord.setText(resources.getString("StopRecord"));
-            ((ImageView) btnRecord.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm()));
+            ((ImageView) btnRecord.getGraphic()).setImage(
+                    new Image(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm())
+            );
+        }
+        else
+        {
+            this.recordManager.stopRecording(this.video);
+
+            btnRecord.setText(resources.getString("StartRecord"));
+            ((ImageView) btnRecord.getGraphic()).setImage(
+                    new Image(Objects.requireNonNull(getClass().getResource("/images/record.png")).toExternalForm())
+            );
         }
     }
 }

@@ -7,6 +7,7 @@ import javafx.stage.FileChooser;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,14 +24,12 @@ public class Corpus {
     /**
      * ONLY USE this method to create a new corpus
      */
-    public static Corpus createCorpus(String name) {
+    public static void createCorpus(String name) {
         FileManager.getFileManager().createFolder(name);
         FileManager.getFileManager().createFolder(name, folderNameFieldAudio);
         FileManager.getFileManager().createFolder(name, folderNameCorpusImage);
         FileManager.getFileManager().createFolder(name, folderNameCorpusVideo);
         FileManager.getFileManager().createFolder(name, folderNameAnnotation);
-
-        return new Corpus(name);
     }
 
 
@@ -47,9 +46,20 @@ public class Corpus {
 
             /* Manage fieldAudios in FieldAudios Folder */
             File fieldAudiosFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + corpus.getName() + "/" + folderNameFieldAudio);
-
             for (File file : Objects.requireNonNull(fieldAudiosFolder.listFiles())) {
                 corpus.fieldAudios.add(new FieldAudio(file));
+            }
+
+            /* Manage videos in Videos Folder */
+            File videosFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + corpus.getName() + "/" + folderNameCorpusVideo);
+            for (File file : Objects.requireNonNull(videosFolder.listFiles())) {
+                corpus.corpusVideos.add(new CorpusVideo(file));
+            }
+
+            /* Manage images in Images Folder */
+            File imagesFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + corpus.getName() + "/" + folderNameCorpusImage);
+            for (File file : Objects.requireNonNull(imagesFolder.listFiles())) {
+                corpus.corpusImages.add(new CorpusImage(file));
             }
 
 
@@ -58,8 +68,7 @@ public class Corpus {
 
             for (File folderFieldAudio : Objects.requireNonNull(annotationsFolder.listFiles())) {
                 // we get the field audio corresponding to the folder
-                FieldAudio fieldAudio = corpus.getFieldAudioByName(folderFieldAudio.getName());
-                System.out.println(fieldAudio == null);
+                Media media = corpus.getMediaByName(folderFieldAudio.getName());
 
                 // Loop on every annotation in the folder
                 for (File annotationFolder : Objects.requireNonNull(folderFieldAudio.listFiles())) {
@@ -83,11 +92,10 @@ public class Corpus {
                     double end = jsonObject.getDouble("end");
 
                     // Create annotation
-                    Objects.requireNonNull(fieldAudio).addAnnotation(new Annotation(audioFile, start, end));
+                    Objects.requireNonNull(media).addAnnotation(new Annotation(audioFile, start, end));
 
                 }
             }
-
 
             corpusList.add(corpus);
         }
@@ -125,16 +133,89 @@ public class Corpus {
         );
 
         // wait for user to choose an audio
-        File file = fileChooser.showOpenDialog(null);
+        File fileAudio = fileChooser.showOpenDialog(null);
 
-        if (file == null) {
+        if (fileAudio != null) {
+            // copy of the file in corpus folder
+            File file = FileManager.getFileManager().copyFile(fileAudio, this.name + "/" + folderNameFieldAudio);
+
+            // rename file to remove acccent
+            String newName = Normalizer.normalize(file.getName(), Normalizer.Form.NFD);
+            newName = newName.replaceAll("\\p{InCombiningDiacriticalMarks}", "");
+            file = FileManager.getFileManager().renameFile(file, newName);
+
+            // create new CorpusImage
+            FieldAudio fieldAudio = new FieldAudio(file);
+
+            // create annotation's folder for this media
+            FileManager.getFileManager().createFolder("/" + this.name + "/" + folderNameAnnotation, fieldAudio.getName());
+
+            this.fieldAudios.add(fieldAudio);
+        } else {
             Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
             Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
             alert.showAndWait();
+        }
+    }
+
+    public void createVideo() {
+        FileChooser fileChooserVideo = new FileChooser();
+        fileChooserVideo.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("VideoFile", "*.mp4")
+        );
+
+        File fileVideo = fileChooserVideo.showOpenDialog(null);
+        if (fileVideo != null) {
+            // copy of the file in corpus folder
+            File file = FileManager.getFileManager().copyFile(fileVideo, this.name + "/" + folderNameCorpusVideo);
+
+            // rename file to remove acccent
+            String newName = Normalizer.normalize(fileVideo.getName(), Normalizer.Form.NFD);
+            newName = newName.replaceAll("\\p{InCombiningDiacriticalMarks}", "");
+            file = FileManager.getFileManager().renameFile(file, newName);
+
+            // create new CorpusImage
+            CorpusVideo video = new CorpusVideo(file);
+
+            // create annotation's folder for this media
+            FileManager.getFileManager().createFolder("/" + this.name + "/" + folderNameAnnotation, video.getName());
+
+            this.corpusVideos.add(video);
         } else {
-            FieldAudio fa = new FieldAudio(FileManager.getFileManager().copyFile(file, this.name + "/" + folderNameFieldAudio));
-            FileManager.getFileManager().createFolder("/" + this.name + "/" + folderNameAnnotation, fa.getName());
-            this.fieldAudios.add(fa);
+            Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
+            Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
+            alert.showAndWait();
+        }
+    }
+
+    public void createImage() {
+        FileChooser fileChooserImage = new FileChooser();
+        fileChooserImage.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("ImageFile", "*.jpg", "*.jpeg", "*.png")
+        );
+
+        File fileImage = fileChooserImage.showOpenDialog(null);
+
+        if (fileImage != null){
+            // copy of the file in corpus folder
+            File file = FileManager.getFileManager().copyFile(fileImage, this.name + "/" + folderNameCorpusImage);
+
+            // rename file to remove acccent
+            String newName = Normalizer.normalize(fileImage.getName(), Normalizer.Form.NFD);
+            newName = newName.replaceAll("\\p{InCombiningDiacriticalMarks}", "");
+            file = FileManager.getFileManager().renameFile(file, newName);
+
+            // create new CorpusImage
+            CorpusImage image = new CorpusImage(file);
+
+            // create annotation's folder for this media
+            FileManager.getFileManager().createFolder("/" + this.name + "/" + folderNameAnnotation, image.getName());
+
+            this.corpusImages.add(image);
+        } else {
+            Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
+            Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
+            alert.showAndWait();
         }
     }
 
@@ -156,11 +237,20 @@ public class Corpus {
         return this.corpusVideos;
     }
 
-    private FieldAudio getFieldAudioByName(String name) {
+    private Media getMediaByName(String name) {
         for (FieldAudio fa : this.fieldAudios) {
-            System.out.println(fa.getName() + " = " + name);
             if (fa.getName().equals(name)) {
                 return fa;
+            }
+        }
+        for (CorpusVideo video : this.corpusVideos) {
+            if (video.getName().equals(name)) {
+                return video;
+            }
+        }
+        for (CorpusImage image : this.corpusImages) {
+            if (image.getName().equals(name)) {
+                return image;
             }
         }
         return null;

@@ -155,4 +155,12 @@ public class FileManager {
         }
     }
 
+    /**
+     * Rename file's name to newName.
+     */
+    public File renameFile(File file, String newName) {
+        file.renameTo(new File(file.getParentFile() + "/" + newName));
+        return new File(file.getParentFile() + "/" + newName);
+    }
+
 }

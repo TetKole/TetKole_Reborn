@@ -123,20 +123,24 @@ public class CorpusMenuSceneController implements Initializable {
             // onClick on corpus
             btn.setOnMouseClicked(event -> {
                 SceneManager.getSceneManager().addArgument("image", image);
+                SceneManager.getSceneManager().addArgument("corpus", this.corpus);
                 SceneManager.getSceneManager().changeScene("ImageScene.fxml");
             });
 
             this.vBoxImages.getChildren().add(btn);
         }
 
-        Button btn = new Button(resources.getString("AddFieldAudio"));
+        Button btn = new Button(resources.getString("AddImage"));
         btn.getStyleClass().add("buttons");
         btn.getStyleClass().add("blue");
         btn.setPrefWidth(140);
         btn.setPrefHeight(50);
 
         // onClick on add corpus image
-        btn.setOnMouseClicked(event -> System.out.println("add image to corpus : TODO"));
+        btn.setOnMouseClicked(event -> {
+            this.corpus.createImage();
+            UpdateImagesList();
+        });
 
         this.vBoxImages.getChildren().add(btn);
     }
@@ -161,20 +165,24 @@ public class CorpusMenuSceneController implements Initializable {
             // onClick on corpus
             btn.setOnMouseClicked(event -> {
                 SceneManager.getSceneManager().addArgument("video", video);
-                SceneManager.getSceneManager().changeScene("ImageScene.fxml");
+                SceneManager.getSceneManager().addArgument("corpus", this.corpus);
+                SceneManager.getSceneManager().changeScene("VideoScene.fxml");
             });
 
             this.vBoxVideos.getChildren().add(btn);
         }
 
-        Button btn = new Button(resources.getString("AddFieldAudio"));
+        Button btn = new Button(resources.getString("AddVideo"));
         btn.getStyleClass().add("buttons");
         btn.getStyleClass().add("blue");
         btn.setPrefWidth(140);
         btn.setPrefHeight(50);
 
         // onClick on add corpus video
-        btn.setOnMouseClicked(event -> System.out.println("add video to corpus : TODO"));
+        btn.setOnMouseClicked(event -> {
+            this.corpus.createVideo();
+            UpdateVideosList();
+        });
 
         this.vBoxVideos.getChildren().add(btn);
     }

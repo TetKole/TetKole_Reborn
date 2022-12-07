@@ -1,7 +1,8 @@
 package com.tetkole.tetkole.utils;
 
+
 import com.tetkole.tetkole.utils.models.Annotation;
-import com.tetkole.tetkole.utils.models.FieldAudio;
+import com.tetkole.tetkole.utils.models.Media;
 
 import javax.sound.sampled.*;
 import java.io.File;
@@ -69,11 +70,7 @@ public class RecordManager {
         }
     }
 
-    // TODO we will delete this method once corpus is implemented in image and video
-    public void stopRecording() {
-        stopRecording(null);
-    }
-    public void stopRecording(FieldAudio fieldAudio) {
+    public void stopRecording(Media media) {
         if (this.isRecording) {
             this.isRecording = false;
             System.out.println("Record stopped");
@@ -90,7 +87,7 @@ public class RecordManager {
                     this.corpusPath
             );
 
-            fieldAudio.addAnnotation(new Annotation(this.file, this.leftBorderValue, this.rightBorderValue));
+            media.addAnnotation(new Annotation(this.file, this.leftBorderValue, this.rightBorderValue));
         }
     }
 
