@@ -124,7 +124,8 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
         //We set the annotationsVisualization width when the screen size change
         this.container.widthProperty().addListener((observable, oldValue, newValue) -> {
-            this.annotationsVisualization.setWidth((double)newValue);
+            //this.annotationsVisualization.setWidth((double)newValue);
+            this.annotationsVisualization.setPrefWidth((double)newValue);
             this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
                     this.waveVisualization.getBeginAudio(),
                     this.waveVisualization.getEndAudio());
@@ -133,7 +134,8 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         //We set the annotationsVisualization height to handle 30% of the screen height
         this.centerAnchorPane.heightProperty().addListener((observable, oldValue, newValue) -> {
             AnchorPane.setBottomAnchor(this.waveVisualization, this.centerAnchorPane.getHeight() * 0.1);
-            this.annotationsVisualization.setHeight(this.centerAnchorPane.getHeight() * 0.1);
+            //this.annotationsVisualization.setHeight(this.centerAnchorPane.getHeight() * 0.1);
+            this.annotationsVisualization.setPrefHeight(this.centerAnchorPane.getHeight() * 0.1);
         });
     }
 
