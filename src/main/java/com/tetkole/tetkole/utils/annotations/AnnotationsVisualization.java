@@ -5,21 +5,18 @@ import com.tetkole.tetkole.utils.models.Annotation;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.TilePane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.*;
 import javafx.stage.Window;
-
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +24,7 @@ public class AnnotationsVisualization extends Pane {
     private static final int annotationSize = 15;
     private List<Annotation> annotations = new ArrayList<>();
     private final List<Rectangle> annotationsRectangles = new ArrayList<>();
+    private HBox actualAnnotationMenu = null;
     private double ratioAudio;
     private double beginAudio = 0;
     private double endAudio = 0;
@@ -34,6 +32,8 @@ public class AnnotationsVisualization extends Pane {
     public AnnotationsVisualization() {
 
         this.widthProperty().addListener((observable , oldValue , newValue) -> {
+            this.getChildren().remove(actualAnnotationMenu);
+            actualAnnotationMenu = null;
             this.drawAnnotations();
         });
     }
@@ -48,7 +48,7 @@ public class AnnotationsVisualization extends Pane {
             if(!(annotationEnd < this.beginAudio || annotationStart > this.endAudio)){
                 Rectangle r = initRectangle(
                         ratioAudio * (annotationStart - this.beginAudio),
-                        this.getHeight()/2 - annotationSize/2.0,
+                        this.getHeight()/2,
                         ratioAudio * (annotationEnd - this.beginAudio) - ratioAudio * (annotationStart - this.beginAudio),
                         annotation
                         );
@@ -79,7 +79,7 @@ public class AnnotationsVisualization extends Pane {
 
         Button btnPlayPause = new Button("PlayPause");
         Button btnDelete = new Button("Delete");
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        Button btnClose = new Button("X");
 
         btnPlayPause.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -92,18 +92,42 @@ public class AnnotationsVisualization extends Pane {
             @Override
             public void handle(ActionEvent event) {
                 System.out.println("delete");
-                alert.close();
             }
         });
 
-        HBox hbox = new HBox(btnPlayPause,btnDelete);
-        alert.setGraphic(hbox);
+        btnClose.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if(actualAnnotationMenu != null){
+                    getChildren().remove(actualAnnotationMenu);
+                    actualAnnotationMenu = null;
+                }
+            }
+        });
 
+        HBox hbox = new HBox(btnPlayPause,btnDelete,btnClose);
+        hbox.setSpacing(3);
+        hbox.setPadding(new Insets(3));
+        hbox.setStyle(
+                "-fx-background-color: #FFFFFF;"
+                        +"-fx-border-style: solid inside;"
+                        +"-fx-border-width: 2;"
+                        +"-fx-border-color: black;"
+        );
 
         r.setOnMousePressed(event -> {
-            System.out.println("Annotations : " + event.getSceneX());
-            //todo modal
-            alert.show();
+            if(this.getChildren().contains(hbox)){
+                this.getChildren().remove(hbox);
+                actualAnnotationMenu = null;
+            }else{
+                if(actualAnnotationMenu != null){
+                    this.getChildren().remove(actualAnnotationMenu);
+                }
+                this.getChildren().add(hbox);
+                actualAnnotationMenu = hbox;
+                hbox.setTranslateX(r.getX());
+                hbox.setTranslateY(0.0);
+            }
         });
 
         return r;
