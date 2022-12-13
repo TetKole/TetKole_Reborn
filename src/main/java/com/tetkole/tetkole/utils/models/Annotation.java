@@ -7,9 +7,9 @@ import java.io.File;
 public class Annotation {
     private File file;
 
-    private double start;
+    private final double start;
 
-    private double end;
+    private final double end;
 
     public Annotation(File file, double start, double end) {
         this.file = file;
@@ -28,5 +28,13 @@ public class Annotation {
     public void delete(String fieldAudioName, String corpusName) {
         String annotationDirPath = FileManager.getFileManager().getFolderPath() + "/" + corpusName + "/" + Corpus.folderNameAnnotation + "/" + fieldAudioName + "/" + this.getName();
         FileManager.getFileManager().deleteFolder(new File(annotationDirPath));
+    }
+
+    public double getStart() {
+        return start;
+    }
+
+    public double getEnd() {
+        return end;
     }
 }

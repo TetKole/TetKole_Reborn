@@ -35,8 +35,6 @@ import java.io.File;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -46,10 +44,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     private Corpus corpus;
     private MediaPlayer mediaPlayer;
     private RecordManager recordManager;
-
     private MediaPlayer annotationPlayer;
-    private ChangeListener disposeListener;
-
 
     // Graphics
     @FXML
@@ -60,7 +55,6 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     private Button btnRecord;
     @FXML
     private Button btnPlayPause;
-    private ResourceBundle resources;
     @FXML
     private HBox header;
     @FXML
@@ -116,16 +110,6 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             });
 
             this.settingUpSidePane();
-            //TODO Vrai liste
-            List<Annotation> annotations = new ArrayList<>();
-            annotations.add(new Annotation(0,5));
-            annotations.add(new Annotation(10,20));
-            annotations.add(new Annotation(30,60));
-            this.annotationsVisualization.setAnnotations(annotations);
-            this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
-                    this.waveVisualization.getBeginAudio(),
-                    this.waveVisualization.getEndAudio());
-            this.annotationsVisualization.drawAnnotations();
         });
 
         this.waveVisualization.startVisualization(audioFile.getAbsolutePath(), WaveFormService.WaveFormJob.AMPLITUDES_AND_WAVEFORM);
@@ -147,6 +131,14 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             this.annotationsVisualization.setPrefHeight(this.centerAnchorPane.getHeight() * 0.1);
         });
 
+    }
+
+    private void settingUpAnnotations() {
+        this.annotationsVisualization.setAnnotations(this.fieldAudio.getAnnotations());
+        this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
+                this.waveVisualization.getBeginAudio(),
+                this.waveVisualization.getEndAudio());
+        this.annotationsVisualization.drawAnnotations();
     }
 
     @FXML
@@ -222,6 +214,9 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     }
 
     private void settingUpSidePane() {
+
+        this.settingUpAnnotations();
+
         vBoxPane.setSpacing(50);
 
         vBoxPane.getChildren().clear();
