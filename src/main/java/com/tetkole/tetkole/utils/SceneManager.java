@@ -82,4 +82,8 @@ public class SceneManager {
     public Locale getCurrentLocale() {
         return this.currentLocale;
     }
+
+    public Stage getStage() {
+        return stage;
+    }
 }

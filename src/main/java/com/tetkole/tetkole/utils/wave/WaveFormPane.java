@@ -79,12 +79,12 @@ public class WaveFormPane extends ResizableCanvas {
 
 			if (rightBorderDragged) {
 				rightBorderXPosition = Math.min(Math.max(event.getX(), leftBorderXPosition + 10),  getWidth() - 10);
-				this.setRightBorderTime(rightBorderXPosition * this.getRatioAudio() + this.beginAudio);
+				this.setRightBorderTime(rightBorderXPosition / this.getRatioAudio() + this.beginAudio);
 			}
 
 			if (leftBorderDragged) {
 				leftBorderXPosition = Math.max(Math.min(event.getX(), rightBorderXPosition - 10), 0);
-				this.setLeftBorderTime(leftBorderXPosition * this.getRatioAudio() + this.beginAudio);
+				this.setLeftBorderTime(leftBorderXPosition / this.getRatioAudio() + this.beginAudio);
 			}
 		});
 
@@ -160,6 +160,10 @@ public class WaveFormPane extends ResizableCanvas {
 		return beginAudio;
 	}
 
+	public double getEndAudio() {
+		return endAudio;
+	}
+
 	public double getLeftBorderTime() {
 		return leftBorderTime;
 	}
@@ -211,9 +215,13 @@ public class WaveFormPane extends ResizableCanvas {
 	public void resetAudioRange(){
 		this.beginAudio = 0;
 		this.endAudio = this.totalTime;
-		this.leftBorderXPosition = this.getLeftBorderTime() * this.getRatioAudio();
-		this.rightBorderXPosition = this.getRightBorderTime() * this.getRatioAudio();
+		this.setPositionBorderWithTime();
 		this.setCurrentXPositionMediaPlayer(leftBorderXPosition);
+	}
+
+	public void setPositionBorderWithTime(){
+		this.leftBorderXPosition = (this.getLeftBorderTime() - this.getBeginAudio()) * this.getRatioAudio();
+		this.rightBorderXPosition = (this.getRightBorderTime() - this.getBeginAudio()) * this.getRatioAudio();
 	}
 
 	/**

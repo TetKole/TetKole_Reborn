@@ -40,6 +40,7 @@ public class WaveVisualization extends WaveFormPane {
 			//Draw single line :)
 			if (getWaveService().getResultingWaveform() != null)
 				getWaveService().startService(getWaveService().getFileAbsolutePath(), WaveFormJob.WAVEFORM);
+			this.setPositionBorderWithTime();
 			clear();
 			
 		});
