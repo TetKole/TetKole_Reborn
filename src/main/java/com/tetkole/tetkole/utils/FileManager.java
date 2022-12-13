@@ -163,4 +163,24 @@ public class FileManager {
         return new File(file.getParentFile() + "/" + newName);
     }
 
+    /**
+     * Delete file
+     */
+    public void deleteFile(File fileToDelete) {
+        if (!fileToDelete.delete()) {
+            System.err.println("\nCannot delete file " + fileToDelete.getName());
+        }
+    }
+
+    public void deleteFolder(File folderToDelete) {
+        File[] allContents = folderToDelete.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                this.deleteFile(file);
+            }
+        }
+        if (!folderToDelete.delete()) {
+            System.err.println("\nCannot delete directory " + folderToDelete.getName());
+        }
+    }
 }

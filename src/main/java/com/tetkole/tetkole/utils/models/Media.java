@@ -29,4 +29,14 @@ public abstract class Media {
     public void addAnnotation(Annotation annotation) {
         this.annotations.add(annotation);
     }
+
+    public void deleteAnnotation(Annotation annotation, String corpusName) {
+        for (Annotation a : this.annotations) {
+            if (a.equals(annotation)) {
+                annotation.delete(this.getName(), corpusName);
+                this.annotations.remove(annotation);
+                break;
+            }
+        }
+    }
 }

@@ -44,6 +44,9 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     private MediaPlayer mediaPlayer;
     private RecordManager recordManager;
 
+    private MediaPlayer annotationPlayer;
+    private ChangeListener disposeListener;
+
 
     // Graphics
     @FXML
@@ -192,6 +195,35 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             btnDelete.getStyleClass().add("blue");
             line.getChildren().add(btnDelete);
 
+            btnDelete.setOnAction(e -> {
+                //TODO delete annotation
+
+                /*
+                if (this.annotationPlayer == null) {
+                    this.fieldAudio.deleteAnnotation(annotation, this.corpus.getName());
+                    this.settingUpSidePane();
+                }
+                else
+                {
+                    this.annotationPlayer.statusProperty().addListener((observable, oldValue, newValue) -> {
+                        System.out.println(newValue);
+                        if (newValue.toString().equals("DISPOSED")) {
+                            System.out.println("oui");
+                            this.fieldAudio.deleteAnnotation(annotation, this.corpus.getName());
+                            this.settingUpSidePane();
+                        }
+                    });
+
+
+                    this.annotationPlayer.dispose();
+                    this.annotationPlayer = null;
+                    this.fieldAudio.deleteAnnotation(annotation, this.corpus.getName());
+                    this.settingUpSidePane();
+                }*/
+
+
+            });
+
             // add the Label
             Label label = new Label(annotation.getName());
             label.setStyle("-fx-text-fill: white;");
@@ -202,6 +234,13 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             btnPlayPause.getStyleClass().add("buttons");
             btnPlayPause.getStyleClass().add("blue");
             line.getChildren().add(btnPlayPause);
+
+            btnPlayPause.setOnAction(e -> {
+                this.annotationPlayer = new MediaPlayer(new Media(annotation.getFile().toURI().toString()));
+                this.annotationPlayer.setOnReady(() -> {
+                    this.annotationPlayer.play();
+                });
+            });
 
             // add the HBox to the VBox
             vBoxPane.getChildren().add(line);

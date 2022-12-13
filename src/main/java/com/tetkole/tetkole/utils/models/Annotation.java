@@ -1,5 +1,7 @@
 package com.tetkole.tetkole.utils.models;
 
+import com.tetkole.tetkole.utils.FileManager;
+
 import java.io.File;
 
 public class Annotation {
@@ -17,5 +19,14 @@ public class Annotation {
 
     public String getName() {
         return this.file.getName();
+    }
+
+    public File getFile() {
+        return this.file;
+    }
+
+    public void delete(String fieldAudioName, String corpusName) {
+        String annotationDirPath = FileManager.getFileManager().getFolderPath() + "/" + corpusName + "/" + Corpus.folderNameAnnotation + "/" + fieldAudioName + "/" + this.getName();
+        FileManager.getFileManager().deleteFolder(new File(annotationDirPath));
     }
 }
