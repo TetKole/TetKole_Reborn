@@ -67,11 +67,6 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     @FXML
     private VBox vBoxPane;
 
-    @FXML
-    private HBox bottomHbox;
-    @FXML
-    private AnchorPane topAnchorPane;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resources = resources;

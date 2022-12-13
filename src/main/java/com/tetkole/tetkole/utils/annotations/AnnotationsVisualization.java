@@ -1,22 +1,11 @@
 package com.tetkole.tetkole.utils.annotations;
 
-import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.models.Annotation;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.*;
-import javafx.stage.Window;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,27 +70,14 @@ public class AnnotationsVisualization extends Pane {
         Button btnDelete = new Button("Delete");
         Button btnClose = new Button("X");
 
-        btnPlayPause.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("lire");
-            }
-        });
+        btnPlayPause.setOnAction(event -> System.out.println("lire"));
 
-        btnDelete.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("delete");
-            }
-        });
+        btnDelete.setOnAction(event -> System.out.println("delete"));
 
-        btnClose.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if(actualAnnotationMenu != null){
-                    getChildren().remove(actualAnnotationMenu);
-                    actualAnnotationMenu = null;
-                }
+        btnClose.setOnAction(event -> {
+            if(actualAnnotationMenu != null){
+                getChildren().remove(actualAnnotationMenu);
+                actualAnnotationMenu = null;
             }
         });
 
