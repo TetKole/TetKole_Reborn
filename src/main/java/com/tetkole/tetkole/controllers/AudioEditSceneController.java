@@ -236,6 +236,11 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             line.getChildren().add(btnPlayPause);
 
             btnPlayPause.setOnAction(e -> {
+                if (this.annotationPlayer != null) {
+                    this.annotationPlayer.dispose();
+                    this.annotationPlayer = null;
+                }
+
                 this.annotationPlayer = new MediaPlayer(new Media(annotation.getFile().toURI().toString()));
                 this.annotationPlayer.setOnReady(() -> {
                     this.annotationPlayer.play();
