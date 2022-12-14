@@ -28,24 +28,20 @@ jobs:
           chmod +x ./gradlew
           ./gradlew --stacktrace --info downloadAndExtractJREs
           chmod -R 777 build/jre
-
       # Run packageApp with gradle for create linux release
       - name: Generate releases
         run: |
           ./gradlew --stacktrace --info packageApp
-
       # Run generateWindowsInstallerInDocker with gradle for create a Windows installer
       - name: Generate Windows Installer with InnoSetup
         run: |
           chmod 777 build/distributions
           chmod -R 777 build/jre
-          ./gradlew --build-cache --stacktrace --info generateWindowsInstallerInDocker
-
+          ./gradlew --stacktrace --info generateWindowsInstallerInDocker
       # Get and store the git name of the repository
       - name: Get Env
         run: |
           echo "REPO_NAME=${{ github.repository }}" >> $GITHUB_ENV
-
       # Create a new tag version for the release on git
       - name: New tag
         id: new-tag
@@ -83,4 +79,3 @@ jobs:
             ./build/distributions/TetKole-windows-x64-installer.exe
             ./build/distributions/TetKole-linux.tar.gz
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          
