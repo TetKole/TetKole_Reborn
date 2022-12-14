@@ -1,0 +1,86 @@
+release.ymlname: Release TètKole
+
+# Trigger this workflow when we push on the master
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+
+    # Set the environment that we are going to use to ubuntu the latest version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set the jdk that we are going to use to java 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # Download all JRE that we are going to use for our release
+      - name: Download JREs
+        run: |
+          chmod +x ./gradlew
+          ./gradlew --stacktrace --info downloadAndExtractJREs
+          chmod -R 777 build/jre
+
+      # Run packageApp with gradle for create linux release
+      - name: Generate releases
+        run: |
+          ./gradlew --stacktrace --info packageApp
+
+      # Run generateWindowsInstallerInDocker with gradle for create a Windows installer
+      - name: Generate Windows Installer with InnoSetup
+        run: |
+          chmod 777 build/distributions
+          chmod -R 777 build/jre
+          ./gradlew --stacktrace --info generateWindowsInstallerInDocker
+
+      # Get and store the git name of the repository
+      - name: Get Env
+        run: |
+          echo "REPO_NAME=${{ github.repository }}" >> $GITHUB_ENV
+
+      # Create a new tag version for the release on git
+      - name: New tag
+        id: new-tag
+        run: |
+          LATEST_RELEASE_INFO=$(curl -s https://api.github.com/repos/${{ env.REPO_NAME }}/releases/latest)
+          NEW_VERSION_LINK=$(echo "$LATEST_RELEASE_INFO" | grep "browser_download_url.*TètKole*" | cut -d: -f2,3 | tr -d \")
+          NEW_VERSION=$( echo "${NEW_VERSION_LINK}" | cut -d/ -f9)
+          NEW_VERSION_NO_EXT=$( echo ${NEW_VERSION} | cut -d. -f1)
+          NEW_VERSION_NAME=$(echo "$LATEST_RELEASE_INFO" | grep "name.*TètKole*" | cut -d: -f2,3 | tr -d \" | head -n 1 | tr -d \,)
+          GET_TAG=$(echo "$NEW_VERSION_NAME" | cut -d " " -f3)
+          TAG_1=$(echo "$GET_TAG" | cut -d. -f1)
+          TAG_2=$(echo "$GET_TAG" | cut -d. -f2)
+          TAG_3=$(echo "$GET_TAG" | cut -d. -f3)
+          NEW_TAG=$(echo "$(( $TAG_3 + 1 ))")
+          TAG="2.0.${NEW_TAG}"
+          echo "tag=$(echo $TAG)" >> $GITHUB_OUTPUT
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.new-tag.outputs.tag }}
+          release_name: TètKole ${{ steps.new-tag.outputs.tag }}
+          draft: false
+          prerelease: false
+
+      # Upload release on git
+      - name: Upload Assets to Release
+        id: upload-assets
+        uses: csexton/release-asset-action@v2
+        with:
+          release-url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`.
+          files: |
+            ./build/distributions/TetKole-windows-x64-installer.exe
+            ./build/distributions/TetKole-linux.tar.gz
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          
