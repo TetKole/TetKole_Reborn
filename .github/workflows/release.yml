@@ -4,7 +4,7 @@ name: Release TètKole
 on:
   push:
     branches:
-      - master
+      - testWorkflow
 
 jobs:
   release:
