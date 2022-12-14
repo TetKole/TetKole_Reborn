@@ -1,4 +1,4 @@
-release.ymlname: Release TètKole
+name: Release TètKole
 
 # Trigger this workflow when we push on the master
 on:
