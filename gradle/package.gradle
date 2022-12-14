@@ -1,0 +1,23 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+task('packageAllDists').dependsOn('linuxDistTar', 'windowsDistZip')
+
+task packageApp(dependsOn: ['packageAllDists',
+                            'downloadLicenses',
+                            'scriptsForRelease'], group: 'distribution') {
+    tasks.findByName('packageAllDists').mustRunAfter('downloadLicenses')
+    tasks.findByName('packageAllDists').mustRunAfter('scriptsForRelease')
+}
+
+task scriptsForRelease(type: Copy, group: 'distribution') {
+    from "${rootDir}/src/main/bin"
+    into "${rootDir}/build/bin"
+
+    outputs.upToDateWhen { false } // Forces the task to rerun every time, without requiring a clean.
+}
+
+task packageAppWithDistPermissions(dependsOn: packageApp, type: Exec, group: 'distribution') {
+    commandLine 'chmod', '-R', '777', "${rootDir}/build/distributions"
+}
+
+beforeReleaseBuild.dependsOn packageAppWithDistPermissions

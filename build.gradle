@@ -57,3 +57,76 @@ jlink {
 jlinkZip {
     group = 'distribution'
 }
+
+jar {
+    enabled=true
+    manifest {
+        attributes(
+                "Implementation-Title": "TètKole",
+                "Implementation-Vendor": "Univ. Grenoble Alpes - LIG - GETALP",
+                "Main-Class": 'application.Main',
+                "Class-Path": configurations.runtimeClasspath.collect { it.getName() }.join(' '),
+                "JavaFX-Version": javafxVersion,
+                "Built-By": System.properties['user.name']
+        )
+    }
+}
+
+distributions {
+    windows {
+        contents {
+            with distributions.main.contents
+            from("build/reports")
+            from("build/bin/tetkole-windows.bat") {
+                into 'bin'
+            }
+            from("build/jre/windows") {
+                into 'lib/jre'
+            }
+        }
+    }
+
+    linux {
+        contents {
+            with distributions.main.contents
+            from("build/reports")
+            from("build/bin/tetkole-linux.sh") {
+                into 'bin'
+            }
+            from("build/jre/linux-x64") {
+                into 'lib/jre'
+            }
+        }
+    }
+}
+
+tasks.jar.dependsOn('createLicence')
+
+task createLicence(dependsOn: ['processResources'], type: Copy, group: 'license') {
+    from("${rootDir}/gradle/templates/licence.txt")
+    expand([
+            "date"   : new Date().format('yyyy-MM-dd')
+    ])
+    into("${processResources.destinationDir}/data/common")
+}
+
+task('downloadAndExtractLinuxDependecies').dependsOn('downloadAndExtractLinuxJREwithLibavPlugin')
+
+windowsDistZip.dependsOn(downloadAndExtractWindowsJRE)
+linuxDistTar.dependsOn(downloadAndExtractLinuxDependecies)
+
+tasks.withType(Tar){
+    compression = Compression.GZIP
+    archiveExtension.set('tar.gz')
+}
+
+distZip {
+    duplicatesStrategy = 'exclude'
+}
+
+release {
+    failOnPublishNeeded = false
+    failOnCommitNeeded = false
+}
+
+afterReleaseBuild.dependsOn generateWindowsInstallerInDocker
