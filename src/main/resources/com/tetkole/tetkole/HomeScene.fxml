@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER"  spacing="100.0" styleClass="background_color" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.HomeSceneController">
+<VBox alignment="CENTER"  spacing="100.0" styleClass="background_color" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.HomeSceneController">
 
     <Label text="TètKole" style="-fx-text-fill: white; -fx-font-size: 100px" />
 
