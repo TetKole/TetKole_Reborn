@@ -16,18 +16,6 @@ repositories {
     mavenCentral()
 }
 
-ext.javafxVersion = "17.0.2"
-
-ext {
-    junitVersion = '5.8.2'
-    Download = de.undercouch.gradle.tasks.download.Download
-    download = download
-}
-
-apply from: "${rootDir}/gradle/package.gradle"
-apply from: "${rootDir}/gradle/jre.gradle"
-apply from: "${rootDir}/gradle/installer.gradle"
-
 sourceCompatibility = '17'
 targetCompatibility = '17'
 
@@ -40,6 +28,18 @@ application {
     mainClass = 'com.tetkole.tetkole.Main'
 }
 
+ext.javafxVersion = "17.0.2"
+
+ext {
+    junitVersion = '5.8.2'
+    Download = de.undercouch.gradle.tasks.download.Download
+    download = download
+}
+
+apply from: "${rootDir}/gradle/package.gradle"
+apply from: "${rootDir}/gradle/jre.gradle"
+apply from: "${rootDir}/gradle/installer.gradle"
+
 javafx {
     version = javafxVersion
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.media']
@@ -51,6 +51,8 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
     implementation 'ws.schild:jave-all-deps:3.3.1'
     implementation 'org.json:json:20220924'
+    implementation 'org.projectlombok:lombok:1.18.20'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
 
 }
 
