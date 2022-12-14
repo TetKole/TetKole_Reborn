@@ -12,8 +12,12 @@ repositories {
     mavenCentral()
 }
 
+ext.javafxVersion = "17.0.2"
+
 ext {
     junitVersion = '5.8.2'
+    Download = de.undercouch.gradle.tasks.download.Download
+    download = download
 }
 
 sourceCompatibility = '17'
