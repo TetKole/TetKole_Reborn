@@ -39,7 +39,7 @@ jobs:
         run: |
           chmod 777 build/distributions
           chmod -R 777 build/jre
-          ./gradlew --stacktrace --info generateWindowsInstallerInDocker
+          ./gradlew --build-cache --stacktrace --info generateWindowsInstallerInDocker
 
       # Get and store the git name of the repository
       - name: Get Env
