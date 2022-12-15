@@ -22,15 +22,15 @@
 
             <HBox alignment="TOP_CENTER" spacing="100.0" >
 
-                <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true">
+                <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true" hbarPolicy="NEVER">
                     <VBox fx:id="vBoxFieldAudios" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="250.0" style="-fx-background-color: #495461;" spacing="20" />
                 </ScrollPane>
 
-                <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true">
+                <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true" hbarPolicy="NEVER">
                     <VBox fx:id="vBoxImages" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="250.0" style="-fx-background-color: #495461;" spacing="20" />
                 </ScrollPane>
 
-                <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true">
+                <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true" hbarPolicy="NEVER">
                     <VBox fx:id="vBoxVideos" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="250.0" style="-fx-background-color: #495461;" spacing="20" />
                 </ScrollPane>
 

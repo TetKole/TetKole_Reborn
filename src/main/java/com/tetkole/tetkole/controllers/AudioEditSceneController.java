@@ -225,7 +225,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             // prepare the HBox
             HBox line = new HBox();
             line.setAlignment(Pos.CENTER);
-            line.setSpacing(50);
+            line.setSpacing(20);
 
             // add the DeleteButton
             Button btnDelete = new Button("Delete");

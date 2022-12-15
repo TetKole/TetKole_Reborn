@@ -36,6 +36,11 @@ public class HomeSceneController implements Initializable {
         }
     }
 
+    @FXML
+    public void onGoToSetting() {
+        SceneManager.getSceneManager().changeScene("SettingsScene.fxml");
+    }
+
     private void UpdateCorpusList() {
         this.vBoxCorpus.getChildren().clear();
 
