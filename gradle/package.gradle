@@ -9,11 +9,12 @@ task packageApp(dependsOn: ['packageAllDists',
     tasks.findByName('packageAllDists').mustRunAfter('scriptsForRelease')
 }
 
-task scriptsForRelease(type: Copy, group: 'distribution') {
-    from "${rootDir}/src/main/bin"
-    into "${rootDir}/build/bin"
-
-    outputs.upToDateWhen { false } // Forces the task to rerun every time, without requiring a clean.
+tasks.register('scriptsForRelease') {
+    group = 'distribution'
+    copy {
+        from "${rootDir}/src/main/bin"
+        into "${rootDir}/build/bin"
+    }
 }
 
 task packageAppWithDistPermissions(dependsOn: packageApp, type: Exec, group: 'distribution') {
