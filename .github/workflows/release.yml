@@ -46,7 +46,7 @@ jobs:
       - name: New tag
         id: new-tag
         run: |
-          echo "tag=$(echo 2.0.2)" >> $GITHUB_OUTPUT
+          echo "tag=$(echo 2.0.3)" >> $GITHUB_OUTPUT
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
