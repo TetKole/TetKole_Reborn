@@ -89,7 +89,7 @@ distributions {
         contents {
             with distributions.main.contents
             from("build/reports")
-            from("build/bin/tetkole-windows.bat") {
+            from("build/bin/TetKole.bat") {
                 into 'bin'
             }
             from("build/jre/windows") {
