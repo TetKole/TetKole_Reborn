@@ -9,7 +9,7 @@ plugins {
     id 'com.github.hierynomus.license-report' version '0.16.1'
 }
 
-group 'application'
+group 'com.tetkole.tetkole'
 
 repositories {
     mavenLocal()
@@ -76,7 +76,7 @@ jar {
         attributes(
                 "Implementation-Title": "TètKole",
                 "Implementation-Vendor": "Univ. Grenoble Alpes - LIG - GETALP",
-                "Main-Class": 'application.Main',
+                "Main-Class": 'com.tetkole.tetkole.Main',
                 "Class-Path": configurations.runtimeClasspath.collect { it.getName() }.join(' '),
                 "JavaFX-Version": javafxVersion,
                 "Built-By": System.properties['user.name']
