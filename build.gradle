@@ -89,7 +89,7 @@ distributions {
         contents {
             with distributions.main.contents
             from("build/reports")
-            from("build/bin/TetKole.bat") {
+            from("build/bin/TetKole-windows.bat") {
                 into 'bin'
             }
             from("build/jre/windows") {
@@ -102,7 +102,7 @@ distributions {
         contents {
             with distributions.main.contents
             from("build/reports")
-            from("build/bin/tetkole-linux.sh") {
+            from("build/bin/TetKole-linux.sh") {
                 into 'bin'
             }
             from("build/jre/linux-x64") {
