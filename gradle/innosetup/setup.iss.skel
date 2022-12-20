@@ -49,12 +49,12 @@ Source: "..\\${unpackedDirectory}\\license\\*"; DestDir: "{app}\\license"; Flags
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\\TetKole"; Filename: "{app}\\bin\\TetKole-windows.bat"; IconFilename: "{app}\\bin\\cream.ico"; Flags: runminimized
+Name: "{group}\\TetKole"; Filename: "{app}\\bin\\tetkole-windows.bat"; IconFilename: "{app}\\bin\\cream.ico"; Flags: runminimized
 Name: "{group}\\Uninstall TetKole"; Filename: "{uninstallexe}"; IconFilename: "{app}\\bin\\cream.ico"
-Name: "{commondesktop}\\TetKole"; Filename: "{app}\\bin\\TetKole-windows.bat"; Tasks: desktopicon; IconFilename: "{app}\\bin\\cream.ico"
+Name: "{commondesktop}\\TetKole"; Filename: "{app}\\bin\\tetkole-windows.bat"; Tasks: desktopicon; IconFilename: "{app}\\bin\\cream.ico"
 
 [Run]
-Filename: "{app}\\bin\\TetKole-windows.bat"; Description: "{cm:LaunchProgram,TetKole}"; Flags: shellexec postinstall skipifsilent
+Filename: "{app}\\bin\\tetkole-windows.bat"; Description: "{cm:LaunchProgram,TetKole}"; Flags: shellexec postinstall skipifsilent
 
 [Code]
 function GetUninstallString: string;
