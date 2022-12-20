@@ -20,9 +20,9 @@ AppName=TetKole
 AppVersion=${applicationVersion}
 AppVerName=TetKole ${applicationVersion}
 AppPublisher=Univ. Grenoble Alpes - LIG - GETALP
-AppPublisherURL=https://github.com/eschang/TetKole
-AppSupportURL=https://github.com/eschang/TetKole/issues
-AppUpdatesURL=https://github.com/eschang/TetKole/releases
+AppPublisherURL=https://github.com/TetKole/TetKole_Reborn
+AppSupportURL=https://github.com/TetKole/TetKole_Reborn/issues
+AppUpdatesURL=https://github.com/TetKole/TetKole_Reborn/releases
 
 SetupIconFile=cream.ico
 WizardStyle=modern
