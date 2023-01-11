@@ -29,9 +29,9 @@ public class FileManager {
             this.isWindows = false;
         } else {
             this.folderPath = FileSystemView.getFileSystemView().getDefaultDirectory().getPath() + "\\TetKole";
-            new File(this.folderPath).mkdir();
             this.isWindows = true;
         }
+        new File(this.folderPath).mkdir();
     }
 
     /**
