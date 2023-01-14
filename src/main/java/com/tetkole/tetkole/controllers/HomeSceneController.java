@@ -1,5 +1,6 @@
 package com.tetkole.tetkole.controllers;
 
+import com.tetkole.tetkole.utils.HttpRequestManager;
 import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.models.Corpus;
 import javafx.fxml.FXML;
@@ -9,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -25,6 +27,7 @@ public class HomeSceneController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
         UpdateCorpusList();
     }
 
@@ -39,6 +42,23 @@ public class HomeSceneController implements Initializable {
     @FXML
     public void onGoToSetting() {
         SceneManager.getSceneManager().changeScene("SettingsScene.fxml");
+    }
+
+    @FXML
+    public void onGoToLogin() {
+        HttpRequestManager requestManager = new HttpRequestManager();
+        try {
+            requestManager.sendPost();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        //SceneManager.getSceneManager().changeScene("LoginScene.fxml");
+    }
+
+    @FXML
+    public void onGoToRegister() {
+        SceneManager.getSceneManager().changeScene("RegisterScene.fxml");
     }
 
     private void UpdateCorpusList() {

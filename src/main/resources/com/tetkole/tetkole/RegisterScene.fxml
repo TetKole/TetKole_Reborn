@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER"  spacing="100.0" styleClass="background_color" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.RegisterSceneController">
+
+    <Label text="%Register" style="-fx-text-fill: white; -fx-font-size: 100px" />
+
+    <HBox alignment="TOP_CENTER" spacing="100.0" >
+
+        <VBox alignment="TOP_CENTER" spacing="30.0">
+            <Label prefWidth="150.0" style="-fx-font-size: 20;" text="%CreateACorpus" textFill="WHITE" alignment="CENTER" />
+
+            <HBox>
+                <Label text="%Firstname" style="-fx-text-fill: white; -fx-font-size: 20px"/>
+                <TextField fx:id="firstnameInput" promptText="%Firstname"/>
+            </HBox>
+            <HBox>
+                <Label text="%Lastname" style="-fx-text-fill: white; -fx-font-size: 20px"/>
+                <TextField fx:id="lastnameInput" promptText="%Lastname" />
+            </HBox>
+            <HBox>
+                <Label text="%Mail" style="-fx-text-fill: white; -fx-font-size: 20px"/>
+                <TextField fx:id="mailInput" promptText="%Mail"/>
+            </HBox>
+            <HBox>
+                <Label text="%Password" style="-fx-text-fill: white; -fx-font-size: 20px"/>
+                <TextField fx:id="passwordInput" promptText="%Password" />
+            </HBox>
+
+            <Button onAction="#onRegister" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Register" />
+            <Button onAction="#onGoToLogin" prefHeight="60" prefWidth="150" styleClass="textButtons, noColor" text="%Login" />
+        </VBox>
+
+    </HBox>
+</VBox>

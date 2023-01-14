@@ -18,6 +18,8 @@
             <TextField fx:id="corpusNameInput" />
             <Button onAction="#onCreateCorpus" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%CreateCorpus" />
             <Button onAction="#onGoToSetting" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Settings" />
+            <Button onAction="#onGoToLogin" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Login" />
+            <Button onAction="#onGoToRegister" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Register" />
         </VBox>
 
         <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true" hbarPolicy="NEVER">
