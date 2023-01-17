@@ -48,7 +48,7 @@ public class HomeSceneController implements Initializable {
     public void onGoToLogin() {
         HttpRequestManager requestManager = new HttpRequestManager();
         try {
-            requestManager.sendPost();
+            SceneManager.getSceneManager().changeScene("LoginScene.fxml");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

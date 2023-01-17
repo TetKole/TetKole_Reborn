@@ -5,59 +5,37 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class HttpRequestManager {
 
-    private static final String GET_URL = "https://catfact.ninja/fact";
+    private static final String baseUrl = "http://localhost:8000";
 
-    private static final String POST_URL = "http://localhost:8000/user";
 
-    private static final String POST_PARAMS = "userName=Pankaj";
-    private void responseCodeReader(HttpURLConnection con,int responseCode){
+    //Post Request to register a user
+    public void sendPostRegister(String firstname, String lastname, String password, String mail) throws Exception {
 
-    }
-    public void sendGET() throws IOException {
-        URL obj = new URL(GET_URL);
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-        con.setRequestMethod("GET");
-        int responseCode = con.getResponseCode();
-        System.out.println("GET Response Code :: " + responseCode);
-        if (responseCode == HttpURLConnection.HTTP_OK) { // success
-            BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-
-            while ((inputLine = in.readLine()) != null) {
-                response.append(inputLine);
-            }
-            in.close();
-
-            // print result
-            System.out.println(response.toString());
-        } else {
-            System.out.println("GET request did not work.");
-        }
-    }
-
-// HTTP Post request
-    public void sendPost() throws Exception {
-
-        String url = "http://localhost:8000/user";
+        String url = baseUrl+"/user";
         URL obj = new URL(url);
+        //Open the connection
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
-        // Setting basic post request
+        // Setting header and the Request Method
         con.setRequestMethod("POST");
-        con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-        con.setRequestProperty("Content-Type","application/json");
+        headerSetter(con);
 
+        //Setting the json object for my user
         JSONObject json = new JSONObject();
-        json.put("firstName", "test");
-        json.put("lastName", "Salihii");
-        json.put("password", "Saksdoqokjsdfqsffse");
-        json.put("mail", "test@gmail.com");
-        json.put("role", "admin");
+        json.put("firstName", firstname);
+        json.put("lastName", lastname);
+        json.put("password", password);
+        json.put("mail", mail);
+        json.put("role", "default");
+
         // Send post request
         con.setDoOutput(true);
         DataOutputStream wr = new DataOutputStream(con.getOutputStream());
@@ -65,11 +43,33 @@ public class HttpRequestManager {
         wr.flush();
         wr.close();
 
+        //get the request response
         int responseCode = con.getResponseCode();
-        System.out.println("nSending 'POST' request to URL : " + url);
-        System.out.println("Post Data : " + String.valueOf(json));
-        System.out.println("Response Code : " + responseCode);
+        responseDecoder(con,url);
+    }
 
+    //Post Request to login a user
+    public void sendPostLogin(String mail,String password) throws Exception {
+
+        // Setting header and the Request Method
+        String url = baseUrl+"/user/login?mail="+mail+"&password="+password;
+        URL obj = new URL(url);
+        //Open the connection
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+        con.setRequestMethod("POST");
+        headerSetter(con);
+
+        con.setDoOutput(true);
+        //get the request response
+        responseDecoder(con,url);
+
+    }
+
+    public void responseDecoder(HttpURLConnection con, String url) throws IOException {
+        int responseCode = con.getResponseCode();
+        System.out.println("Sending 'POST' request to URL : " + url);
+        System.out.println("Response Code : " + responseCode);
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
         String output;
@@ -79,9 +79,14 @@ public class HttpRequestManager {
             response.append(output);
         }
         in.close();
-
         //printing result from response
         System.out.println(response.toString());
+    }
+
+    //Function to set basic header for request
+    public void headerSetter(HttpURLConnection con){
+        con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+        con.setRequestProperty("Content-Type","application/json");
     }
 
 }
