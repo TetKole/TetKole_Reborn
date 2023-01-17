@@ -17,7 +17,7 @@ public class HttpRequestManager {
 
 
     //Post Request to register a user
-    public void sendPostRegister(String firstname, String lastname, String password, String mail) throws Exception {
+    public void sendPostRegister(String firstname, String lastname, String mail, String password) throws Exception {
 
         String url = baseUrl+"/user";
         URL obj = new URL(url);
