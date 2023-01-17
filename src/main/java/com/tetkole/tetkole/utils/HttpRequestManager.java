@@ -12,6 +12,7 @@ public class HttpRequestManager{
 
     private static final String baseUrl = "http://localhost:8000";
 
+
     private static final String testUrl ="https://jsonplaceholder.typicode.com/posts";
     public static void exemplegetRequest() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();

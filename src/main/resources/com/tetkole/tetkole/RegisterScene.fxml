@@ -6,31 +6,32 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER"  spacing="100.0" styleClass="background_color" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.RegisterSceneController">
+<VBox alignment="TOP_RIGHT" styleClass="background_color" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.RegisterSceneController">
 
-    <Label text="%Register" style="-fx-text-fill: white; -fx-font-size: 100px" />
+    <fx:include fx:id="header" source="components/Header.fxml"/>
 
     <HBox alignment="TOP_CENTER" spacing="100.0" >
 
         <VBox alignment="TOP_CENTER" spacing="30.0">
-            <Label prefWidth="150.0" style="-fx-font-size: 20;" text="%CreateACorpus" textFill="WHITE" alignment="CENTER" />
 
-            <HBox>
+            <Label text="%Register" style="-fx-text-fill: white; -fx-font-size: 50px" />
+
+            <VBox>
                 <Label text="%Firstname" style="-fx-text-fill: white; -fx-font-size: 20px"/>
                 <TextField fx:id="firstnameInput" promptText="%Firstname"/>
-            </HBox>
-            <HBox>
+            </VBox>
+            <VBox>
                 <Label text="%Lastname" style="-fx-text-fill: white; -fx-font-size: 20px"/>
                 <TextField fx:id="lastnameInput" promptText="%Lastname" />
-            </HBox>
-            <HBox>
+            </VBox>
+            <VBox>
                 <Label text="%Mail" style="-fx-text-fill: white; -fx-font-size: 20px"/>
                 <TextField fx:id="mailInput" promptText="%Mail"/>
-            </HBox>
-            <HBox>
+            </VBox>
+            <VBox>
                 <Label text="%Password" style="-fx-text-fill: white; -fx-font-size: 20px"/>
                 <TextField fx:id="passwordInput" promptText="%Password" />
-            </HBox>
+            </VBox>
 
             <Button onAction="#onRegister" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Register" />
             <Button onAction="#onGoToLogin" prefHeight="60" prefWidth="150" styleClass="textButtons, noColor" text="%Login" />
