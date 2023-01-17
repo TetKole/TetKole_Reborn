@@ -34,10 +34,6 @@ public class RegisterSceneController implements Initializable {
     public void onRegister() throws Exception {
         if (!firstnameInput.getText().isEmpty() && !lastnameInput.getText().isEmpty()
                 && !mailInput.getText().isEmpty() && !passwordInput.getText().isEmpty())  {
-            System.out.println(firstnameInput.getText());
-            System.out.println(lastnameInput.getText());
-            System.out.println(mailInput.getText());
-            System.out.println(passwordInput.getText());
             apiManager.sendPostRegister(firstnameInput.getText(),lastnameInput.getText(),mailInput.getText(),passwordInput.getText());
         }
     }
