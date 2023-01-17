@@ -12,13 +12,13 @@ public class HttpRequestManager{
 
     private static final String baseUrl = "http://localhost:8000";
 
-    private static final String PSOTS_API_URL ="https://jsonplaceholder.typicode.com/posts";
+    private static final String testUrl ="https://jsonplaceholder.typicode.com/posts";
     public static void exemplegetRequest() throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
                 .header("Content-Type","application/json")
-                .uri(URI.create(PSOTS_API_URL))
+                .uri(URI.create(testUrl))
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
