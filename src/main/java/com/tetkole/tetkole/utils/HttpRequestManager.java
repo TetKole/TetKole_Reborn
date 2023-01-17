@@ -1,34 +1,33 @@
 package com.tetkole.tetkole.utils;
-
-
 import org.json.JSONObject;
 
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
-public class HttpRequestManager {
+
+public class HttpRequestManager{
 
     private static final String baseUrl = "http://localhost:8000";
 
+    private static final String PSOTS_API_URL ="https://jsonplaceholder.typicode.com/posts";
+    public static void exemplegetRequest() throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .header("Content-Type","application/json")
+                .uri(URI.create(PSOTS_API_URL))
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        System.out.println(response.body());
+    }
+
 
     //Post Request to register a user
-    public void sendPostRegister(String firstname, String lastname, String password, String mail) throws Exception {
-
-        String url = baseUrl+"/user";
-        URL obj = new URL(url);
-        //Open the connection
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-        // Setting header and the Request Method
-        con.setRequestMethod("POST");
-        headerSetter(con);
-
-        //Setting the json object for my user
+    public static void sendPostRegister(String firstname, String lastname, String password, String mail) throws IOException, InterruptedException {
         JSONObject json = new JSONObject();
         json.put("firstName", firstname);
         json.put("lastName", lastname);
@@ -36,57 +35,34 @@ public class HttpRequestManager {
         json.put("mail", mail);
         json.put("role", "default");
 
-        // Send post request
-        con.setDoOutput(true);
-        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-        wr.writeBytes(String.valueOf(json));
-        wr.flush();
-        wr.close();
+        String routeUrl = baseUrl+"/user";
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
+                .header("Content-Type","application/json")
+                .uri(URI.create(routeUrl))
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        //get the request response
-        int responseCode = con.getResponseCode();
-        responseDecoder(con,url);
+        System.out.println(response.body());
     }
+
 
     //Post Request to login a user
     public void sendPostLogin(String mail,String password) throws Exception {
 
         // Setting header and the Request Method
-        String url = baseUrl+"/user/login?mail="+mail+"&password="+password;
-        URL obj = new URL(url);
-        //Open the connection
-        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        String routeUrl = baseUrl+"/user/login?mail="+mail+"&password="+password;
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(String.valueOf("")))
+                .header("Content-Type","application/json")
+                .uri(URI.create(routeUrl))
+                .build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        con.setRequestMethod("POST");
-        headerSetter(con);
+        System.out.println(response.body());
 
-        con.setDoOutput(true);
-        //get the request response
-        responseDecoder(con,url);
-
-    }
-
-    public void responseDecoder(HttpURLConnection con, String url) throws IOException {
-        int responseCode = con.getResponseCode();
-        System.out.println("Sending 'POST' request to URL : " + url);
-        System.out.println("Response Code : " + responseCode);
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String output;
-        StringBuffer response = new StringBuffer();
-
-        while ((output = in.readLine()) != null) {
-            response.append(output);
-        }
-        in.close();
-        //printing result from response
-        System.out.println(response.toString());
-    }
-
-    //Function to set basic header for request
-    public void headerSetter(HttpURLConnection con){
-        con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-        con.setRequestProperty("Content-Type","application/json");
     }
 
 }

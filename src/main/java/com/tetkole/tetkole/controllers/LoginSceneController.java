@@ -16,8 +16,6 @@ public class LoginSceneController {
     @FXML
     public void onLogin() throws Exception {
         if (!mailInput.getText().isEmpty() && !passwordInput.getText().isEmpty())  {
-            System.out.println(mailInput.getText());
-            System.out.println(passwordInput.getText());
             apiManager.sendPostLogin(mailInput.getText(),passwordInput.getText());
         }
     }
