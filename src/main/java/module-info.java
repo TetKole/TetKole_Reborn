@@ -6,6 +6,7 @@ module com.tetkole.tetkole {
     requires java.desktop;
     requires jave.core;
     requires org.json;
+    requires java.net.http;
 
 
     opens com.tetkole.tetkole to javafx.fxml;

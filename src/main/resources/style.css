@@ -11,6 +11,14 @@
     -fx-background-radius: 16;
 }
 
+.textButtons {
+    -fx-text-fill: #000000;
+    -fx-font-family: Futura;
+    -fx-font-weight: bold ;
+    -fx-wrap-text: true;
+    -fx-text-alignment: center;
+}
+
 .topBarButtons {
     -fx-background-color: #3f4152;
     -fx-text-fill: white;

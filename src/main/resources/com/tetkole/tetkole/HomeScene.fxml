@@ -13,11 +13,15 @@
 
     <HBox alignment="TOP_CENTER" spacing="100.0" >
 
-        <VBox alignment="TOP_CENTER" spacing="30.0">
-            <Label prefWidth="150.0" style="-fx-font-size: 20;" text="%CreateACorpus" textFill="WHITE" alignment="CENTER" />
+        <VBox fx:id="vBoxButtons" alignment="TOP_CENTER" spacing="30.0">
+            <Label style="-fx-font-size: 20;" text="%CreateACorpus" textFill="WHITE" alignment="CENTER" />
             <TextField fx:id="corpusNameInput" />
             <Button onAction="#onCreateCorpus" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%CreateCorpus" />
-            <Button onAction="#onGoToSetting" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Settings" />
+            <Button onAction="#onGoToSettings" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Settings" />
+            <Button fx:id="btnLogin" onAction="#onGoToLogin" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Login" />
+            <Button fx:id="btnRegister" onAction="#onGoToRegister" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Register" />
+            <Button fx:id="btnDisconnect" onAction="#onDisconnect" prefHeight="60" prefWidth="150" styleClass="buttons, red" text="%Disconnect" />
+            <Label fx:id="labelUserName" prefWidth="150.0" style="-fx-font-size: 20;" textFill="WHITE" alignment="CENTER" />
         </VBox>
 
         <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true" hbarPolicy="NEVER">

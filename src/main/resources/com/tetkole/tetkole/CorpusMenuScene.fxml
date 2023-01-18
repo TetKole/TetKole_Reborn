@@ -20,18 +20,18 @@
 
             <Label fx:id="corpusName" style="-fx-text-fill: white; -fx-font-size: 50px"/>
 
-            <HBox alignment="TOP_CENTER" spacing="100.0" >
+            <HBox alignment="TOP_CENTER" spacing="100.0">
 
                 <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true" hbarPolicy="NEVER">
-                    <VBox fx:id="vBoxFieldAudios" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="250.0" style="-fx-background-color: #495461;" spacing="20" />
+                    <VBox  fx:id="vBoxFieldAudios" alignment="TOP_CENTER" prefWidth="300.0" prefHeight="500.0" style="-fx-background-color: #495461; -fx-padding: 5 5 5 5;" spacing="20" />
                 </ScrollPane>
 
                 <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true" hbarPolicy="NEVER">
-                    <VBox fx:id="vBoxImages" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="250.0" style="-fx-background-color: #495461;" spacing="20" />
+                    <VBox fx:id="vBoxImages" alignment="TOP_CENTER" prefWidth="300.0" prefHeight="500.0" style="-fx-background-color: #495461; -fx-padding: 5 5 5 5;" spacing="20" />
                 </ScrollPane>
 
                 <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true" hbarPolicy="NEVER">
-                    <VBox fx:id="vBoxVideos" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="250.0" style="-fx-background-color: #495461;" spacing="20" />
+                    <VBox fx:id="vBoxVideos" alignment="TOP_CENTER" prefWidth="300.0" prefHeight="500.0" style="-fx-background-color: #495461; -fx-padding: 5 5 5 5;" spacing="20" />
                 </ScrollPane>
 
             </HBox>
