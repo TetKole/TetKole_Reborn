@@ -6,6 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.PasswordField?>
 <VBox alignment="TOP_RIGHT" styleClass="background_color" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.LoginSceneController">
 
     <fx:include fx:id="header" source="components/Header.fxml"/>
@@ -22,7 +23,7 @@
             </VBox>
             <VBox>
                 <Label text="%Password" style="-fx-text-fill: white; -fx-font-size: 20px"/>
-                <TextField fx:id="passwordInput" promptText="%Password" />
+                <PasswordField fx:id="passwordInput" promptText="%Password" />
             </VBox>
 
             <Button onAction="#onLogin" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Login" />

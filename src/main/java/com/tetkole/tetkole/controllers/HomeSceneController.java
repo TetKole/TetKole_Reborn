@@ -1,5 +1,6 @@
 package com.tetkole.tetkole.controllers;
 
+import com.tetkole.tetkole.utils.AuthenticationManager;
 import com.tetkole.tetkole.utils.HttpRequestManager;
 import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.models.Corpus;
@@ -21,6 +22,17 @@ public class HomeSceneController implements Initializable {
     private TextField corpusNameInput;
     @FXML
     private VBox vBoxCorpus;
+    @FXML
+    private VBox vBoxButtons;
+
+    @FXML
+    private Button btnLogin;
+
+    @FXML
+    private Button btnRegister;
+
+    @FXML
+    private Button btnDisconnect;
 
     private List<Corpus> corpusList;
 
@@ -29,6 +41,7 @@ public class HomeSceneController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         UpdateCorpusList();
+        isConnected();
     }
 
     @FXML
@@ -40,25 +53,26 @@ public class HomeSceneController implements Initializable {
     }
 
     @FXML
-    public void onGoToSetting() {
+    public void onGoToSettings() {
         SceneManager.getSceneManager().changeScene("SettingsScene.fxml");
     }
 
     @FXML
     public void onGoToLogin() {
-        HttpRequestManager requestManager = new HttpRequestManager();
-        try {
-            SceneManager.getSceneManager().changeScene("LoginScene.fxml");
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        //SceneManager.getSceneManager().changeScene("LoginScene.fxml");
+        SceneManager.getSceneManager().changeScene("LoginScene.fxml");
     }
 
     @FXML
     public void onGoToRegister() {
         SceneManager.getSceneManager().changeScene("RegisterScene.fxml");
+    }
+
+    @FXML
+    public void onDisconnect() {
+        AuthenticationManager.getAuthenticationManager().disconnect();
+        vBoxButtons.getChildren().remove(btnDisconnect);
+        vBoxButtons.getChildren().add(btnLogin);
+        vBoxButtons.getChildren().add(btnRegister);
     }
 
     private void UpdateCorpusList() {
@@ -86,6 +100,15 @@ public class HomeSceneController implements Initializable {
             });
 
             vBoxCorpus.getChildren().add(btn);
+        }
+    }
+
+    public void isConnected() {
+        if (AuthenticationManager.getAuthenticationManager().isAuthenticated()) {
+            vBoxButtons.getChildren().remove(btnLogin);
+            vBoxButtons.getChildren().remove(btnRegister);
+        } else {
+            vBoxButtons.getChildren().remove(btnDisconnect);
         }
     }
 }

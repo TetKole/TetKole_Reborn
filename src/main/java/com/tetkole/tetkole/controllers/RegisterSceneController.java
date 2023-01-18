@@ -1,5 +1,6 @@
 package com.tetkole.tetkole.controllers;
 
+import com.tetkole.tetkole.utils.AuthenticationManager;
 import com.tetkole.tetkole.utils.HttpRequestManager;
 import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.models.Corpus;
@@ -7,14 +8,15 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class RegisterSceneController implements Initializable {
-    public HttpRequestManager apiManager = new HttpRequestManager();
     @FXML
     private TextField firstnameInput;
 
@@ -25,16 +27,31 @@ public class RegisterSceneController implements Initializable {
     private TextField mailInput;
 
     @FXML
-    private TextField passwordInput;
+    private PasswordField passwordInput;
 
     @FXML
     private HBox header;
 
     @FXML
     public void onRegister() throws Exception {
-        if (!firstnameInput.getText().isEmpty() && !lastnameInput.getText().isEmpty()
-                && !mailInput.getText().isEmpty() && !passwordInput.getText().isEmpty())  {
-            apiManager.sendPostRegister(firstnameInput.getText(),lastnameInput.getText(),mailInput.getText(),passwordInput.getText());
+        if (
+                !firstnameInput.getText().isEmpty() &&
+                !lastnameInput.getText().isEmpty() &&
+                !mailInput.getText().isEmpty() &&
+                !passwordInput.getText().isEmpty()
+        )  {
+            JSONObject response = AuthenticationManager.getAuthenticationManager().register(
+                    firstnameInput.getText(),
+                    lastnameInput.getText(),
+                    mailInput.getText(),
+                    passwordInput.getText()
+            );
+
+            if (response.getBoolean("success")) {
+                onGoToLogin();
+            } else {
+                System.out.println(response.get("body"));
+            }
         }
     }
 

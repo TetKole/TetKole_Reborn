@@ -10,25 +10,17 @@ import java.net.http.HttpResponse;
 
 public class HttpRequestManager{
 
-    private static final String baseUrl = "http://localhost:8000";
+    private static HttpRequestManager httpRequestManagerInstance;
+    private static String apiUrl;
 
+    private static final int STATUS_OK = 200;
 
-    private static final String testUrl ="https://jsonplaceholder.typicode.com/posts";
-    public static void exemplegetRequest() throws IOException, InterruptedException {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .GET()
-                .header("Content-Type","application/json")
-                .uri(URI.create(testUrl))
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        System.out.println(response.body());
+    private HttpRequestManager(String apiUrl) {
+        HttpRequestManager.apiUrl = apiUrl;
     }
 
-
     //Post Request to register a user
-    public static void sendPostRegister(String firstname, String lastname, String password, String mail) throws IOException, InterruptedException {
+    public static JSONObject sendPostRegister(String firstname, String lastname, String password, String mail) throws IOException, InterruptedException {
         JSONObject json = new JSONObject();
         json.put("firstName", firstname);
         json.put("lastName", lastname);
@@ -36,7 +28,7 @@ public class HttpRequestManager{
         json.put("mail", mail);
         json.put("role", "default");
 
-        String routeUrl = baseUrl+"/user";
+        String routeUrl = apiUrl+"/user";
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
@@ -45,25 +37,45 @@ public class HttpRequestManager{
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println(response.body());
+        JSONObject answer = new JSONObject();
+        answer.put("body", response.body());
+        answer.put("success", response.statusCode() == STATUS_OK);
+
+        return answer;
     }
 
 
     //Post Request to login a user
-    public void sendPostLogin(String mail,String password) throws Exception {
+    public static JSONObject sendPostLogin(String mail, String password) throws Exception {
+
+        JSONObject json = new JSONObject();
+        json.put("mail", mail);
+        json.put("password", password);
 
         // Setting header and the Request Method
-        String routeUrl = baseUrl+"/user/login?mail="+mail+"&password="+password;
+        String routeUrl = apiUrl+"/user/login";
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(String.valueOf("")))
+                .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
                 .header("Content-Type","application/json")
                 .uri(URI.create(routeUrl))
                 .build();
+
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println(response.body());
+        JSONObject answer = new JSONObject();
+        answer.put("body", response.body());
+        answer.put("success", response.statusCode() == STATUS_OK);
+
+        return answer;
 
     }
 
+    public static HttpRequestManager getHttpRequestManagerInstance() {
+        return httpRequestManagerInstance;
+    }
+
+    public static void setHttpRequestManagerInstance(String apiUrl) {
+        HttpRequestManager.httpRequestManagerInstance = new HttpRequestManager(apiUrl);
+    }
 }
