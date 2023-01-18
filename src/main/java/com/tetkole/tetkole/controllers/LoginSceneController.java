@@ -18,9 +18,10 @@ import java.util.ResourceBundle;
 public class LoginSceneController implements Initializable {
     @FXML
     private TextField mailInput;
-
     @FXML
     private PasswordField passwordInput;
+    @FXML
+    private HBox header;
 
     @FXML
     public void onLogin() throws Exception {
@@ -33,9 +34,6 @@ public class LoginSceneController implements Initializable {
             }
         }
     }
-
-    @FXML
-    private HBox header;
 
     @FXML
     public void onGoToRegister() {

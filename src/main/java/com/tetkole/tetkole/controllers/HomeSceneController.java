@@ -21,6 +21,8 @@ public class HomeSceneController implements Initializable {
     @FXML
     private TextField corpusNameInput;
     @FXML
+    private Label labelUserName;
+    @FXML
     private VBox vBoxCorpus;
     @FXML
     private VBox vBoxButtons;
@@ -71,6 +73,7 @@ public class HomeSceneController implements Initializable {
     public void onDisconnect() {
         AuthenticationManager.getAuthenticationManager().disconnect();
         vBoxButtons.getChildren().remove(btnDisconnect);
+        vBoxButtons.getChildren().remove(labelUserName);
         vBoxButtons.getChildren().add(btnLogin);
         vBoxButtons.getChildren().add(btnRegister);
     }
@@ -105,10 +108,17 @@ public class HomeSceneController implements Initializable {
 
     public void isConnected() {
         if (AuthenticationManager.getAuthenticationManager().isAuthenticated()) {
+
             vBoxButtons.getChildren().remove(btnLogin);
             vBoxButtons.getChildren().remove(btnRegister);
+            labelUserName.setText(
+                    AuthenticationManager.getAuthenticationManager().getFirstName() + " " +
+                            AuthenticationManager.getAuthenticationManager().getLastName()
+            );
+
         } else {
             vBoxButtons.getChildren().remove(btnDisconnect);
+            vBoxButtons.getChildren().remove(labelUserName);
         }
     }
 }

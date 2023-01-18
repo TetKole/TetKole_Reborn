@@ -61,4 +61,12 @@ public class AuthenticationManager {
         this.lastName = null;
         this.isAuthenticated = false;
     }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
 }

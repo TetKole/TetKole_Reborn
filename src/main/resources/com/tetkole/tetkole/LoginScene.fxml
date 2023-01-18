@@ -27,7 +27,7 @@
             </VBox>
 
             <Button onAction="#onLogin" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Login" />
-            <Button onAction="#onGoToRegister" prefHeight="60" prefWidth="150" styleClass="textButtons, noColor" text="%Register" />
+            <Button onAction="#onGoToRegister" style="-fx-text-fill: white;" prefHeight="60" prefWidth="150" styleClass="textButtons, noColor" text="%Register" />
         </VBox>
 
     </HBox>

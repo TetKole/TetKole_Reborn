@@ -6,9 +6,15 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 
-<HBox alignment="TOP_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+<?import javafx.scene.control.Label?>
+
+<HBox alignment="TOP_RIGHT" spacing="5" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       stylesheets="@../../../../style.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.tetkole.tetkole.controllers.components.HeaderController">
+
+   <HBox alignment="CENTER">
+      <Label fx:id="labelUserName" text="%userDisconnected" style="-fx-font-size: 20;" textFill="WHITE" />
+   </HBox>
 
    <Button id="btnFolder" mnemonicParsing="false" onAction="#onOpenFolderClick">
       <styleClass>
