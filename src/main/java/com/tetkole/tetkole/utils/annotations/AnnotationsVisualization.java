@@ -1,6 +1,7 @@
 package com.tetkole.tetkole.utils.annotations;
 
 import com.tetkole.tetkole.utils.models.Annotation;
+import com.tetkole.tetkole.utils.models.FieldAudio;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
@@ -17,6 +18,9 @@ public class AnnotationsVisualization extends Pane {
     private double ratioAudio;
     private double beginAudio = 0;
     private double endAudio = 0;
+    private FieldAudio fieldAudio;
+    private VBox vBoxPane;
+    private List<HBox> lines = new ArrayList<>();
 
     public AnnotationsVisualization() {
 
@@ -54,10 +58,6 @@ public class AnnotationsVisualization extends Pane {
         this.endAudio = endAudio;
     }
 
-    public void setAnnotations(List<Annotation> annotations) {
-        this.annotations = annotations;
-    }
-
     private Rectangle initRectangle(double X, double Y, double W, Annotation annotation) {
 
         Rectangle r = new Rectangle(X,Y,W, AnnotationsVisualization.annotationSize);
@@ -67,21 +67,26 @@ public class AnnotationsVisualization extends Pane {
         r.setStroke(Color.WHITE);
 
         Button btnPlayPause = new Button("PlayPause");
+        Button btnRecord = new Button("ReRecord");
         Button btnDelete = new Button("Delete");
         Button btnClose = new Button("X");
 
-        btnPlayPause.setOnAction(event -> System.out.println("lire"));
-
-        btnDelete.setOnAction(event -> System.out.println("delete"));
-
-        btnClose.setOnAction(event -> {
-            if(actualAnnotationMenu != null){
-                getChildren().remove(actualAnnotationMenu);
-                actualAnnotationMenu = null;
-            }
+        btnPlayPause.setOnAction(event -> {
+            annotation.playPause();
         });
 
-        HBox hbox = new HBox(btnPlayPause,btnDelete,btnClose);
+        btnRecord.setOnAction(event -> {
+            annotation.playPause();
+        });
+
+        btnDelete.setOnAction(event -> {
+            this.vBoxPane.getChildren().remove(lines.get(annotations.indexOf(annotation)));
+            this.delete(annotation);
+        });
+
+        btnClose.setOnAction(event -> this.closePopup());
+
+        HBox hbox = new HBox(btnPlayPause, btnRecord, btnDelete, btnClose);
         hbox.setSpacing(3);
         hbox.setPadding(new Insets(3));
         hbox.setStyle(
@@ -107,6 +112,33 @@ public class AnnotationsVisualization extends Pane {
         });
 
         return r;
+    }
+
+    public void setFieldAudio(FieldAudio fieldAudio) {
+        this.fieldAudio = fieldAudio;
+        this.annotations = this.fieldAudio.getAnnotations();
+    }
+
+    public void closePopup(){
+        if(actualAnnotationMenu != null){
+            getChildren().remove(actualAnnotationMenu);
+            actualAnnotationMenu = null;
+        }
+    }
+
+    public void delete(Annotation annotation) {
+        this.fieldAudio.deleteAnnotation(annotation);
+        this.annotations.remove(annotation);
+        this.drawAnnotations();
+        this.closePopup();
+    }
+
+    public void setvBoxPane(VBox vBoxPane) {
+        this.vBoxPane = vBoxPane;
+    }
+
+    public List<HBox> getLines() {
+        return lines;
     }
 }
 

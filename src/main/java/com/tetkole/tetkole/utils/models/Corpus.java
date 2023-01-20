@@ -92,7 +92,7 @@ public class Corpus {
                     double end = jsonObject.getDouble("end");
 
                     // Create annotation
-                    Objects.requireNonNull(media).addAnnotation(new Annotation(audioFile, start, end));
+                    Objects.requireNonNull(media).addAnnotation(new Annotation(audioFile, start, end, folderFieldAudio.getName(), corpus.getName()));
 
                 }
             }
@@ -237,7 +237,7 @@ public class Corpus {
         return this.corpusVideos;
     }
 
-    private Media getMediaByName(String name) {
+    public Media getMediaByName(String name) {
         for (FieldAudio fa : this.fieldAudios) {
             if (fa.getName().equals(name)) {
                 return fa;

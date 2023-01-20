@@ -30,10 +30,10 @@ public abstract class Media {
         this.annotations.add(annotation);
     }
 
-    public void deleteAnnotation(Annotation annotation, String corpusName) {
+    public void deleteAnnotation(Annotation annotation) {
         for (Annotation a : this.annotations) {
             if (a.equals(annotation)) {
-                annotation.delete(this.getName(), corpusName);
+                annotation.delete();
                 this.annotations.remove(annotation);
                 break;
             }

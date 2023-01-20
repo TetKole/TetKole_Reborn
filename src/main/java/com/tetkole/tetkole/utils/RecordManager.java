@@ -7,6 +7,8 @@ import com.tetkole.tetkole.utils.models.Media;
 import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class RecordManager {
     private boolean isRecording = false;
@@ -24,11 +26,6 @@ public class RecordManager {
 
     public boolean isRecording() {
         return isRecording;
-    }
-
-    // TODO we will delete this method once corpus is implemented in image and video
-    public void startRecording(String fileName, String recordName) {
-        startRecording(fileName, recordName, "", 0, 0);
     }
 
     public void startRecording(String fileName, String recordName, String corpusPath, double rightBorderValue, double leftBorderValue) {
@@ -87,7 +84,7 @@ public class RecordManager {
                     this.corpusPath
             );
 
-            media.addAnnotation(new Annotation(this.file, this.leftBorderValue, this.rightBorderValue));
+            media.addAnnotation(new Annotation(this.file, this.leftBorderValue, this.rightBorderValue, this.fileName, this.corpusPath.split("/")[1]));
         }
     }
 

@@ -44,7 +44,6 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     private Corpus corpus;
     private MediaPlayer mediaPlayer;
     private RecordManager recordManager;
-    private MediaPlayer annotationPlayer;
 
     // Graphics
     @FXML
@@ -134,10 +133,13 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     }
 
     private void settingUpAnnotations() {
-        this.annotationsVisualization.setAnnotations(this.fieldAudio.getAnnotations());
-        this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
+        this.annotationsVisualization.setvBoxPane(this.vBoxPane);
+        this.annotationsVisualization.setFieldAudio(this.fieldAudio);
+        this.annotationsVisualization.setValueFromWave(
+                this.waveVisualization.getRatioAudio(),
                 this.waveVisualization.getBeginAudio(),
-                this.waveVisualization.getEndAudio());
+                this.waveVisualization.getEndAudio()
+        );
         this.annotationsVisualization.drawAnnotations();
     }
 
@@ -162,7 +164,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     protected void onRecordButtonClick() {
         if (!recordManager.isRecording()) {
             // get the date for the record name
-            String formattedDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("(dd-MM-yyyy_HH'h'mm'm'ss's')"));
+            String formattedDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("(dd-MM-yyyy_HH'h'mm'm'ss's'_SSS)"));
             formattedDateTime = formattedDateTime.substring(1, formattedDateTime.length()-1);
             String recordName = "annotation_" + formattedDateTime + ".wav";
 
@@ -220,6 +222,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         vBoxPane.setSpacing(50);
 
         vBoxPane.getChildren().clear();
+        this.annotationsVisualization.getLines().clear();
 
         for(Annotation annotation : this.fieldAudio.getAnnotations()) {
             // prepare the HBox
@@ -234,32 +237,8 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             line.getChildren().add(btnDelete);
 
             btnDelete.setOnAction(e -> {
-                //TODO delete annotation
-
-                /*
-                if (this.annotationPlayer == null) {
-                    this.fieldAudio.deleteAnnotation(annotation, this.corpus.getName());
-                    this.settingUpSidePane();
-                }
-                else
-                {
-                    this.annotationPlayer.statusProperty().addListener((observable, oldValue, newValue) -> {
-                        System.out.println(newValue);
-                        if (newValue.toString().equals("DISPOSED")) {
-                            System.out.println("oui");
-                            this.fieldAudio.deleteAnnotation(annotation, this.corpus.getName());
-                            this.settingUpSidePane();
-                        }
-                    });
-
-
-                    this.annotationPlayer.dispose();
-                    this.annotationPlayer = null;
-                    this.fieldAudio.deleteAnnotation(annotation, this.corpus.getName());
-                    this.settingUpSidePane();
-                }*/
-
-
+                this.annotationsVisualization.delete(annotation);
+                this.vBoxPane.getChildren().remove(line);
             });
 
             // add the Label
@@ -274,22 +253,13 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             line.getChildren().add(btnPlayPause);
 
             btnPlayPause.setOnAction(e -> {
-                if (this.annotationPlayer != null) {
-                    this.annotationPlayer.dispose();
-                    this.annotationPlayer = null;
-                }
-
-                this.annotationPlayer = new MediaPlayer(new Media(annotation.getFile().toURI().toString()));
-                this.annotationPlayer.setOnReady(() -> {
-                    this.annotationPlayer.play();
-                });
+                annotation.playPause();
             });
 
             // add the HBox to the VBox
-            vBoxPane.getChildren().add(line);
+            this.vBoxPane.getChildren().add(line);
+            this.annotationsVisualization.getLines().add(line);
         }
-
-
 
         ChangeListener listener = (observable, oldValue, newValue) -> {
             recordAnchorPane.setTranslateX(-recordAnchorPane.getWidth());
@@ -297,8 +267,6 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
         recordAnchorPane.widthProperty().addListener(listener);
         recordAnchorPane.setPrefWidth(Screen.getPrimary().getBounds().getWidth() / 4);
-
-
 
         // animated transitions
         TranslateTransition openNav = new TranslateTransition(new Duration(350), recordAnchorPane);

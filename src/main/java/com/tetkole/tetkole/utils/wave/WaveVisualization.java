@@ -129,7 +129,7 @@ public class WaveVisualization extends WaveFormPane {
 		
 		@Override
 		public void handle(long nanos) {
-			//Paint
+			//TODO Error heap space
 			paintWaveForm();
 		}
 		
