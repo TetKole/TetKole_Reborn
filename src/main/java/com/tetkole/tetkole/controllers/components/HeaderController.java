@@ -24,7 +24,7 @@ public class HeaderController implements Initializable {
         AuthenticationManager instance = AuthenticationManager.getAuthenticationManager();
 
         if (instance.isAuthenticated()) {
-            labelUserName.setText(instance.getFirstName() + " " + instance.getLastName());
+            labelUserName.setText(instance.getFirstname() + " " + instance.getLastname());
         }
 
     }

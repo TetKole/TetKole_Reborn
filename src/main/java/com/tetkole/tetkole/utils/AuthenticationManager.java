@@ -9,8 +9,8 @@ public class AuthenticationManager {
     private static AuthenticationManager authenticationManagerInstance;
 
     private String JWT_TOKEN;
-    private String firstName;
-    private String lastName;
+    private String firstname;
+    private String lastname;
     private String mail;
     private int userId;
     private boolean isAuthenticated = false;
@@ -28,8 +28,8 @@ public class AuthenticationManager {
         if (response.getBoolean("success")) {
             this.JWT_TOKEN = responseBody.getString("token");
             this.userId = responseBody.getInt("userId");
-            this.firstName = responseBody.getString("firstName");
-            this.lastName = responseBody.getString("lastName");
+            this.firstname = responseBody.getString("firstname");
+            this.lastname = responseBody.getString("lastname");
             this.mail = responseBody.getString("mail");
             this.isAuthenticated = true;
         }
@@ -37,8 +37,8 @@ public class AuthenticationManager {
         return response;
     }
 
-    public JSONObject register(String firstName, String lastName, String mail, String password) throws IOException, InterruptedException {
-        return HttpRequestManager.sendPostRegister(firstName, lastName, password, mail);
+    public JSONObject register(String firstname, String lastname, String mail, String password) throws IOException, InterruptedException {
+        return HttpRequestManager.sendPostRegister(firstname, lastname, password, mail);
     }
 
     public static AuthenticationManager getAuthenticationManager() {
@@ -57,16 +57,16 @@ public class AuthenticationManager {
         this.JWT_TOKEN = null;
         this.userId = -1;
         this.mail = null;
-        this.firstName = null;
-        this.lastName = null;
+        this.firstname = null;
+        this.lastname = null;
         this.isAuthenticated = false;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getFirstname() {
+        return firstname;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getLastname() {
+        return lastname;
     }
 }
