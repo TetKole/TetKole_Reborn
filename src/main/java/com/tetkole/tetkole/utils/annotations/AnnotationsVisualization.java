@@ -1,14 +1,24 @@
 package com.tetkole.tetkole.utils.annotations;
 
+import com.tetkole.tetkole.utils.RecordManager;
 import com.tetkole.tetkole.utils.models.Annotation;
+import com.tetkole.tetkole.utils.models.Corpus;
 import com.tetkole.tetkole.utils.models.FieldAudio;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AnnotationsVisualization extends Pane {
     private static final int annotationSize = 15;
@@ -21,6 +31,8 @@ public class AnnotationsVisualization extends Pane {
     private FieldAudio fieldAudio;
     private VBox vBoxPane;
     private List<HBox> lines = new ArrayList<>();
+    private RecordManager recordManager;
+    private String corpusName;
 
     public AnnotationsVisualization() {
 
@@ -71,13 +83,9 @@ public class AnnotationsVisualization extends Pane {
         Button btnDelete = new Button("Delete");
         Button btnClose = new Button("X");
 
-        btnPlayPause.setOnAction(event -> {
-            annotation.playPause();
-        });
+        btnPlayPause.setOnAction(event -> annotation.playPause());
 
-        btnRecord.setOnAction(event -> {
-            annotation.playPause();
-        });
+        btnRecord.setOnAction(event -> handleRecord(annotation));
 
         btnDelete.setOnAction(event -> {
             this.vBoxPane.getChildren().remove(lines.get(annotations.indexOf(annotation)));
@@ -129,8 +137,29 @@ public class AnnotationsVisualization extends Pane {
     public void delete(Annotation annotation) {
         this.fieldAudio.deleteAnnotation(annotation);
         this.annotations.remove(annotation);
-        this.drawAnnotations();
-        this.closePopup();
+        this.refresh();
+    }
+
+    public void handleRecord(Annotation annotation) {
+        if (!recordManager.isRecording()) {
+
+            // get the date for the record name
+            String formattedDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("(dd-MM-yyyy_HH'h'mm'm'ss's'_SSS)"));
+            formattedDateTime = formattedDateTime.substring(1, formattedDateTime.length()-1);
+            String recordName = "newAnnotation_" + formattedDateTime + ".wav";
+
+            String corpusPath = "/" + this.corpusName + "/" + Corpus.folderNameAnnotation + "/" + this.fieldAudio.getName();
+            this.recordManager.startRecording(this.fieldAudio.getName(), recordName, corpusPath, annotation.getEnd(), annotation.getStart());
+        }
+        else
+        {
+            this.recordManager.stopRecording(this.fieldAudio);
+            this.vBoxPane.getChildren().remove(lines.get(annotations.indexOf(annotation)));
+            this.lines.remove(lines.get(annotations.indexOf(annotation)));
+            this.delete(annotation);
+
+            //TODO add line in AudioEditSceneController lines array
+        }
     }
 
     public void setvBoxPane(VBox vBoxPane) {
@@ -139,6 +168,23 @@ public class AnnotationsVisualization extends Pane {
 
     public List<HBox> getLines() {
         return lines;
+    }
+
+    public void setCorpusName(String corpusName) {
+        this.corpusName = corpusName;
+    }
+
+    public void setRecordManager(RecordManager recordManager) {
+        this.recordManager = recordManager;
+    }
+
+    public void refresh() {
+        this.drawAnnotations();
+        this.closePopup();
+    }
+
+    public void addLine(HBox e) {
+        this.lines.add(e);
     }
 }
 

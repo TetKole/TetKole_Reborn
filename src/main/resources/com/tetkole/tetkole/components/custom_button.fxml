@@ -6,8 +6,8 @@
 
 <fx:root xmlns:fx="http://javafx.com/fxml"
          type="javafx.scene.control.Button"
-         prefHeight="50.0" prefWidth="300.0" styleClass="buttons, blue">
+         prefHeight="50.0" prefWidth="50.0" styleClass="buttons, blue">
     <graphic>
-        <ImageView fx:id="imageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true"/>
+        <ImageView fx:id="imageView" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true"/>
     </graphic>
 </fx:root>

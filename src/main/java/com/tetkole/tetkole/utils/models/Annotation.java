@@ -64,12 +64,4 @@ public class Annotation {
     public double getEnd() {
         return end;
     }
-
-    public String getFieldAudioName() {
-        return fieldAudioName;
-    }
-
-    public String getCorpusName() {
-        return corpusName;
-    }
 }

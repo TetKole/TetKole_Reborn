@@ -1,5 +1,6 @@
 package com.tetkole.tetkole.controllers;
 
+import com.tetkole.tetkole.components.CustomButton;
 import com.tetkole.tetkole.utils.RecordManager;
 import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.annotations.AnnotationsVisualization;
@@ -133,6 +134,8 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     }
 
     private void settingUpAnnotations() {
+        this.annotationsVisualization.setRecordManager(this.recordManager);
+        this.annotationsVisualization.setCorpusName(corpus.getName());
         this.annotationsVisualization.setvBoxPane(this.vBoxPane);
         this.annotationsVisualization.setFieldAudio(this.fieldAudio);
         this.annotationsVisualization.setValueFromWave(
@@ -162,6 +165,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
     @FXML
     protected void onRecordButtonClick() {
+        // TODO disable others record buttons
         if (!recordManager.isRecording()) {
             // get the date for the record name
             String formattedDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("(dd-MM-yyyy_HH'h'mm'm'ss's'_SSS)"));
@@ -211,8 +215,30 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         double rightBorderXPosition = waveVisualization.getRightBorderXPosition() + 10;
         double newStop = rightBorderXPosition / waveVisualization.getRatioAudio() + waveVisualization.getBeginAudio();
         mediaPlayer.setStopTime(new Duration((newStop) * 1000));
+    }
 
-        //annotationsVisualization.setRatioAudio(waveVisualization.getRatioAudio());
+    public void handleRecord(CustomButton btnRecord, Annotation annotation, HBox line) {
+        if (!recordManager.isRecording()) {
+
+            btnRecord.setImage(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm());
+
+            // get the date for the record name
+            String formattedDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("(dd-MM-yyyy_HH'h'mm'm'ss's'_SSS)"));
+            formattedDateTime = formattedDateTime.substring(1, formattedDateTime.length()-1);
+            String recordName = "newAnnotation_" + formattedDateTime + ".wav";
+
+            String corpusPath = "/" + this.corpus.getName() + "/" + Corpus.folderNameAnnotation + "/" + this.fieldAudio.getName();
+            this.recordManager.startRecording(this.fieldAudio.getName(), recordName, corpusPath, annotation.getEnd(), annotation.getStart());
+        }
+        else
+        {
+            btnRecord.setImage(Objects.requireNonNull(getClass().getResource("/images/reRecord.png")).toExternalForm());
+            this.recordManager.stopRecording(this.fieldAudio);
+            this.setupLine(this.fieldAudio.getAnnotations().get(this.fieldAudio.getAnnotations().size()-1));
+            this.vBoxPane.getChildren().remove(line);
+            this.annotationsVisualization.getLines().remove(line);
+            this.annotationsVisualization.delete(annotation);
+        }
     }
 
     private void settingUpSidePane() {
@@ -225,40 +251,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         this.annotationsVisualization.getLines().clear();
 
         for(Annotation annotation : this.fieldAudio.getAnnotations()) {
-            // prepare the HBox
-            HBox line = new HBox();
-            line.setAlignment(Pos.CENTER);
-            line.setSpacing(20);
-
-            // add the DeleteButton
-            Button btnDelete = new Button("Delete");
-            btnDelete.getStyleClass().add("buttons");
-            btnDelete.getStyleClass().add("blue");
-            line.getChildren().add(btnDelete);
-
-            btnDelete.setOnAction(e -> {
-                this.annotationsVisualization.delete(annotation);
-                this.vBoxPane.getChildren().remove(line);
-            });
-
-            // add the Label
-            Label label = new Label(annotation.getName());
-            label.setStyle("-fx-text-fill: white;");
-            line.getChildren().add(label);
-
-            // add the Play/Pause Button
-            Button btnPlayPause = new Button("Play");
-            btnPlayPause.getStyleClass().add("buttons");
-            btnPlayPause.getStyleClass().add("blue");
-            line.getChildren().add(btnPlayPause);
-
-            btnPlayPause.setOnAction(e -> {
-                annotation.playPause();
-            });
-
-            // add the HBox to the VBox
-            this.vBoxPane.getChildren().add(line);
-            this.annotationsVisualization.getLines().add(line);
+            this.setupLine(annotation);
         }
 
         ChangeListener listener = (observable, oldValue, newValue) -> {
@@ -285,5 +278,44 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
                 closeNav.play();
             }
         });
+    }
+
+    public void setupLine(Annotation annotation) {
+        // prepare the HBox
+        HBox line = new HBox();
+        line.setAlignment(Pos.CENTER);
+        line.setSpacing(20);
+
+        // add the DeleteButton
+        CustomButton btnDelete = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/trash.png")).toExternalForm());
+        //CustomButton btnDelete = new CustomButton("trash.png");
+        line.getChildren().add(btnDelete);
+
+        btnDelete.setOnAction(e -> {
+            this.annotationsVisualization.delete(annotation);
+            this.vBoxPane.getChildren().remove(line);
+        });
+
+        CustomButton btnRecord = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/reRecord.png")).toExternalForm());
+        line.getChildren().add(btnRecord);
+
+        btnRecord.setOnAction(e -> handleRecord(btnRecord,annotation,line));
+
+        // add the Label
+        Label label = new Label(annotation.getName());
+        label.setStyle("-fx-text-fill: white;");
+        line.getChildren().add(label);
+
+        // add the Play/Pause Button
+        CustomButton btnPlayPause = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());
+        line.getChildren().add(btnPlayPause);
+
+        btnPlayPause.setOnAction(e -> {
+            annotation.playPause();
+        });
+
+        // add the HBox to the VBox
+        this.vBoxPane.getChildren().add(line);
+        this.annotationsVisualization.addLine(line);
     }
 }

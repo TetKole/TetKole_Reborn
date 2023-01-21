@@ -1,4 +1,4 @@
-package com.tetkole.tetkole.controllers.components;
+package com.tetkole.tetkole.components;
 
 
 import com.tetkole.tetkole.utils.AuthenticationManager;
