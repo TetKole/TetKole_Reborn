@@ -37,4 +37,9 @@ public class CustomButton extends Button {
         Image img = new Image(imageUrl);
         this.imageView.setImage(img);
     }
+
+    public void resizeImage(int size) {
+        this.setPrefHeight(size);
+        this.setPrefWidth(size);
+    }
 }

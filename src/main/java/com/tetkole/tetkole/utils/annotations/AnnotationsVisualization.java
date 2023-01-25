@@ -1,5 +1,6 @@
 package com.tetkole.tetkole.utils.annotations;
 
+import com.tetkole.tetkole.components.CustomButton;
 import com.tetkole.tetkole.controllers.AudioEditSceneController;
 import com.tetkole.tetkole.utils.models.Annotation;
 import javafx.geometry.Insets;
@@ -9,12 +10,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AnnotationsVisualization extends Pane {
 
     // Change it to modify annotationsRectangles height
     private static final int annotationSize = 15;
     private final List<Rectangle> annotationsRectangles = new ArrayList<>();
+    private final List<HBox> annotationsRectanglesMenu = new ArrayList<>();
     private HBox actualAnnotationMenu = null;
     private double ratioAudio;
     private double beginAudio = 0;
@@ -33,6 +36,8 @@ public class AnnotationsVisualization extends Pane {
     public void drawAnnotations() {
 
         this.getChildren().removeAll(annotationsRectangles);
+        annotationsRectangles.clear();
+        annotationsRectanglesMenu.clear();
 
         for( Annotation annotation : this.audioEditSceneController.getFieldAudio().getAnnotations()) {
             int i = 0;
@@ -43,7 +48,8 @@ public class AnnotationsVisualization extends Pane {
                         ratioAudio * (annotationStart - this.beginAudio),
                         this.getHeight()/2,
                         ratioAudio * (annotationEnd - this.beginAudio) - ratioAudio * (annotationStart - this.beginAudio),
-                        this.audioEditSceneController.getLines().get(i)
+                        this.audioEditSceneController.getLines().get(i),
+                        annotation
                         );
 
                 annotationsRectangles.add(r);
@@ -59,7 +65,7 @@ public class AnnotationsVisualization extends Pane {
         this.endAudio = endAudio;
     }
 
-    private Rectangle initRectangle(double X, double Y, double W, HBox line) {
+    private Rectangle initRectangle(double X, double Y, double W, HBox line, Annotation annotation) {
 
         Rectangle r = new Rectangle(X,Y,W, AnnotationsVisualization.annotationSize);
         r.setFill(Color.ORANGE);
@@ -67,14 +73,23 @@ public class AnnotationsVisualization extends Pane {
         r.setArcHeight(10);
         r.setStroke(Color.WHITE);
 
-        Button btnPlayPause = new Button("PlayPause");
-        Button btnRecord = new Button("ReRecord");
-        Button btnDelete = new Button("Delete");
+        CustomButton btnPlayPause = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());
+        CustomButton btnRecord = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/reRecord.png")).toExternalForm());
+        CustomButton btnDelete = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/trash.png")).toExternalForm());
         Button btnClose = new Button("X");
+
+        btnPlayPause.resizeImage(10);
+        btnRecord.resizeImage(10);
+        btnDelete.resizeImage(10);
 
         btnPlayPause.setOnAction(((Button)line.getChildren().get(3)).getOnAction());
         btnRecord.setOnAction(((Button)line.getChildren().get(1)).getOnAction());
-        btnDelete.setOnAction(((Button)line.getChildren().get(0)).getOnAction());
+        btnDelete.setOnAction(e -> {
+            this.audioEditSceneController.getLines().remove(line);
+            this.audioEditSceneController.getvBoxPane().getChildren().remove(line);
+            this.audioEditSceneController.getFieldAudio().deleteAnnotation(annotation);
+            this.refresh();
+        });
         btnClose.setOnAction(event -> this.closePopup());
 
         HBox hbox = new HBox(btnPlayPause, btnRecord, btnDelete, btnClose);
@@ -102,6 +117,8 @@ public class AnnotationsVisualization extends Pane {
             }
         });
 
+        annotationsRectanglesMenu.add(hbox);
+
         return r;
     }
 
@@ -113,12 +130,20 @@ public class AnnotationsVisualization extends Pane {
     }
 
     public void refresh() {
-        this.drawAnnotations();
         this.closePopup();
+        this.drawAnnotations();
     }
 
     public void setEditSceneController(AudioEditSceneController audioEditSceneController) {
         this.audioEditSceneController = audioEditSceneController;
+    }
+
+    public List<Rectangle> getAnnotationsRectangles() {
+        return annotationsRectangles;
+    }
+
+    public List<HBox> getAnnotationsRectanglesMenu() {
+        return annotationsRectanglesMenu;
     }
 }
 

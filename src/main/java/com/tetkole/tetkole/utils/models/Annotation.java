@@ -44,16 +44,8 @@ public class Annotation {
 
     public void playPause() {
         switch (mediaPlayer.getStatus()) {
-            case PLAYING -> {
-                mediaPlayer.stop();
-                //btnPlayPause.setText(resources.getString("Play"));
-                //((ImageView) btnPlayPause.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()));
-            }
-            case PAUSED, READY, STOPPED -> {
-                mediaPlayer.play();
-                //btnPlayPause.setText(resources.getString("Pause"));
-                //((ImageView) btnPlayPause.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/pause.png")).toExternalForm()));
-            }
+            case PLAYING -> mediaPlayer.stop();
+            case PAUSED, READY, STOPPED -> mediaPlayer.play();
         }
     }
 
@@ -63,5 +55,9 @@ public class Annotation {
 
     public double getEnd() {
         return end;
+    }
+
+    public MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
     }
 }
