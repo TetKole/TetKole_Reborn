@@ -86,6 +86,8 @@ public class WaveFormPane extends ResizableCanvas {
 				leftBorderXPosition = Math.max(Math.min(event.getX(), rightBorderXPosition - 10), 0);
 				this.setLeftBorderTime(leftBorderXPosition / this.getRatioAudio() + this.beginAudio);
 			}
+
+			paintWaveForm();
 		});
 
 		// we disabled draggable border and set the new currentXPosition to the left border
@@ -101,11 +103,15 @@ public class WaveFormPane extends ResizableCanvas {
 
 			leftBorderDragged = false;
 			rightBorderDragged = false;
+			paintWaveForm();
 		});
 
 		// we set the mouseXPosition on hover
 		setOnMouseMoved(event -> {
-			setMouseXPosition(event.getX());
+			if (event.getX() > leftBorderXPosition + 10 && event.getX() < rightBorderXPosition) {
+				setMouseXPosition(event.getX());
+				paintWaveForm();
+			}
 		});
 
 		support = new PropertyChangeSupport(this);
@@ -113,9 +119,6 @@ public class WaveFormPane extends ResizableCanvas {
 
 	public void addPropertyChangeListener(PropertyChangeListener pcl) {
 		support.addPropertyChangeListener(pcl);
-	}
-	public void removePropertyChangeListener(PropertyChangeListener pcl) {
-		support.removePropertyChangeListener(pcl);
 	}
 	public void setCurrentXPositionMediaPlayer(double newValue) {
 		support.firePropertyChange("currentXPosition", this.currentXPosition, newValue);
@@ -178,10 +181,6 @@ public class WaveFormPane extends ResizableCanvas {
 
 	public void setRightBorderTime(double rightBorderTime) {
 		this.rightBorderTime = rightBorderTime;
-	}
-
-	public void setEndAudio(double endAudio) {
-		this.endAudio = endAudio;
 	}
 
 	public double getRatioAudio(){

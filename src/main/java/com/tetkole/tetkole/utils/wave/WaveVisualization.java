@@ -13,10 +13,7 @@ import javafx.scene.input.ScrollEvent;
  * @author GOXR3PLUS
  */
 public class WaveVisualization extends WaveFormPane {
-	
-	/*** This Service is constantly repainting the wave */
-	private final PaintService animationService;
-	
+
 	/*** This Service is creating the wave data for the painter */
 	private final WaveFormService waveService;
 
@@ -27,17 +24,14 @@ public class WaveVisualization extends WaveFormPane {
 	public WaveVisualization() {
 		super(500, 500);
 		waveService = new WaveFormService(this);
-		animationService = new PaintService();
-
 
 		// ----------
 		widthProperty().addListener((observable , oldValue , newValue) -> {
-			//System.out.println("New Visualizer Width is:" + newValue);
 			
 			// Canvas Width
 			this.width = Math.round(newValue.floatValue());
 			
-			//Draw single line :)
+			// Draw single line
 			if (getWaveService().getResultingWaveform() != null)
 				getWaveService().startService(getWaveService().getFileAbsolutePath(), WaveFormJob.WAVEFORM);
 			this.setPositionBorderWithTime();
@@ -46,12 +40,11 @@ public class WaveVisualization extends WaveFormPane {
 		});
 		// -------------
 		heightProperty().addListener((observable , oldValue , newValue) -> {
-			//System.out.println("New Visualizer Height is:" + newValue);
 			
 			// Canvas Height
 			this.height = Math.round(newValue.floatValue());
 			
-			//Draw single line :)
+			//Draw single line
 			if (getWaveService().getResultingWaveform() != null)
 				getWaveService().startService(getWaveService().getFileAbsolutePath(), WaveFormJob.WAVEFORM);
 			clear();
@@ -66,26 +59,10 @@ public class WaveVisualization extends WaveFormPane {
 	private WaveFormService getWaveService() {
 		return waveService;
 	}
-	
-	//--------------------------------------------------------------------------------------//
-	
-	/**
-	 * Stars the wave visualiser painter
-	 */
-	public void startPainterService() {
-		animationService.start();
-	}
-	
-	/**
-	 * Stops the wave visualiser painter
-	 */
-	public void stopPainterService() {
-		animationService.stop();
-		clear();
-	}
 
 	public void setCursorTime(double seconds) {
 		setCurrentXPosition((seconds - this.getBeginAudio()) * this.getRatioAudio());
+		paintWaveForm();
 	}
 
 	public void setRangeZoom(ScrollEvent scrollEvent) {
@@ -105,38 +82,6 @@ public class WaveVisualization extends WaveFormPane {
 		this.initTotalTime(seconds);
 		// set up number of wave for the audio, 200 wave per seconds
 		this.waveService.setArrayWaveLength((int)this.totalTime * 200);
-	}
-
-
-
-	/*-----------------------------------------------------------------------
-	 * 
-	 * -----------------------------------------------------------------------
-	 * 
-	 * 
-	 * 							      Paint Service
-	 * 
-	 * -----------------------------------------------------------------------
-	 * 
-	 * -----------------------------------------------------------------------
-	 */
-	/**
-	 * This Service is updating the visualizer.
-	 *
-	 * @author GOXR3PLUS
-	 */
-	public class PaintService extends AnimationTimer {
-		
-		@Override
-		public void handle(long nanos) {
-			//Paint
-			paintWaveForm();
-		}
-		
-		@Override
-		public void stop() {
-			super.stop();
-		}
 	}
 	
 }
