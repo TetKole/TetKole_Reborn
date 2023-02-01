@@ -163,7 +163,6 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
     @FXML
     protected void onRecordButtonClick() {
-        // TODO disable others record buttons
         if (!recordManager.isRecording()) {
             this.lines.forEach(hBox -> {
                 hBox.getChildren().get(1).setDisable(true);
@@ -339,19 +338,29 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             annotation.playPause();
 
             int index = this.fieldAudio.getAnnotations().indexOf(annotation);
+            System.out.println(annotation.getMediaPlayer().getStatus());
             switch (annotation.getMediaPlayer().getStatus()) {
                 case PLAYING -> {
-                    mediaPlayer.stop();
+                    annotation.getMediaPlayer().stop();
                     btnPlayPause.setImage(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());
                     ((CustomButton)this.annotationsVisualization.getAnnotationsRectanglesMenu().get(index).getChildren().get(0)).setImage(
                             Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()
                     );
                 }
                 case PAUSED, READY, STOPPED -> {
-                    mediaPlayer.play();
+                    annotation.getMediaPlayer().play();
                     btnPlayPause.setImage(Objects.requireNonNull(getClass().getResource("/images/stop.png")).toExternalForm());
                     ((CustomButton)this.annotationsVisualization.getAnnotationsRectanglesMenu().get(index).getChildren().get(0)).setImage(
                             Objects.requireNonNull(getClass().getResource("/images/stop.png")).toExternalForm()
+                    );
+
+                    annotation.getMediaPlayer().setOnEndOfMedia(() -> {
+                            btnPlayPause.setImage(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());
+                            ((CustomButton)this.annotationsVisualization.getAnnotationsRectanglesMenu().get(index).getChildren().get(0)).setImage(
+                                    Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()
+                            );
+                            annotation.getMediaPlayer().stop();
+                        }
                     );
                 }
             }

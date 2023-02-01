@@ -39,8 +39,8 @@ public class AnnotationsVisualization extends Pane {
         annotationsRectangles.clear();
         annotationsRectanglesMenu.clear();
 
+        int i = 0;
         for( Annotation annotation : this.audioEditSceneController.getFieldAudio().getAnnotations()) {
-            int i = 0;
             double annotationStart = annotation.getStart();
             double annotationEnd = annotation.getEnd();
             if(!(annotationEnd < this.beginAudio || annotationStart > this.endAudio)){
@@ -136,10 +136,6 @@ public class AnnotationsVisualization extends Pane {
 
     public void setEditSceneController(AudioEditSceneController audioEditSceneController) {
         this.audioEditSceneController = audioEditSceneController;
-    }
-
-    public List<Rectangle> getAnnotationsRectangles() {
-        return annotationsRectangles;
     }
 
     public List<HBox> getAnnotationsRectanglesMenu() {
