@@ -40,7 +40,8 @@ public class WaveFormService extends Service<Boolean> {
 	private int arrayWaveLength;
 	private int beginArrayWaveLength = 0;
 	private int endArrayWaveLength;
-
+	private static double borderSize = 10;
+	
 	public enum WaveFormJob {
 		AMPLITUDES_AND_WAVEFORM, WAVEFORM
 	}
@@ -324,10 +325,10 @@ public class WaveFormService extends Service<Boolean> {
 
 	public void setWaveRange(double leftBorderXPosition, double rightBorderXPosition, double width){
 		int waveSize = this.endArrayWaveLength - this.beginArrayWaveLength;
-		double newBeginArrayWaveLength = leftBorderXPosition * waveSize / width + this.beginArrayWaveLength;
-		double newEndArrayWaveLength = rightBorderXPosition * waveSize / width + this.beginArrayWaveLength;
-		this.beginArrayWaveLength = (int)Math.max(newBeginArrayWaveLength, 0);
-		this.endArrayWaveLength = (int)Math.min(newEndArrayWaveLength, this.arrayWaveLength);
+		int newBeginArrayWaveLength = (int) (leftBorderXPosition * waveSize / width + this.beginArrayWaveLength);
+		int newEndArrayWaveLength = (int) ((rightBorderXPosition + borderSize) * waveSize / width + this.beginArrayWaveLength);
+		this.beginArrayWaveLength = newBeginArrayWaveLength;
+		this.endArrayWaveLength = newEndArrayWaveLength;
 	}
 
 	public void resetWaveRange(){

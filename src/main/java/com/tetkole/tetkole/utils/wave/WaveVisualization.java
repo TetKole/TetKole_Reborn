@@ -29,7 +29,7 @@ public class WaveVisualization extends WaveFormPane {
 		widthProperty().addListener((observable , oldValue , newValue) -> {
 			
 			// Canvas Width
-			this.width = Math.round(newValue.floatValue());
+			this.width = Math.round(newValue.intValue());
 			
 			// Draw single line
 			if (getWaveService().getResultingWaveform() != null)
@@ -42,7 +42,7 @@ public class WaveVisualization extends WaveFormPane {
 		heightProperty().addListener((observable , oldValue , newValue) -> {
 			
 			// Canvas Height
-			this.height = Math.round(newValue.floatValue());
+			this.height = Math.round(newValue.intValue());
 			
 			//Draw single line
 			if (getWaveService().getResultingWaveform() != null)
@@ -80,8 +80,9 @@ public class WaveVisualization extends WaveFormPane {
 
 	public void setTotalTime(double seconds) {
 		this.initTotalTime(seconds);
-		// set up number of wave for the audio, 200 wave per seconds
-		this.waveService.setArrayWaveLength((int)this.totalTime * 200);
+		// set up number of wave for the audio, 500 wave per seconds
+		//TODO change array waveLenght to upgrade zoom
+		this.waveService.setArrayWaveLength((int)this.totalTime * 50);
 	}
 	
 }

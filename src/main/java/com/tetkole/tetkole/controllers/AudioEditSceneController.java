@@ -45,6 +45,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     private MediaPlayer mediaPlayer;
     private RecordManager recordManager;
     private MediaPlayer annotationPlayer;
+    private int borderSize = 10;
 
     // Graphics
     @FXML
@@ -202,12 +203,10 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         ((ImageView) btnPlayPause.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()));
 
         // set current X in media player aka start time
-        double newCurrentX = (double) evt.getNewValue();
-        double newStart = newCurrentX / waveVisualization.getRatioAudio() + waveVisualization.getBeginAudio();
+        double newStart = (double) evt.getNewValue() / waveVisualization.getRatioAudio() + waveVisualization.getBeginAudio();
         mediaPlayer.setStartTime(new Duration((newStart) * 1000));
         // set stop time (with right border)
-        double rightBorderXPosition = waveVisualization.getRightBorderXPosition() + 10;
-        double newStop = rightBorderXPosition / waveVisualization.getRatioAudio() + waveVisualization.getBeginAudio();
+        double newStop = (waveVisualization.getRightBorderXPosition() + borderSize) / waveVisualization.getRatioAudio() + waveVisualization.getBeginAudio();
         mediaPlayer.setStopTime(new Duration((newStop) * 1000));
 
         //annotationsVisualization.setRatioAudio(waveVisualization.getRatioAudio());
