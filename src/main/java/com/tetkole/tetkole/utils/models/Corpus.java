@@ -10,6 +10,7 @@ import java.io.File;
 import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class Corpus {
@@ -46,8 +47,24 @@ public class Corpus {
 
             /* Manage fieldAudios in FieldAudios Folder */
             File fieldAudiosFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + corpus.getName() + "/" + folderNameFieldAudio);
+            for (File audioFile : Objects.requireNonNull(fieldAudiosFolder.listFiles(file -> !file.getName().endsWith("json")))) {
+
+                File jsonFile = Objects.requireNonNull(fieldAudiosFolder.listFiles(file ->
+                        file.getName().endsWith("json")
+                ))[0];
+
+                JSONObject jsonObject = FileManager.getFileManager().readJSONFile(jsonFile);
+
+                corpus.fieldAudios.add(new FieldAudio(audioFile, jsonObject.getString("description")));
+            }
+
             for (File file : Objects.requireNonNull(fieldAudiosFolder.listFiles())) {
-                corpus.fieldAudios.add(new FieldAudio(file));
+                String fileName = file.getName();
+                int extIndex = fileName.lastIndexOf('.');
+
+                if(fileName.substring(extIndex + 1).equals("json")) {
+
+                }
             }
 
             /* Manage videos in Videos Folder */
@@ -143,6 +160,9 @@ public class Corpus {
             String newName = Normalizer.normalize(file.getName(), Normalizer.Form.NFD);
             newName = newName.replaceAll("\\p{InCombiningDiacriticalMarks}", "");
             file = FileManager.getFileManager().renameFile(file, newName);
+
+            // creates corresponding JSON File
+            FileManager.getFileManager().createJSONFile(newName, Map.of("description", ""), String.format("/%s/FieldAudio", this.getName()));
 
             // create new CorpusImage
             FieldAudio fieldAudio = new FieldAudio(file);

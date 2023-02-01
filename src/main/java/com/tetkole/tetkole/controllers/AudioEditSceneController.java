@@ -1,5 +1,6 @@
 package com.tetkole.tetkole.controllers;
 
+import com.tetkole.tetkole.utils.FileManager;
 import com.tetkole.tetkole.utils.RecordManager;
 import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.annotations.AnnotationsVisualization;
@@ -11,10 +12,12 @@ import com.tetkole.tetkole.utils.wave.WaveVisualization;
 import javafx.animation.TranslateTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -35,10 +38,12 @@ import java.io.File;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class AudioEditSceneController implements PropertyChangeListener, Initializable {
+    public Button btnEditDescription;
     private ResourceBundle resources;
     private FieldAudio fieldAudio;
     private Corpus corpus;
@@ -316,5 +321,17 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
                 closeNav.play();
             }
         });
+    }
+
+    public void onEditDescriptionButtonClick(ActionEvent actionEvent) {
+        String description = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", this.fieldAudio.getDescription());
+
+        this.fieldAudio.setDescription(description);
+
+        Map<String, Object> map = Map.of(
+                "description", this.fieldAudio.getDescription()
+        );
+
+        FileManager.getFileManager().createJSONFile(this.fieldAudio.getName(), map, String.format("/%s/FieldAudio", this.corpus.getName()));
     }
 }

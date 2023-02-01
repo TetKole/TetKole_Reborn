@@ -71,6 +71,14 @@
                     </ImageView>
                 </graphic>
             </Button>
+
+            <Button fx:id="btnEditDescription" contentDisplay="TOP" text="%EditDescription" onAction="#onEditDescriptionButtonClick" prefHeight="60" prefWidth="150" styleClass="buttons, blue">
+                <graphic>
+                    <ImageView fitHeight="82.5" fitWidth="82.5">
+                        <Image url="@../../../images/option.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
         </HBox>
     </bottom>
 
