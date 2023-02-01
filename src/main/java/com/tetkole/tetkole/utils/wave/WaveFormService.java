@@ -268,7 +268,8 @@ public class WaveFormService extends Service<Boolean> {
 			 */
 			private float[] processAmplitudes(int[] sourcePcmData) {
 				//The width of the resulting waveform panel
-				int width = waveVisualization.width;
+				int width = (int) waveVisualization.width;
+				System.out.println("Width Service : " + width);
 				float[] waveData = new float[width];
 				int samplesPerPixel = sourcePcmData.length / width;
 				

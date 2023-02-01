@@ -19,8 +19,8 @@ public class WaveFormPane extends ResizableCanvas {
 	private Color foregroundColor;
 	private Color transparentForeground;
 	private final Color mouseXColor = Color.rgb(255, 255, 255, 0.7);
-	int width;
-	int height;
+	double width;
+	double height;
 	private double currentXPosition = 0;
 	private double mouseXPosition = -1;
 	private double leftBorderXPosition;
@@ -44,10 +44,8 @@ public class WaveFormPane extends ResizableCanvas {
 	 */
 	public WaveFormPane(int width, int height) {
 		defaultWave = new float[width];
-		this.width = width;
-		this.height = height;
-		this.setWidth(width);
-		this.setHeight(height);
+		this.setWidthPane(width);
+		this.setHeightPane(height);
 
 		this.leftBorderXPosition = 0;
 		this.rightBorderXPosition = width - borderSize;
@@ -253,7 +251,7 @@ public class WaveFormPane extends ResizableCanvas {
 		if (waveData != null) {
 			for (int i = 0; i < waveData.length; i++) {
 				int value = (int) (waveData[i] * height);
-				int y1 = (height - 2 * value) / 2;
+				int y1 = (int) ((height - 2 * value) / 2);
 				int y2 = y1 + 2 * value;
 				gc.strokeLine(i, y1, i, y2);
 			}
@@ -357,6 +355,16 @@ public class WaveFormPane extends ResizableCanvas {
 		} else {
 			return 15;
 		}
+	}
+
+	public void setWidthPane(double value) {
+		this.width = value;
+		this.setWidth(value);
+	}
+
+	public void setHeightPane(double value) {
+		this.height = value;
+		this.setHeight(value);
 	}
 
 }
