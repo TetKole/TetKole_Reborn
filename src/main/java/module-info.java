@@ -7,6 +7,9 @@ module com.tetkole.tetkole {
     requires jave.core;
     requires org.json;
     requires java.net.http;
+    requires org.apache.httpcomponents.httpmime;
+    requires org.apache.httpcomponents.httpcore;
+    requires org.apache.httpcomponents.httpclient;
 
 
     opens com.tetkole.tetkole to javafx.fxml;

@@ -1,5 +1,7 @@
 package com.tetkole.tetkole.controllers;
 
+import com.tetkole.tetkole.utils.AuthenticationManager;
+import com.tetkole.tetkole.utils.HttpRequestManager;
 import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.models.Corpus;
 import com.tetkole.tetkole.utils.models.CorpusImage;
@@ -13,6 +15,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -53,16 +56,16 @@ public class CorpusMenuSceneController implements Initializable {
         // We get the corpus then update all the displayed information
         this.corpus = (Corpus) SceneManager.getSceneManager().getArgument("corpus");
         this.corpusName.setText(this.corpus.getName());
-        UpdateFieldAudioList();
-        UpdateImagesList();
-        UpdateVideosList();
+        updateFieldAudioList();
+        updateImagesList();
+        updateVideosList();
     }
 
 
     /**
      * Create FieldAudio List
      */
-    private void UpdateFieldAudioList() {
+    private void updateFieldAudioList() {
         this.vBoxFieldAudios.getChildren().clear();
 
         Label labelTitle = new Label(resources.getString("FieldAudios"));
@@ -95,14 +98,14 @@ public class CorpusMenuSceneController implements Initializable {
         // onClick on add field audio
         btn.setOnMouseClicked(event -> {
             this.corpus.createFieldAudio();
-            UpdateFieldAudioList();
+            updateFieldAudioList();
         });
 
         this.vBoxFieldAudios.getChildren().add(btn);
     }
 
 
-    private void UpdateImagesList() {
+    private void updateImagesList() {
         this.vBoxImages.getChildren().clear();
 
         Label labelTitle = new Label(resources.getString("Images"));
@@ -135,14 +138,14 @@ public class CorpusMenuSceneController implements Initializable {
         // onClick on add corpus image
         btn.setOnMouseClicked(event -> {
             this.corpus.createImage();
-            UpdateImagesList();
+            updateImagesList();
         });
 
         this.vBoxImages.getChildren().add(btn);
     }
 
 
-    private void UpdateVideosList() {
+    private void updateVideosList() {
         this.vBoxVideos.getChildren().clear();
 
         Label labelTitle = new Label(resources.getString("Videos"));
@@ -175,10 +178,33 @@ public class CorpusMenuSceneController implements Initializable {
         // onClick on add corpus video
         btn.setOnMouseClicked(event -> {
             this.corpus.createVideo();
-            UpdateVideosList();
+            updateVideosList();
         });
 
         this.vBoxVideos.getChildren().add(btn);
+    }
+
+
+    public void pushInitCoprus() throws Exception {
+        if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) return;
+
+        JSONObject response = HttpRequestManager.getHttpRequestManagerInstance()
+                .postAddCorpus(this.corpus.getName(), AuthenticationManager.getAuthenticationManager().getToken());
+
+        // si success est false --> on va pas plus loin
+        if (!response.getBoolean("success")) {
+            System.out.println("post add corpus failed, this corpus probably already exist on server");
+            return;
+        }
+
+
+
+
+
+
+
+
+
     }
 
 }
