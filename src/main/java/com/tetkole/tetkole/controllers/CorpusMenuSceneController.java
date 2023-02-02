@@ -3,10 +3,7 @@ package com.tetkole.tetkole.controllers;
 import com.tetkole.tetkole.utils.AuthenticationManager;
 import com.tetkole.tetkole.utils.HttpRequestManager;
 import com.tetkole.tetkole.utils.SceneManager;
-import com.tetkole.tetkole.utils.models.Corpus;
-import com.tetkole.tetkole.utils.models.CorpusImage;
-import com.tetkole.tetkole.utils.models.CorpusVideo;
-import com.tetkole.tetkole.utils.models.FieldAudio;
+import com.tetkole.tetkole.utils.models.*;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,7 +14,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class CorpusMenuSceneController implements Initializable {
@@ -188,15 +188,56 @@ public class CorpusMenuSceneController implements Initializable {
     public void pushInitCoprus() throws Exception {
         if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) return;
 
-        JSONObject response = HttpRequestManager.getHttpRequestManagerInstance()
-                .postAddCorpus(this.corpus.getName(), AuthenticationManager.getAuthenticationManager().getToken());
+        // Get the infos we need
+        HttpRequestManager httpRequestManager = HttpRequestManager.getHttpRequestManagerInstance();
+        String token = AuthenticationManager.getAuthenticationManager().getToken();
+
+        /* Add Corpus */
+        JSONObject responseAddCorpus = httpRequestManager.postAddCorpus(this.corpus.getName(), token);
 
         // si success est false --> on va pas plus loin
-        if (!response.getBoolean("success")) {
+        if (!responseAddCorpus.getBoolean("success")) {
             System.out.println("post add corpus failed, this corpus probably already exist on server");
             return;
         }
 
+        final int corpusId = responseAddCorpus.getJSONObject("body").getInt("corpusId");
+        System.out.println("POST addCorpus successfull. Corpus: " + this.corpus.getName() + " | Id: " + corpusId);
+
+
+
+        /* Add Documents */
+
+        List<Media> medias = new ArrayList<>(this.corpus.getCorpusImages());
+        //medias.addAll(this.corpus.getCorpusVideos());
+        //medias.addAll(this.corpus.getCorpusImages());
+
+        for (Media m : medias) {
+            String docType = "";
+            if (m instanceof FieldAudio)  docType = "FieldAudio";
+            if (m instanceof CorpusImage) docType = "CorpusImage";
+            if (m instanceof CorpusVideo) docType = "CorpusVideo";
+
+            JSONObject responseAddDocument = httpRequestManager.addDocument(corpusId, m.getFile(), docType, token);
+
+            if (!responseAddDocument.getBoolean("success")) {
+                System.out.println("post add document failed");
+                return;
+            }
+            int docId = responseAddDocument.getJSONObject("body").getInt("docId");
+            System.out.println("POST addDocument successfull. Document: " + m.getName() + " | Id: " + docId);
+        }
+
+        /*File file = new File("C:/Users/Remi/Documents/_Cours_M1/Projet/test.mp3");
+        String docType = "FieldAudio";
+        JSONObject responseAddDocument = httpRequestManager.addDocument(corpusId, file, docType, token);
+
+        if (!responseAddDocument.getBoolean("success")) {
+            System.out.println("post add document failed");
+            return;
+        }
+        int docId = responseAddDocument.getJSONObject("body").getInt("docId");
+        System.out.println("POST addDocument successfull. Document: " + file.getName() + " | Id: " + docId);*/
 
 
 

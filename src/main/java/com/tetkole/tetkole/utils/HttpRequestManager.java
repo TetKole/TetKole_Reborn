@@ -1,6 +1,7 @@
 package com.tetkole.tetkole.utils;
 import org.apache.http.HttpClientConnection;
 import org.apache.http.HttpEntity;
+import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -10,6 +11,7 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -17,6 +19,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 
 
 public class HttpRequestManager{
@@ -107,105 +110,57 @@ public class HttpRequestManager{
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         JSONObject answer = new JSONObject();
-        answer.accumulate("body", new JSONObject(response.body()));
         answer.put("success", response.statusCode() == STATUS_OK);
+        answer.accumulate("body", new JSONObject(response.body()));
 
-        System.out.println(answer.getJSONObject("body").get("name"));
-
+        //System.out.println(answer);
         return answer;
     }
 
 
     // /api/corpus/{corpusId}/addDocument avec dans le body en form-data les fichiers.
-    public JSONObject addDocument(int corpusId, File file, String token) throws Exception {
+    public JSONObject addDocument(int corpusId, File file, String docType, String token) throws Exception {
+        String uri = apiUrl + "/corpus/" + corpusId + "/addDocument";
 
-        /* VERSION 3 */
+        JSONObject answer = new JSONObject();
+        answer.put("success", false);
 
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+        try (final CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            final HttpPost httppost = new HttpPost(uri);
+            httppost.addHeader("Authorization", "Bearer " + token);
+            httppost.addHeader("Content", "Bearer " + token);
+            // si on ajoute la ligne du dessous, le back ne trouve pas les parts "type", "filename", ...
+            //httppost.addHeader("Content-Type", "multipart/form-data; boundary=" + System.currentTimeMillis());
 
-        HttpPost httpPost = new HttpPost(apiUrl + "/corpus/" + corpusId + "/addDocument");
-        httpPost.addHeader("Authorization", "Bearer " + token);
-        httpPost.addHeader("Accept", "*/*");
-        httpPost.addHeader("Content-Type", "multipart/form-data; boundary=" + System.currentTimeMillis());
+            final FileBody fileBody = new FileBody(file);
+            final StringBody type = new StringBody(docType, ContentType.TEXT_PLAIN);
+            final StringBody fileName = new StringBody(file.getName(), ContentType.TEXT_PLAIN);
 
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-        builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-        builder.addTextBody("type", "FieldAudio", ContentType.TEXT_PLAIN);
-        builder.addTextBody("fileName", file.getName(), ContentType.TEXT_PLAIN);
+            final HttpEntity reqEntity = MultipartEntityBuilder.create()
+                    .addPart("file", fileBody)
+                    .addPart("type", type)
+                    .addPart("fileName", fileName)
+                    .build();
 
-        // This attaches the file to the POST:
-        builder.addBinaryBody(
-                "file",
-                new FileInputStream(file),
-                ContentType.DEFAULT_BINARY,
-                file.getName()
-        );
+            httppost.setEntity(reqEntity);
 
-        HttpEntity entity = builder.build();
-        httpPost.setEntity(entity);
-        CloseableHttpResponse response = httpClient.execute(httpPost);
-        HttpEntity responseEntity = response.getEntity();
+            httpclient.execute(httppost, response -> {
+                // get the info from the response
+                final int responseCode = response.getStatusLine().getStatusCode();
+                final String responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
 
-        System.out.println(responseEntity);
+                // close the request
+                EntityUtils.consume(response.getEntity());
 
-        /* VERSION 2
-        String boundary = "===" + System.currentTimeMillis() + "===";
+                // construct return value
+                answer.put("success", responseCode == STATUS_OK);
+                answer.accumulate("body", new JSONObject(responseBody));
 
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-        //builder.addPart("file", new FileBody(file));
-        //builder.addBinaryBody("file", file);
-        builder.addTextBody("type", "FieldAudio");
-        builder.addTextBody("fileName", file.getName());
-        HttpEntity entity = builder.build();
+                return true;
+            });
+        }
 
-        HttpPost httppost = new HttpPost(apiUrl + "/corpus/" + corpusId + "/addDocument");
-        httppost.addHeader("Authorization", "Bearer " + token);
-        httppost.addHeader("Accept", "application/json");
-        httppost.addHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
-
-
-
-        httppost.setEntity(entity);
-
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        org.apache.http.HttpResponse response = httpClient.execute(httppost);
-
-        System.out.println(response);
-        */
-
-
-
-        /* VERSION 1
-        JSONObject body = new JSONObject();
-        body.put("type", "FieldAudio");
-        body.put("fileName", file.getName());
-        body.put("file", file);
-
-        // creates a unique boundary based on time stamp
-        String boundary = "===" + System.currentTimeMillis() + "===";
-
-        // Setting header and the Request Method
-        String route = apiUrl + "/corpus/" + corpusId + "/addDocument";
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(body)))
-                .header("Content-Type","multipart/form-data; boundary" + boundary)
-                .header("Authorization", "Bearer " + token)
-                .uri(URI.create(route))
-                .build();
-
-
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-
-        System.out.println(route);
-        System.out.println(response.body());
-
-
-        */
-
-
-        return null;
+        //System.out.println(answer);
+        return answer;
     }
 }

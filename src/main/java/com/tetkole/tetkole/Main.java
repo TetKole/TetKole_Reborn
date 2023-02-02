@@ -27,17 +27,6 @@ public class Main extends Application {
         SceneManager.getSceneManager().changeScene("HomeScene.fxml", (int) (dimension.width * 0.8),  (int) (dimension.height * 0.8));
 
         stage.show();
-
-
-        try {
-            File file = new File("C:/Users/Remi/Documents/145269_CRI_CASAMENTO_44k.mp3");
-            HttpRequestManager.getHttpRequestManagerInstance()
-                    .addDocument(2, file,
-                            "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyZW1pQG1haWwuY29tIiwiaWF0IjoxNjc1MjU4MTAyLCJleHAiOjE2NzUzNDQ1MDJ9.YbJP9JHFX734lzvxqmbpsHb7xhQXbzUNn92T5hyYy42ZBSDGt804iG-fOVyISnSrg-RQro77i0km1uxAt-ONKQ"
-                    );
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static void main(String[] args) {
