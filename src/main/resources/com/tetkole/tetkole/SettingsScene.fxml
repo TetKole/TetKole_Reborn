@@ -3,6 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import com.sun.javafx.scene.control.InputField?>
 <VBox alignment="TOP_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
       prefHeight="400.0" prefWidth="600.0" styleClass="background_color" stylesheets="@../../../style.css"
       xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
@@ -10,8 +11,17 @@
 
    <fx:include fx:id="header" source="components/Header.fxml"/>
 
-   <HBox alignment="BOTTOM_CENTER" prefHeight="100.0" prefWidth="200.0">
+   <VBox spacing="100" alignment="BOTTOM_CENTER" prefHeight="100.0" prefWidth="200.0">
       <ComboBox fx:id="languagesComboBox" onAction="#onNewLanguageSelected" prefWidth="150.0"/>
-   </HBox>
+      <VBox alignment="CENTER" spacing="50">
+         <VBox alignment="CENTER">
+            <Label text="%RangeValue" style="-fx-text-fill: white; -fx-font-size: 20px"/>
+            <Label text="%LimitRange" style="-fx-text-fill: white; -fx-font-size: 15px"/>
+         </VBox>
+         <HBox alignment="CENTER">
+            <TextField onAction="#OnChangeRange" fx:id="rangeInput" promptText="%RangeValue" />
+         </HBox>
+      </VBox>
+   </VBox>
 
 </VBox>

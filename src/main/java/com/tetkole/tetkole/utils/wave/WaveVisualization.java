@@ -3,6 +3,7 @@
  */
 package com.tetkole.tetkole.utils.wave;
 
+import com.tetkole.tetkole.utils.StaticEnvVariable;
 import com.tetkole.tetkole.utils.wave.WaveFormService.WaveFormJob;
 import javafx.animation.AnimationTimer;
 import javafx.scene.input.ScrollEvent;
@@ -29,7 +30,8 @@ public class WaveVisualization extends WaveFormPane {
 		widthProperty().addListener((observable , oldValue , newValue) -> {
 			
 			// Canvas Width
-			this.width = Math.round(newValue.intValue());
+			this.setWidthPane(newValue.intValue());
+			System.out.println("Width listener : " + width);
 			
 			// Draw single line
 			if (getWaveService().getResultingWaveform() != null)
@@ -42,7 +44,7 @@ public class WaveVisualization extends WaveFormPane {
 		heightProperty().addListener((observable , oldValue , newValue) -> {
 			
 			// Canvas Height
-			this.height = Math.round(newValue.intValue());
+			this.setHeightPane(newValue.intValue());
 			
 			//Draw single line
 			if (getWaveService().getResultingWaveform() != null)
@@ -80,9 +82,9 @@ public class WaveVisualization extends WaveFormPane {
 
 	public void setTotalTime(double seconds) {
 		this.initTotalTime(seconds);
-		// set up number of wave for the audio, 500 wave per seconds
+		// set up number of wave for the audio, 200 wave per seconds
 		//TODO change array waveLenght to upgrade zoom
-		this.waveService.setArrayWaveLength((int)this.totalTime * 50);
+		this.waveService.setArrayWaveLength((int)this.totalTime * StaticEnvVariable.zoomRange);
 	}
 	
 }
