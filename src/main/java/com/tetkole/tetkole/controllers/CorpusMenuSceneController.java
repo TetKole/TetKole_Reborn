@@ -208,15 +208,15 @@ public class CorpusMenuSceneController implements Initializable {
 
         /* Add Documents */
 
-        List<Media> medias = new ArrayList<>(this.corpus.getCorpusImages());
-        //medias.addAll(this.corpus.getCorpusVideos());
-        //medias.addAll(this.corpus.getCorpusImages());
+        List<Media> medias = new ArrayList<>(this.corpus.getFieldAudios());
+        medias.addAll(this.corpus.getCorpusVideos());
+        medias.addAll(this.corpus.getCorpusImages());
 
         for (Media m : medias) {
             String docType = "";
             if (m instanceof FieldAudio)  docType = "FieldAudio";
-            if (m instanceof CorpusImage) docType = "CorpusImage";
-            if (m instanceof CorpusVideo) docType = "CorpusVideo";
+            if (m instanceof CorpusImage) docType = "Images";
+            if (m instanceof CorpusVideo) docType = "Videos";
 
             JSONObject responseAddDocument = httpRequestManager.addDocument(corpusId, m.getFile(), docType, token);
 
@@ -227,25 +227,6 @@ public class CorpusMenuSceneController implements Initializable {
             int docId = responseAddDocument.getJSONObject("body").getInt("docId");
             System.out.println("POST addDocument successfull. Document: " + m.getName() + " | Id: " + docId);
         }
-
-        /*File file = new File("C:/Users/Remi/Documents/_Cours_M1/Projet/test.mp3");
-        String docType = "FieldAudio";
-        JSONObject responseAddDocument = httpRequestManager.addDocument(corpusId, file, docType, token);
-
-        if (!responseAddDocument.getBoolean("success")) {
-            System.out.println("post add document failed");
-            return;
-        }
-        int docId = responseAddDocument.getJSONObject("body").getInt("docId");
-        System.out.println("POST addDocument successfull. Document: " + file.getName() + " | Id: " + docId);*/
-
-
-
-
-
-
-
-
     }
 
 }

@@ -128,9 +128,6 @@ public class HttpRequestManager{
         try (final CloseableHttpClient httpclient = HttpClients.createDefault()) {
             final HttpPost httppost = new HttpPost(uri);
             httppost.addHeader("Authorization", "Bearer " + token);
-            httppost.addHeader("Content", "Bearer " + token);
-            // si on ajoute la ligne du dessous, le back ne trouve pas les parts "type", "filename", ...
-            //httppost.addHeader("Content-Type", "multipart/form-data; boundary=" + System.currentTimeMillis());
 
             final FileBody fileBody = new FileBody(file);
             final StringBody type = new StringBody(docType, ContentType.TEXT_PLAIN);
@@ -148,6 +145,8 @@ public class HttpRequestManager{
                 // get the info from the response
                 final int responseCode = response.getStatusLine().getStatusCode();
                 final String responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
+
+                System.out.println(responseBody);
 
                 // close the request
                 EntityUtils.consume(response.getEntity());
