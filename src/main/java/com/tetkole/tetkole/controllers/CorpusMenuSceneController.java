@@ -37,6 +37,9 @@ public class CorpusMenuSceneController implements Initializable {
     @FXML
     private Label corpusName;
 
+    @FXML
+    private Label loadingLabel;
+
     private ResourceBundle resources;
 
     @Override
@@ -185,67 +188,85 @@ public class CorpusMenuSceneController implements Initializable {
     }
 
 
-    public void pushInitCoprus() throws Exception {
+    public void pushInitCoprus() {
         if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) return;
 
-        // Get the infos we need
-        HttpRequestManager httpRequestManager = HttpRequestManager.getHttpRequestManagerInstance();
-        String token = AuthenticationManager.getAuthenticationManager().getToken();
+        this.loadingLabel.setVisible(true);
 
-        // Add Corpus
+        // the push init thread
+        new Thread(() -> {
 
-        JSONObject responseAddCorpus = httpRequestManager.postAddCorpus(this.corpus.getName(), token);
+            // Get the infos we need
+            HttpRequestManager httpRequestManager = HttpRequestManager.getHttpRequestManagerInstance();
+            String token = AuthenticationManager.getAuthenticationManager().getToken();
 
-        // si success est false --> on va pas plus loin
-        if (!responseAddCorpus.getBoolean("success")) {
-            System.out.println("post add corpus failed, this corpus probably already exist on server");
-            return;
-        }
+            // Add Corpus
 
-        final int corpusId = responseAddCorpus.getJSONObject("body").getInt("corpusId");
-        System.out.println("POST addCorpus successfull. Corpus: " + this.corpus.getName() + " | Id: " + corpusId);
+            JSONObject responseAddCorpus;
+            try {
+                responseAddCorpus = httpRequestManager.postAddCorpus(this.corpus.getName(), token);
+            } catch (Exception e) { throw new RuntimeException(e); }
 
-
-
-        // Add Documents
-
-        List<Media> medias = new ArrayList<>(this.corpus.getFieldAudios());
-        medias.addAll(this.corpus.getCorpusVideos());
-        medias.addAll(this.corpus.getCorpusImages());
-
-        for (Media m : medias) {
-            String docType = "";
-            if (m instanceof FieldAudio)  docType = "FieldAudio";
-            if (m instanceof CorpusImage) docType = "Images";
-            if (m instanceof CorpusVideo) docType = "Videos";
-
-            JSONObject responseAddDocument = httpRequestManager.addDocument(corpusId, m.getFile(), docType, token);
-
-            if (!responseAddDocument.getBoolean("success")) {
-                System.out.println("post add document failed");
+            // si success est false --> on va pas plus loin
+            if (!responseAddCorpus.getBoolean("success")) {
+                System.out.println("post add corpus failed, this corpus probably already exist on server");
                 return;
             }
-            int docId = responseAddDocument.getJSONObject("body").getInt("docId");
-            System.out.println("POST addDocument successfull. Document: " + m.getName() + " | Id: " + docId);
-        }
+
+            final int corpusId = responseAddCorpus.getJSONObject("body").getInt("corpusId");
+            System.out.println("POST addCorpus successfull. Corpus: " + this.corpus.getName() + " | Id: " + corpusId);
 
 
-        // Add Annotations
 
-        for (Media m : medias) {
-            for (Annotation annotation : m.getAnnotations()) {
+            // Add Documents
 
-                File jsonFile = annotation.getJsonFile();
-                String documentName = annotation.getDocumentName();
-                JSONObject responseAddAnnotation = httpRequestManager.addAnnotation(annotation.getFile(), jsonFile, documentName, token);
+            List<Media> medias = new ArrayList<>(this.corpus.getFieldAudios());
+            medias.addAll(this.corpus.getCorpusVideos());
+            medias.addAll(this.corpus.getCorpusImages());
 
-                if (!responseAddAnnotation.getBoolean("success")) {
+            for (Media m : medias) {
+                String docType = "";
+                if (m instanceof FieldAudio)  docType = "FieldAudio";
+                if (m instanceof CorpusImage) docType = "Images";
+                if (m instanceof CorpusVideo) docType = "Videos";
+
+                JSONObject responseAddDocument;
+                try {
+                    responseAddDocument = httpRequestManager.addDocument(corpusId, m.getFile(), docType, token);
+                } catch (Exception e) { throw new RuntimeException(e); }
+
+                if (!responseAddDocument.getBoolean("success")) {
                     System.out.println("post add document failed");
                     return;
                 }
-                System.out.println("POST addAnnotation successfull. Annotation: " + annotation.getFile().getName());
+                int docId = responseAddDocument.getJSONObject("body").getInt("docId");
+                System.out.println("POST addDocument successfull. Document: " + m.getName() + " | Id: " + docId);
             }
-        }
-    }
 
+
+            // Add Annotations
+
+            for (Media m : medias) {
+                for (Annotation annotation : m.getAnnotations()) {
+
+                    File jsonFile = annotation.getJsonFile();
+                    String documentName = annotation.getDocumentName();
+
+                    JSONObject responseAddAnnotation;
+                    try {
+                        responseAddAnnotation = httpRequestManager.addAnnotation(annotation.getFile(), jsonFile, documentName, token);
+                    } catch (Exception e) { throw new RuntimeException(e); }
+
+                    if (!responseAddAnnotation.getBoolean("success")) {
+                        System.out.println("post add document failed");
+                        return;
+                    }
+                    System.out.println("POST addAnnotation successfull. Annotation: " + annotation.getFile().getName());
+                }
+            }
+
+            loadingLabel.setVisible(false);
+
+        }).start();
+    }
 }

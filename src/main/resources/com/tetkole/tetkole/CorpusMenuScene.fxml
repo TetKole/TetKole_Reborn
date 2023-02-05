@@ -21,7 +21,10 @@
 
             <Label fx:id="corpusName" style="-fx-text-fill: white; -fx-font-size: 50px"/>
 
-            <Button onAction="#pushInitCoprus" prefHeight="60" prefWidth="150" styleClass="buttons, red" text="%Push" />
+            <VBox alignment="TOP_CENTER" spacing="10.0" >
+                <Button onAction="#pushInitCoprus" prefHeight="60" prefWidth="150" styleClass="buttons, blue" text="%Push"/>
+                <Label fx:id="loadingLabel" style="-fx-text-fill: white; -fx-font-size: 15px;" text="%Loading" visible="false"/>
+            </VBox>
 
 
             <HBox alignment="TOP_CENTER" spacing="100.0">
