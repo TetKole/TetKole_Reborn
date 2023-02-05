@@ -1,11 +1,7 @@
 package com.tetkole.tetkole.utils;
-import org.apache.http.HttpClientConnection;
 import org.apache.http.HttpEntity;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
@@ -146,7 +142,49 @@ public class HttpRequestManager{
                 final int responseCode = response.getStatusLine().getStatusCode();
                 final String responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
 
-                System.out.println(responseBody);
+                // close the request
+                EntityUtils.consume(response.getEntity());
+
+                // construct return value
+                answer.put("success", responseCode == STATUS_OK);
+                answer.accumulate("body", new JSONObject(responseBody));
+
+                return true;
+            });
+        }
+
+        //System.out.println(answer);
+        return answer;
+    }
+
+
+    // /api/document/addAnnotation avec dans le body en form-data les fichiers et le doc name.
+    public JSONObject addAnnotation(File audioFile, File jsonFile, String documentName, String token) throws Exception {
+        String uri = apiUrl + "/document/addAnnotation";
+
+        JSONObject answer = new JSONObject();
+        answer.put("success", false);
+
+        try (final CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            final HttpPost httppost = new HttpPost(uri);
+            httppost.addHeader("Authorization", "Bearer " + token);
+
+            final FileBody audioFileBody = new FileBody(audioFile);
+            final FileBody jsonFileBody = new FileBody(jsonFile);
+            final StringBody documentNameBody = new StringBody(documentName, ContentType.TEXT_PLAIN);
+
+            final HttpEntity reqEntity = MultipartEntityBuilder.create()
+                    .addPart("audioFile", audioFileBody)
+                    .addPart("jsonFile", jsonFileBody)
+                    .addPart("documentName", documentNameBody)
+                    .build();
+
+            httppost.setEntity(reqEntity);
+
+            httpclient.execute(httppost, response -> {
+                // get the info from the response
+                final int responseCode = response.getStatusLine().getStatusCode();
+                final String responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
 
                 // close the request
                 EntityUtils.consume(response.getEntity());

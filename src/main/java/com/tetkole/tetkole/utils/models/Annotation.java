@@ -37,4 +37,13 @@ public class Annotation {
     public double getEnd() {
         return end;
     }
+
+    public File getJsonFile() {
+        String name = this.file.getName();
+        return new File(this.file.getParentFile() + "/" + name.substring(0, name.length() - 3) + "json");
+    }
+
+    public String getDocumentName() {
+        return this.file.getParentFile().getParentFile().getName();
+    }
 }

@@ -192,7 +192,8 @@ public class CorpusMenuSceneController implements Initializable {
         HttpRequestManager httpRequestManager = HttpRequestManager.getHttpRequestManagerInstance();
         String token = AuthenticationManager.getAuthenticationManager().getToken();
 
-        /* Add Corpus */
+        // Add Corpus
+
         JSONObject responseAddCorpus = httpRequestManager.postAddCorpus(this.corpus.getName(), token);
 
         // si success est false --> on va pas plus loin
@@ -206,7 +207,7 @@ public class CorpusMenuSceneController implements Initializable {
 
 
 
-        /* Add Documents */
+        // Add Documents
 
         List<Media> medias = new ArrayList<>(this.corpus.getFieldAudios());
         medias.addAll(this.corpus.getCorpusVideos());
@@ -226,6 +227,24 @@ public class CorpusMenuSceneController implements Initializable {
             }
             int docId = responseAddDocument.getJSONObject("body").getInt("docId");
             System.out.println("POST addDocument successfull. Document: " + m.getName() + " | Id: " + docId);
+        }
+
+
+        // Add Annotations
+
+        for (Media m : medias) {
+            for (Annotation annotation : m.getAnnotations()) {
+
+                File jsonFile = annotation.getJsonFile();
+                String documentName = annotation.getDocumentName();
+                JSONObject responseAddAnnotation = httpRequestManager.addAnnotation(annotation.getFile(), jsonFile, documentName, token);
+
+                if (!responseAddAnnotation.getBoolean("success")) {
+                    System.out.println("post add document failed");
+                    return;
+                }
+                System.out.println("POST addAnnotation successfull. Annotation: " + annotation.getFile().getName());
+            }
         }
     }
 
