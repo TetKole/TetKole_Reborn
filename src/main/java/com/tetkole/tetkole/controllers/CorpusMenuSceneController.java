@@ -1,10 +1,9 @@
 package com.tetkole.tetkole.controllers;
 
+import com.tetkole.tetkole.utils.AuthenticationManager;
+import com.tetkole.tetkole.utils.HttpRequestManager;
 import com.tetkole.tetkole.utils.SceneManager;
-import com.tetkole.tetkole.utils.models.Corpus;
-import com.tetkole.tetkole.utils.models.CorpusImage;
-import com.tetkole.tetkole.utils.models.CorpusVideo;
-import com.tetkole.tetkole.utils.models.FieldAudio;
+import com.tetkole.tetkole.utils.models.*;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -13,8 +12,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.json.JSONObject;
 
+import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class CorpusMenuSceneController implements Initializable {
@@ -53,16 +56,16 @@ public class CorpusMenuSceneController implements Initializable {
         // We get the corpus then update all the displayed information
         this.corpus = (Corpus) SceneManager.getSceneManager().getArgument("corpus");
         this.corpusName.setText(this.corpus.getName());
-        UpdateFieldAudioList();
-        UpdateImagesList();
-        UpdateVideosList();
+        updateFieldAudioList();
+        updateImagesList();
+        updateVideosList();
     }
 
 
     /**
      * Create FieldAudio List
      */
-    private void UpdateFieldAudioList() {
+    private void updateFieldAudioList() {
         this.vBoxFieldAudios.getChildren().clear();
 
         Label labelTitle = new Label(resources.getString("FieldAudios"));
@@ -95,14 +98,14 @@ public class CorpusMenuSceneController implements Initializable {
         // onClick on add field audio
         btn.setOnMouseClicked(event -> {
             this.corpus.createFieldAudio();
-            UpdateFieldAudioList();
+            updateFieldAudioList();
         });
 
         this.vBoxFieldAudios.getChildren().add(btn);
     }
 
 
-    private void UpdateImagesList() {
+    private void updateImagesList() {
         this.vBoxImages.getChildren().clear();
 
         Label labelTitle = new Label(resources.getString("Images"));
@@ -135,14 +138,14 @@ public class CorpusMenuSceneController implements Initializable {
         // onClick on add corpus image
         btn.setOnMouseClicked(event -> {
             this.corpus.createImage();
-            UpdateImagesList();
+            updateImagesList();
         });
 
         this.vBoxImages.getChildren().add(btn);
     }
 
 
-    private void UpdateVideosList() {
+    private void updateVideosList() {
         this.vBoxVideos.getChildren().clear();
 
         Label labelTitle = new Label(resources.getString("Videos"));
@@ -175,10 +178,55 @@ public class CorpusMenuSceneController implements Initializable {
         // onClick on add corpus video
         btn.setOnMouseClicked(event -> {
             this.corpus.createVideo();
-            UpdateVideosList();
+            updateVideosList();
         });
 
         this.vBoxVideos.getChildren().add(btn);
+    }
+
+
+    public void pushInitCoprus() throws Exception {
+        if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) return;
+
+        // Get the infos we need
+        HttpRequestManager httpRequestManager = HttpRequestManager.getHttpRequestManagerInstance();
+        String token = AuthenticationManager.getAuthenticationManager().getToken();
+
+        /* Add Corpus */
+        JSONObject responseAddCorpus = httpRequestManager.postAddCorpus(this.corpus.getName(), token);
+
+        // si success est false --> on va pas plus loin
+        if (!responseAddCorpus.getBoolean("success")) {
+            System.out.println("post add corpus failed, this corpus probably already exist on server");
+            return;
+        }
+
+        final int corpusId = responseAddCorpus.getJSONObject("body").getInt("corpusId");
+        System.out.println("POST addCorpus successfull. Corpus: " + this.corpus.getName() + " | Id: " + corpusId);
+
+
+
+        /* Add Documents */
+
+        List<Media> medias = new ArrayList<>(this.corpus.getFieldAudios());
+        medias.addAll(this.corpus.getCorpusVideos());
+        medias.addAll(this.corpus.getCorpusImages());
+
+        for (Media m : medias) {
+            String docType = "";
+            if (m instanceof FieldAudio)  docType = "FieldAudio";
+            if (m instanceof CorpusImage) docType = "Images";
+            if (m instanceof CorpusVideo) docType = "Videos";
+
+            JSONObject responseAddDocument = httpRequestManager.addDocument(corpusId, m.getFile(), docType, token);
+
+            if (!responseAddDocument.getBoolean("success")) {
+                System.out.println("post add document failed");
+                return;
+            }
+            int docId = responseAddDocument.getJSONObject("body").getInt("docId");
+            System.out.println("POST addDocument successfull. Document: " + m.getName() + " | Id: " + docId);
+        }
     }
 
 }

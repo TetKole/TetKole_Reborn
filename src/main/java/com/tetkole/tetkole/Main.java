@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.File;
 
 public class Main extends Application {
     @Override

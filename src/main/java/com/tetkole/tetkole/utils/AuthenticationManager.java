@@ -15,31 +15,7 @@ public class AuthenticationManager {
     private int userId;
     private boolean isAuthenticated = false;
 
-    private AuthenticationManager() {
-
-    }
-
-    public JSONObject login(String mail, String password) throws Exception {
-
-        JSONObject response = HttpRequestManager.sendPostLogin(mail, password);
-
-        JSONObject responseBody = new JSONObject(response.getString("body"));
-
-        if (response.getBoolean("success")) {
-            this.JWT_TOKEN = responseBody.getString("token");
-            this.userId = responseBody.getInt("userId");
-            this.firstname = responseBody.getString("firstname");
-            this.lastname = responseBody.getString("lastname");
-            this.mail = responseBody.getString("mail");
-            this.isAuthenticated = true;
-        }
-
-        return response;
-    }
-
-    public JSONObject register(String firstname, String lastname, String mail, String password) throws IOException, InterruptedException {
-        return HttpRequestManager.sendPostRegister(firstname, lastname, password, mail);
-    }
+    private AuthenticationManager() { }
 
     public static AuthenticationManager getAuthenticationManager() {
         return authenticationManagerInstance;
@@ -47,6 +23,29 @@ public class AuthenticationManager {
 
     public static void setAuthenticationManager() {
         AuthenticationManager.authenticationManagerInstance = new AuthenticationManager();
+    }
+
+
+    public JSONObject login(String mail, String password) throws Exception {
+
+        JSONObject response = HttpRequestManager.getHttpRequestManagerInstance().sendPostLogin(mail, password);
+
+        JSONObject body = response.getJSONObject("body");
+
+        if (response.getBoolean("success")) {
+            this.JWT_TOKEN = body.getString("token");
+            this.userId = body.getInt("userId");
+            this.firstname = body.getString("firstname");
+            this.lastname = body.getString("lastname");
+            this.mail = body.getString("mail");
+            this.isAuthenticated = true;
+        }
+
+        return response;
+    }
+
+    public JSONObject register(String firstname, String lastname, String mail, String password) throws Exception {
+        return HttpRequestManager.getHttpRequestManagerInstance().sendPostRegister(firstname, lastname, password, mail);
     }
 
     public boolean isAuthenticated() {
@@ -68,5 +67,9 @@ public class AuthenticationManager {
 
     public String getLastname() {
         return lastname;
+    }
+
+    public String getToken() {
+        return this.JWT_TOKEN;
     }
 }

@@ -7,6 +7,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.Button?>
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.CorpusMenuSceneController" styleClass="background_color">
 
     <top>
@@ -19,6 +20,9 @@
         <VBox alignment="TOP_CENTER" spacing="100.0" >
 
             <Label fx:id="corpusName" style="-fx-text-fill: white; -fx-font-size: 50px"/>
+
+            <Button onAction="#pushInitCoprus" prefHeight="60" prefWidth="150" styleClass="buttons, red" text="%Push" />
+
 
             <HBox alignment="TOP_CENTER" spacing="100.0">
 
