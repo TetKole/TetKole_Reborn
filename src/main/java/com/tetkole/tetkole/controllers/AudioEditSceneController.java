@@ -1,6 +1,7 @@
 package com.tetkole.tetkole.controllers;
 
 import com.tetkole.tetkole.components.CustomButton;
+import com.tetkole.tetkole.utils.FileManager;
 import com.tetkole.tetkole.utils.RecordManager;
 import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.annotations.AnnotationsVisualization;
@@ -12,10 +13,12 @@ import com.tetkole.tetkole.utils.wave.WaveVisualization;
 import javafx.animation.TranslateTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -38,15 +41,19 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class AudioEditSceneController implements PropertyChangeListener, Initializable {
+    public Button btnEditDescription;
     private ResourceBundle resources;
     private FieldAudio fieldAudio;
     private Corpus corpus;
     private MediaPlayer mediaPlayer;
     private RecordManager recordManager;
+    private MediaPlayer annotationPlayer;
+    private int borderSize = 10;
     private List<HBox> lines = new ArrayList<>();
 
     // Graphics
@@ -217,12 +224,10 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         ((ImageView) btnPlayPause.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()));
 
         // set current X in media player aka start time
-        double newCurrentX = (double) evt.getNewValue();
-        double newStart = newCurrentX / waveVisualization.getRatioAudio() + waveVisualization.getBeginAudio();
+        double newStart = (double) evt.getNewValue() / waveVisualization.getRatioAudio() + waveVisualization.getBeginAudio();
         mediaPlayer.setStartTime(new Duration((newStart) * 1000));
         // set stop time (with right border)
-        double rightBorderXPosition = waveVisualization.getRightBorderXPosition() + 10;
-        double newStop = rightBorderXPosition / waveVisualization.getRatioAudio() + waveVisualization.getBeginAudio();
+        double newStop = (waveVisualization.getRightBorderXPosition() + borderSize) / waveVisualization.getRatioAudio() + waveVisualization.getBeginAudio();
         mediaPlayer.setStopTime(new Duration((newStop) * 1000));
     }
 
@@ -385,5 +390,17 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
     public VBox getvBoxPane() {
         return vBoxPane;
+    }
+
+    public void onEditDescriptionButtonClick(ActionEvent actionEvent) {
+        String description = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", this.fieldAudio.getDescription());
+
+        this.fieldAudio.setDescription(description);
+
+        Map<String, Object> map = Map.of(
+                "description", this.fieldAudio.getDescription()
+        );
+
+        FileManager.getFileManager().createJSONFile(this.fieldAudio.getName(), map, String.format("/%s/FieldAudio", this.corpus.getName()));
     }
 }

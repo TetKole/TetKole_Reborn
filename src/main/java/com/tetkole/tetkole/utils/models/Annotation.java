@@ -60,4 +60,13 @@ public class Annotation {
     public MediaPlayer getMediaPlayer() {
         return mediaPlayer;
     }
+
+    public File getJsonFile() {
+        String name = this.file.getName();
+        return new File(this.file.getParentFile() + "/" + name.substring(0, name.length() - 3) + "json");
+    }
+
+    public String getDocumentName() {
+        return this.file.getParentFile().getParentFile().getName();
+    }
 }

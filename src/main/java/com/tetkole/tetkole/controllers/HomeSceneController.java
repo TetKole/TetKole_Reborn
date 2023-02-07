@@ -1,7 +1,6 @@
 package com.tetkole.tetkole.controllers;
 
 import com.tetkole.tetkole.utils.AuthenticationManager;
-import com.tetkole.tetkole.utils.HttpRequestManager;
 import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.models.Corpus;
 import javafx.fxml.FXML;
@@ -11,7 +10,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -112,8 +110,8 @@ public class HomeSceneController implements Initializable {
             vBoxButtons.getChildren().remove(btnLogin);
             vBoxButtons.getChildren().remove(btnRegister);
             labelUserName.setText(
-                    AuthenticationManager.getAuthenticationManager().getFirstName() + " " +
-                            AuthenticationManager.getAuthenticationManager().getLastName()
+                    AuthenticationManager.getAuthenticationManager().getFirstname() + " " +
+                            AuthenticationManager.getAuthenticationManager().getLastname()
             );
 
         } else {

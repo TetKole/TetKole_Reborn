@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.File;
 
 public class Main extends Application {
     @Override
@@ -21,7 +22,7 @@ public class Main extends Application {
         SceneManager.setSceneManager(stage);
         FileManager.setFileManager();
         AuthenticationManager.setAuthenticationManager();
-        HttpRequestManager.setHttpRequestManagerInstance("http://localhost:8000"); // TODO .env
+        HttpRequestManager.setHttpRequestManagerInstance("http://localhost:8000/api"); // TODO .env
 
         SceneManager.getSceneManager().changeScene("HomeScene.fxml", (int) (dimension.width * 0.8),  (int) (dimension.height * 0.8));
 

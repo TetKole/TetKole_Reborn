@@ -7,8 +7,7 @@ import com.tetkole.tetkole.utils.models.Media;
 import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Map;
 
 public class RecordManager {
     private boolean isRecording = false;
@@ -75,13 +74,18 @@ public class RecordManager {
             targetLine.stop();
             targetLine.close();
 
+            Map<String, Object> fileMap = Map.of(
+                    "fileName", this.fileName,
+                    "recordName", this.recordName,
+                    "start", this.leftBorderValue,
+                    "end", this.rightBorderValue
+            );
+
             // JSON file is created here !
             FileManager.getFileManager().createJSONFile(
-                    this.fileName,
                     this.recordName,
-                    this.leftBorderValue,
-                    this.rightBorderValue,
-                    this.corpusPath
+                    fileMap,
+                    this.corpusPath + '/' + this.recordName
             );
 
             media.addAnnotation(new Annotation(this.file, this.leftBorderValue, this.rightBorderValue, this.fileName, this.corpusPath.split("/")[1]));
