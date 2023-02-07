@@ -22,5 +22,4 @@ module com.tetkole.tetkole {
     exports com.tetkole.tetkole.utils.models;
     exports com.tetkole.tetkole.controllers.modals;
     opens com.tetkole.tetkole.controllers to javafx.fxml;
-    exports com.tetkole.tetkole.components;
 }
