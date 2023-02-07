@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
 
 public class FileManager {
     private static FileManager fileManagerInstance;
@@ -53,21 +54,6 @@ public class FileManager {
      */
     public String getFolderPath() {
         return this.folderPath;
-    }
-
-    /**
-     * Return true if on Windows, false if else
-     */
-    public boolean getIsWindows() {
-        return this.isWindows;
-    }
-
-
-    /**
-     * Create a file into Tetkole folder
-     */
-    public File createFile(String fileName) {
-        return new File(this.folderPath + "/" + fileName);
     }
 
     /**
@@ -125,17 +111,16 @@ public class FileManager {
      * Create a json file
      * this method should be used only when adding a new annotation
      */
-    public void createJSONFile(String fileName, String recordName, Double start, Double end, String corpusPath) {
+    public void createJSONFile(String fileName, Map<String, Object> map, String relativeLocation) {
         JSONObject json = new JSONObject();
+
         json.put("fileName", fileName);
-        json.put("recordName", recordName);
-        json.put("start", start);
-        json.put("end", end);
+        map.forEach(json::put);
 
-        FileManager.getFileManager().createFile(fileName, recordName);
-
+        FileManager.getFileManager().createFile(relativeLocation, fileName.split("\\.")[0]);
+        String fileNameWithoutExt = fileName.split("\\.")[0];
         try {
-            FileWriter file = new FileWriter(FileManager.getFileManager().getFolderPath() + corpusPath + "/" + recordName + "/" + recordName + ".json");
+            FileWriter file = new FileWriter(FileManager.getFileManager().getFolderPath() + relativeLocation + "/" + fileNameWithoutExt + ".json");
             file.write(json.toString());
             file.close();
         } catch (IOException e) {

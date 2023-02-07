@@ -19,8 +19,8 @@ public class WaveFormPane extends ResizableCanvas {
 	private Color foregroundColor;
 	private Color transparentForeground;
 	private final Color mouseXColor = Color.rgb(255, 255, 255, 0.7);
-	int width;
-	int height;
+	double width;
+	double height;
 	private double currentXPosition = 0;
 	private double mouseXPosition = -1;
 	private double leftBorderXPosition;
@@ -34,6 +34,7 @@ public class WaveFormPane extends ResizableCanvas {
 	private final GraphicsContext gc = getGraphicsContext2D();
 	private double beginAudio = 0;
 	private double endAudio;
+	private static double borderSize = 10;
 
 	/**
 	 * Constructor
@@ -43,13 +44,11 @@ public class WaveFormPane extends ResizableCanvas {
 	 */
 	public WaveFormPane(int width, int height) {
 		defaultWave = new float[width];
-		this.width = width;
-		this.height = height;
-		this.setWidth(width);
-		this.setHeight(height);
+		this.setWidthPane(width);
+		this.setHeightPane(height);
 
 		this.leftBorderXPosition = 0;
-		this.rightBorderXPosition = (2 * width) / 3.0;
+		this.rightBorderXPosition = width - borderSize;
 
 		//Create the default Wave
 		for (int i = 0; i < width; i++)
@@ -63,12 +62,12 @@ public class WaveFormPane extends ResizableCanvas {
 		// we look for a click on left border or right border
 		setOnMousePressed(event -> {
 			// click on left border
-			if (event.getX() >= leftBorderXPosition && event.getX() <= leftBorderXPosition + 10) {
+			if (event.getX() >= leftBorderXPosition && event.getX() <= leftBorderXPosition + borderSize) {
 				leftBorderDragged = true;
 			}
 
 			// click on right border
-			if (event.getX() >= rightBorderXPosition && event.getX() <= rightBorderXPosition + 10) {
+			if (event.getX() >= rightBorderXPosition && event.getX() <= rightBorderXPosition + borderSize) {
 				rightBorderDragged = true;
 			}
 		});
@@ -78,14 +77,16 @@ public class WaveFormPane extends ResizableCanvas {
 			setMouseXPosition((int) event.getX());
 
 			if (rightBorderDragged) {
-				rightBorderXPosition = Math.min(Math.max(event.getX(), leftBorderXPosition + 10),  getWidth() - 10);
-				this.setRightBorderTime(rightBorderXPosition / this.getRatioAudio() + this.beginAudio);
+				rightBorderXPosition = Math.min(Math.max(event.getX(), leftBorderXPosition + borderSize),  getWidth() - borderSize);
+				this.setRightBorderTime((rightBorderXPosition + borderSize) / this.getRatioAudio() + this.beginAudio);
 			}
 
 			if (leftBorderDragged) {
-				leftBorderXPosition = Math.max(Math.min(event.getX(), rightBorderXPosition - 10), 0);
+				leftBorderXPosition = Math.max(Math.min(event.getX(), rightBorderXPosition - borderSize), 0);
 				this.setLeftBorderTime(leftBorderXPosition / this.getRatioAudio() + this.beginAudio);
 			}
+
+			paintWaveForm();
 		});
 
 		// we disabled draggable border and set the new currentXPosition to the left border
@@ -94,18 +95,22 @@ public class WaveFormPane extends ResizableCanvas {
 			if (leftBorderDragged || rightBorderDragged) {
 				this.setCurrentXPositionMediaPlayer(leftBorderXPosition);
 			} else { // else set current to click position
-				if (event.getX() > leftBorderXPosition + 10 && event.getX() < rightBorderXPosition) {
+				if (event.getX() > leftBorderXPosition + borderSize && event.getX() < rightBorderXPosition) {
 					this.setCurrentXPositionMediaPlayer(mouseXPosition);
 				}
 			}
 
 			leftBorderDragged = false;
 			rightBorderDragged = false;
+			paintWaveForm();
 		});
 
 		// we set the mouseXPosition on hover
 		setOnMouseMoved(event -> {
-			setMouseXPosition(event.getX());
+			if (event.getX() > leftBorderXPosition + 10 && event.getX() < rightBorderXPosition) {
+				setMouseXPosition(event.getX());
+				paintWaveForm();
+			}
 		});
 
 		support = new PropertyChangeSupport(this);
@@ -113,9 +118,6 @@ public class WaveFormPane extends ResizableCanvas {
 
 	public void addPropertyChangeListener(PropertyChangeListener pcl) {
 		support.addPropertyChangeListener(pcl);
-	}
-	public void removePropertyChangeListener(PropertyChangeListener pcl) {
-		support.removePropertyChangeListener(pcl);
 	}
 	public void setCurrentXPositionMediaPlayer(double newValue) {
 		support.firePropertyChange("currentXPosition", this.currentXPosition, newValue);
@@ -180,10 +182,6 @@ public class WaveFormPane extends ResizableCanvas {
 		this.rightBorderTime = rightBorderTime;
 	}
 
-	public void setEndAudio(double endAudio) {
-		this.endAudio = endAudio;
-	}
-
 	public double getRatioAudio(){
 		return this.getWidth() / (this.endAudio - this.beginAudio);
 	}
@@ -191,24 +189,24 @@ public class WaveFormPane extends ResizableCanvas {
 	public void initTotalTime(double seconds){
 		this.totalTime = seconds;
 		this.endAudio = seconds;
-		this.leftBorderXPosition = (seconds * 0.1) * this.getRatioAudio();
-		this.rightBorderXPosition = (seconds * 0.9) * this.getRatioAudio();
-		this.setLeftBorderTime(seconds * 0.1);
-		this.setRightBorderTime(seconds * 0.9);
+		this.leftBorderXPosition = 0;
+		this.rightBorderXPosition = seconds * this.getRatioAudio() - borderSize;
+		this.setLeftBorderTime(0);
+		this.setRightBorderTime(seconds);
 		this.setCurrentXPositionMediaPlayer(leftBorderXPosition);
 	}
 
 	public void setAudioRange(){
 		double newBeginAudio = this.leftBorderXPosition / this.getRatioAudio() + this.beginAudio;
-		double newEndAudio = this.rightBorderXPosition / this.getRatioAudio() + this.beginAudio;
+		double newEndAudio = (this.rightBorderXPosition + borderSize) / this.getRatioAudio() + this.beginAudio;
 
-		this.setLeftBorderTime((newEndAudio - newBeginAudio) * 0.1 + newBeginAudio);
-		this.setRightBorderTime((newEndAudio - newBeginAudio) * 0.9 + newBeginAudio);
+		this.setLeftBorderTime(newBeginAudio);
+		this.setRightBorderTime(newEndAudio);
 
-		this.beginAudio = Math.max(0 , newBeginAudio);
-		this.endAudio = Math.min(newEndAudio, this.totalTime);
-		this.leftBorderXPosition = this.getWidth() * 0.1;
-		this.rightBorderXPosition = this.getWidth() * 0.9;
+		this.beginAudio = newBeginAudio;
+		this.endAudio = newEndAudio;
+		this.leftBorderXPosition = 0;
+		this.rightBorderXPosition = (this.getWidth() - borderSize);
 		this.setCurrentXPositionMediaPlayer(leftBorderXPosition);
 	}
 
@@ -221,7 +219,7 @@ public class WaveFormPane extends ResizableCanvas {
 
 	public void setPositionBorderWithTime(){
 		this.leftBorderXPosition = (this.getLeftBorderTime() - this.getBeginAudio()) * this.getRatioAudio();
-		this.rightBorderXPosition = (this.getRightBorderTime() - this.getBeginAudio()) * this.getRatioAudio();
+		this.rightBorderXPosition = (this.getRightBorderTime() - this.getBeginAudio()) * this.getRatioAudio() - borderSize;
 	}
 
 	/**
@@ -253,7 +251,7 @@ public class WaveFormPane extends ResizableCanvas {
 		if (waveData != null) {
 			for (int i = 0; i < waveData.length; i++) {
 				int value = (int) (waveData[i] * height);
-				int y1 = (height - 2 * value) / 2;
+				int y1 = (int) ((height - 2 * value) / 2);
 				int y2 = y1 + 2 * value;
 				gc.strokeLine(i, y1, i, y2);
 			}
@@ -261,19 +259,19 @@ public class WaveFormPane extends ResizableCanvas {
 
 		// Draw Left Border
 		gc.setFill(Color.WHITE);
-		gc.fillRect(this.leftBorderXPosition, 0, 10, height);
+		gc.fillRect(this.leftBorderXPosition, 0, borderSize, height);
 		// Write the time at top of the border left border
 		gc.strokeText(this.getTimeLeftBorderInString(), this.posLeftStrokeText(), adjustPosYStrokeText(), 500);
 
 		// Draw Right Border
-		gc.fillRect(this.rightBorderXPosition, 0, 10, height);
+		gc.fillRect(this.rightBorderXPosition, 0, borderSize, height);
 		// Write the time at top of the right border
 		gc.strokeText(this.getTimeRightBorderInString(), this.posRightStrokeText(), 15, 500);
 
 		// Draw Transparent Rect for borders
 		gc.setFill(transparentForeground);
 		gc.fillRect(0, 0, this.leftBorderXPosition, height);
-		gc.fillRect((this.rightBorderXPosition + 10), 0, width, height);
+		gc.fillRect((this.rightBorderXPosition + borderSize), 0, width, height);
 
 
 		// Draw currentXPosition
@@ -312,8 +310,8 @@ public class WaveFormPane extends ResizableCanvas {
 	}
 
 	public String getTimeRightBorderInString() {
-		double time = this.rightBorderXPosition / this.getRatioAudio() + this.beginAudio;
-		double milliTime = Math.round((this.rightBorderXPosition / this.getRatioAudio()) * 100.0) / 100.0;
+		double time = (this.rightBorderXPosition + borderSize) / this.getRatioAudio() + this.beginAudio;
+		double milliTime = Math.round(time * 100.0) / 100.0;
 
 		double hoursRightBorderTime = time / 3600;
 		double minutesRightBorderTime = (time % 3600) / 60;
@@ -357,6 +355,16 @@ public class WaveFormPane extends ResizableCanvas {
 		} else {
 			return 15;
 		}
+	}
+
+	public void setWidthPane(double value) {
+		this.width = value;
+		this.setWidth(value);
+	}
+
+	public void setHeightPane(double value) {
+		this.height = value;
+		this.setHeight(value);
 	}
 
 }

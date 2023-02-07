@@ -7,6 +7,7 @@ import com.tetkole.tetkole.utils.models.Media;
 import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 public class RecordManager {
     private boolean isRecording = false;
@@ -24,11 +25,6 @@ public class RecordManager {
 
     public boolean isRecording() {
         return isRecording;
-    }
-
-    // TODO we will delete this method once corpus is implemented in image and video
-    public void startRecording(String fileName, String recordName) {
-        startRecording(fileName, recordName, "", 0, 0);
     }
 
     public void startRecording(String fileName, String recordName, String corpusPath, double rightBorderValue, double leftBorderValue) {
@@ -78,16 +74,21 @@ public class RecordManager {
             targetLine.stop();
             targetLine.close();
 
-            // JSON file is created here !
-            FileManager.getFileManager().createJSONFile(
-                    this.fileName,
-                    this.recordName,
-                    this.leftBorderValue,
-                    this.rightBorderValue,
-                    this.corpusPath
+            Map<String, Object> fileMap = Map.of(
+                    "fileName", this.fileName,
+                    "recordName", this.recordName,
+                    "start", this.leftBorderValue,
+                    "end", this.rightBorderValue
             );
 
-            media.addAnnotation(new Annotation(this.file, this.leftBorderValue, this.rightBorderValue));
+            // JSON file is created here !
+            FileManager.getFileManager().createJSONFile(
+                    this.recordName,
+                    fileMap,
+                    this.corpusPath + '/' + this.recordName
+            );
+
+            media.addAnnotation(new Annotation(this.file, this.leftBorderValue, this.rightBorderValue, this.fileName, this.corpusPath.split("/")[1]));
         }
     }
 

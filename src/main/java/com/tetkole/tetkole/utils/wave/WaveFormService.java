@@ -32,7 +32,6 @@ public class WaveFormService extends Service<Boolean> {
 	private int[] wavAmplitudes;
 	private String fileAbsolutePath;
 	private final WaveVisualization waveVisualization;
-	private final Random random = new Random();
 	private File temp1;
 	private File temp2;
 	private Encoder encoder;
@@ -41,20 +40,12 @@ public class WaveFormService extends Service<Boolean> {
 	private int arrayWaveLength;
 	private int beginArrayWaveLength = 0;
 	private int endArrayWaveLength;
+	private static double borderSize = 10;
 	
-	/**
-	 * Wave Service type of Job ( not boob job ... )
-	 * 
-	 * @author GOXR3PLUSSTUDIO
-	 *
-	 */
 	public enum WaveFormJob {
 		AMPLITUDES_AND_WAVEFORM, WAVEFORM
 	}
-	
-	/**
-	 * Constructor.
-	 */
+
 	public WaveFormService(WaveVisualization waveVisualization) {
 		this.waveVisualization = waveVisualization;
 		
@@ -70,29 +61,21 @@ public class WaveFormService extends Service<Boolean> {
 		if (waveFormJob == WaveFormJob.WAVEFORM)
 			cancel();
 		
-		//Stop the Serivce
-		waveVisualization.stopPainterService();
-		
-		//Check if boob job
+		//Check if good job
 		this.waveFormJob = waveFormJob;
 		
 		//Variables
 		this.fileAbsolutePath = fileAbsolutePath;
-		//this.resultingWaveform = null;
+
 		if (waveFormJob != WaveFormJob.WAVEFORM)
 			this.wavAmplitudes = null;
-		
-		//Go
+
 		restart();
 	}
-	
-	/**
-	 * Done.
-	 */
-	// Work done
+
 	public void done() {
 		waveVisualization.setWaveData(resultingWaveform);
-		waveVisualization.startPainterService();
+		waveVisualization.paintWaveForm();
 		deleteTemporaryFiles();
 	}
 	
@@ -124,7 +107,7 @@ public class WaveFormService extends Service<Boolean> {
 						resultingWaveform = processFromNoWavFile(fileFormat);
 						
 					} else if (waveFormJob == WaveFormJob.WAVEFORM) { //WAVEFORM
-						int newArr[] = Arrays.copyOfRange(wavAmplitudes, beginArrayWaveLength, endArrayWaveLength);
+						int[] newArr = Arrays.copyOfRange(wavAmplitudes, beginArrayWaveLength, endArrayWaveLength);
 						resultingWaveform = processAmplitudes(newArr);
 					}
 				} catch (Exception ex) {
@@ -146,7 +129,7 @@ public class WaveFormService extends Service<Boolean> {
 			 * @return float[]
 			 */
 			private float[] processFromNoWavFile(String fileFormat) throws IOException {
-				int randomN = random.nextInt(99999);
+				int randomN = new Random().nextInt(99999);
 				
 				//Create temporary files
 				File temporalDecodedFile = File.createTempFile("decoded_" + randomN, ".wav");
@@ -285,7 +268,8 @@ public class WaveFormService extends Service<Boolean> {
 			 */
 			private float[] processAmplitudes(int[] sourcePcmData) {
 				//The width of the resulting waveform panel
-				int width = waveVisualization.width;
+				int width = (int) waveVisualization.width;
+				System.out.println("Width Service : " + width);
 				float[] waveData = new float[width];
 				int samplesPerPixel = sourcePcmData.length / width;
 				
@@ -331,24 +315,8 @@ public class WaveFormService extends Service<Boolean> {
 		return fileAbsolutePath;
 	}
 	
-	public void setFileAbsolutePath(String fileAbsolutePath) {
-		this.fileAbsolutePath = fileAbsolutePath;
-	}
-	
-	public int[] getWavAmplitudes() {
-		return wavAmplitudes;
-	}
-	
 	public float[] getResultingWaveform() {
 		return resultingWaveform;
-	}
-	
-	public void setResultingWaveform(float[] resultingWaveform) {
-		this.resultingWaveform = resultingWaveform;
-	}
-
-	public int getArrayWaveLength() {
-		return arrayWaveLength;
 	}
 
 	public void setArrayWaveLength(int arrayWaveLength) {
@@ -358,11 +326,10 @@ public class WaveFormService extends Service<Boolean> {
 
 	public void setWaveRange(double leftBorderXPosition, double rightBorderXPosition, double width){
 		int waveSize = this.endArrayWaveLength - this.beginArrayWaveLength;
-		double newBeginArrayWaveLength = leftBorderXPosition * waveSize / width + this.beginArrayWaveLength;
-		double newEndArrayWaveLength = rightBorderXPosition * waveSize / width + this.beginArrayWaveLength;
-		//double ten_percent = (right - left) * augmentationRationZoom;
-		this.beginArrayWaveLength = (int)Math.max(newBeginArrayWaveLength, 0);
-		this.endArrayWaveLength = (int)Math.min(newEndArrayWaveLength, this.arrayWaveLength);
+		int newBeginArrayWaveLength = (int) (leftBorderXPosition * waveSize / width + this.beginArrayWaveLength);
+		int newEndArrayWaveLength = (int) ((rightBorderXPosition + borderSize) * waveSize / width + this.beginArrayWaveLength);
+		this.beginArrayWaveLength = newBeginArrayWaveLength;
+		this.endArrayWaveLength = newEndArrayWaveLength;
 	}
 
 	public void resetWaveRange(){
