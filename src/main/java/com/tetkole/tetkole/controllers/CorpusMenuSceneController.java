@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -154,6 +155,12 @@ public class CorpusMenuSceneController implements Initializable {
         Label labelTitle = new Label(resources.getString("Videos"));
         labelTitle.setStyle("-fx-font-size: 20; -fx-text-fill: white; ");
         this.vBoxVideos.getChildren().add(labelTitle);
+
+        Label labelLimitVideo = new Label(resources.getString("LimitVideo"));
+        labelLimitVideo.setStyle("-fx-font-size: 15; -fx-text-fill: white; -fx-text-alignment: CENTER");
+        labelLimitVideo.setPrefWidth(240);
+        labelLimitVideo.setWrapText(true);
+        this.vBoxVideos.getChildren().add(labelLimitVideo);
 
         for(CorpusVideo video : this.corpus.getCorpusVideos()) {
 
