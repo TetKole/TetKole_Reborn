@@ -41,31 +41,22 @@ public class HomeSceneController implements Initializable {
 
     private List<Corpus> corpusList;
 
-    @FXML
-    private List<String> corpusListServer;
-
     private ResourceBundle resources;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        isConnected();
         this.resources = resources;
-        UpdateCorpusList();
-        UpdateCorpusListServer();
-
-
-        try {
-            isConnected();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        updateCorpusList();
+        updateCorpusListServer();
     }
 
     @FXML
     public void onCreateCorpus() {
         if (!corpusNameInput.getText().isEmpty()) {
             Corpus.createCorpus(corpusNameInput.getText());
-            UpdateCorpusList();
+            updateCorpusList();
         }
     }
 
@@ -91,11 +82,10 @@ public class HomeSceneController implements Initializable {
         vBoxButtons.getChildren().remove(labelUserName);
         vBoxButtons.getChildren().add(btnLogin);
         vBoxButtons.getChildren().add(btnRegister);
-        vBoxCorpusServer.getChildren().clear();
-
+        updateCorpusListServer();
     }
 
-    private void UpdateCorpusList() {
+    private void updateCorpusList() {
         this.vBoxCorpus.getChildren().clear();
 
         Label labelTitle = new Label("Corpus");
@@ -123,8 +113,7 @@ public class HomeSceneController implements Initializable {
         }
     }
 
-    private void UpdateCorpusListServer() {
-
+    private void updateCorpusListServer() {
         this.vBoxCorpusServer.getChildren().clear();
 
         Label labelTitleServer = new Label(resources.getString("CorpusServerTitle"));
@@ -135,10 +124,12 @@ public class HomeSceneController implements Initializable {
             Label labelNeedAuth = new Label(resources.getString("CorpusListNeedAuth"));
             labelNeedAuth.setStyle("-fx-font-size: 20; -fx-text-fill: white; ");
             this.vBoxCorpusServer.getChildren().add(labelNeedAuth);
+            System.out.println("not auth");
+            System.out.println(this.vBoxCorpusServer.getChildren().size());
         } else {
             String token = AuthenticationManager.getAuthenticationManager().getToken();
 
-            JSONObject jsonCorpus = null;
+            JSONObject jsonCorpus;
             try {
                 jsonCorpus = HttpRequestManager.getHttpRequestManagerInstance().getCorpusList(token);
             } catch (Exception e) {
@@ -156,28 +147,26 @@ public class HomeSceneController implements Initializable {
                 btn.setPrefHeight(50);
 
                 btn.setOnMouseClicked(event -> {
+                    // TODO CLONE HERE
+                    // genre un appel de fonction a la méthode clone
+                    // private void clone(String corpusName);
                     System.out.println("Corpus name : " + corpusName);
                 });
 
                 vBoxCorpusServer.getChildren().add(btn);
             }
         }
-
     }
 
-    public void isConnected() throws Exception {
-
+    public void isConnected() {
         if (AuthenticationManager.getAuthenticationManager().isAuthenticated()) {
-
             vBoxButtons.getChildren().remove(btnLogin);
             vBoxButtons.getChildren().remove(btnRegister);
             labelUserName.setText(
                     AuthenticationManager.getAuthenticationManager().getFirstname() + " " +
                             AuthenticationManager.getAuthenticationManager().getLastname()
             );
-
         } else {
-
             vBoxButtons.getChildren().remove(btnDisconnect);
             vBoxButtons.getChildren().remove(labelUserName);
             vBoxCorpusServer.getChildren().clear();
