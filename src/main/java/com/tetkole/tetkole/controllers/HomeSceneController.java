@@ -136,25 +136,28 @@ public class HomeSceneController implements Initializable {
                 throw new RuntimeException(e);
             }
             System.out.println(jsonCorpus.toString());
-            JSONArray array = new JSONArray(jsonCorpus.get("body").toString());
 
-            for (int i = 0; i < array.length(); i++) {
-                String corpusName = array.get(i).toString();
-                // add the Label
-                Button btn = new Button(corpusName);
-                btn.getStyleClass().add("buttons");
-                btn.getStyleClass().add("grey");
-                btn.setPrefWidth(140);
-                btn.setPrefHeight(50);
+            if (jsonCorpus.get("body").toString().length() > 0) {
+                JSONArray array = new JSONArray(jsonCorpus.get("body").toString());
+                for (int i = 0; i < array.length(); i++) {
 
-                btn.setOnMouseClicked(event -> {
-                    // TODO CLONE HERE
-                    // genre un appel de fonction a la méthode clone
-                    // private void clone(String corpusName);
-                    System.out.println("Corpus name : " + corpusName);
-                });
+                    String corpusName = array.get(i).toString();
+                    // add the Label
+                    Button btn = new Button(corpusName);
+                    btn.getStyleClass().add("buttons");
+                    btn.getStyleClass().add("grey");
+                    btn.setPrefWidth(140);
+                    btn.setPrefHeight(50);
 
-                vBoxCorpusServer.getChildren().add(btn);
+                    btn.setOnMouseClicked(event -> {
+                        // TODO CLONE HERE
+                        // genre un appel de fonction a la méthode clone
+                        // private void clone(String corpusName);
+                        System.out.println("Corpus name : " + corpusName);
+                    });
+
+                    vBoxCorpusServer.getChildren().add(btn);
+                }
             }
         }
     }
