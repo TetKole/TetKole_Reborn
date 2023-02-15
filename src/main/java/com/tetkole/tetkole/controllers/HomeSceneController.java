@@ -1,6 +1,7 @@
 package com.tetkole.tetkole.controllers;
 
 import com.tetkole.tetkole.utils.AuthenticationManager;
+import com.tetkole.tetkole.utils.FileManager;
 import com.tetkole.tetkole.utils.HttpRequestManager;
 import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.models.Corpus;
@@ -13,6 +14,7 @@ import javafx.scene.layout.VBox;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.net.URL;
 import java.util.*;
 
@@ -124,8 +126,6 @@ public class HomeSceneController implements Initializable {
             Label labelNeedAuth = new Label(resources.getString("CorpusListNeedAuth"));
             labelNeedAuth.setStyle("-fx-font-size: 20; -fx-text-fill: white; ");
             this.vBoxCorpusServer.getChildren().add(labelNeedAuth);
-            System.out.println("not auth");
-            System.out.println(this.vBoxCorpusServer.getChildren().size());
         } else {
             String token = AuthenticationManager.getAuthenticationManager().getToken();
 
@@ -135,13 +135,14 @@ public class HomeSceneController implements Initializable {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            System.out.println(jsonCorpus.toString());
 
             if (jsonCorpus.get("body").toString().length() > 0) {
-                JSONArray array = new JSONArray(jsonCorpus.get("body").toString());
-                for (int i = 0; i < array.length(); i++) {
+                JSONArray corpusList = new JSONArray(jsonCorpus.get("body").toString());
 
-                    String corpusName = array.get(i).toString();
+                for (Object corpusString : corpusList) {
+                    JSONObject corpusJSON = new JSONObject(corpusString.toString());
+                    String corpusName = corpusJSON.getString("name");
+
                     // add the Label
                     Button btn = new Button(corpusName);
                     btn.getStyleClass().add("buttons");
@@ -150,13 +151,58 @@ public class HomeSceneController implements Initializable {
                     btn.setPrefHeight(50);
 
                     btn.setOnMouseClicked(event -> {
-                        // TODO CLONE HERE
-                        // genre un appel de fonction a la méthode clone
-                        // private void clone(String corpusName);
-                        System.out.println("Corpus name : " + corpusName);
+                        try {
+                            // Get corpus_state.json from server
+                            JSONObject responseClone = HttpRequestManager.getHttpRequestManagerInstance().getCorpusState(token, corpusJSON.getInt("corpusId"));
+
+                            // TODO faire en sorte si les fichiers ne se télécharge pas en entier quand la co crash
+                            JSONObject corpus_content = new JSONObject(responseClone.get("body").toString());
+                            // Create folders for new corpus
+                            Corpus.createCorpus(corpusName);
+
+                            // Create corpus_state.json
+                            File corpus_state = FileManager.getFileManager().createFile(corpusName, "corpus_state.json");
+                            FileManager.getFileManager().writeJSONFile(corpus_state, corpus_content);
+
+                            // Pour chaque document, télécharger le doc et le move dans le dossier de son type et créer un dossier dans Annotation
+                            JSONArray documents = corpus_content.getJSONArray("documents");
+
+                            for (int i = 0; i < documents.length(); i++) {
+                                JSONObject document_json = documents.getJSONObject(i);
+                                FileManager.getFileManager().downloadDocument(
+                                            document_json.getString("type"),
+                                            corpusName,
+                                            document_json.getString("name")
+                                        );
+                                JSONArray annotations = document_json.getJSONArray("annotations");
+                                for (int j = 0; j < annotations.length(); j++) {
+                                    JSONObject annotation_json = annotations.getJSONObject(j);
+                                    FileManager.getFileManager().downloadAnnotation(
+                                            corpusName,
+                                            document_json.getString("name"),
+                                            annotation_json.getString("name")
+                                    );
+                                }
+                                // TODO revoir le système des annotation écrites
+                                if(document_json.getString("type").equals(Corpus.folderNameFieldAudio)) {
+                                    String fieldAudioJsonName = document_json.getString("name").split("\\.")[0] + ".json";
+                                    File fieldAudioJson = FileManager.getFileManager().createFile(corpusName + "/" + Corpus.folderNameFieldAudio, fieldAudioJsonName);
+                                    JSONObject fieldAudioJsonContent = new JSONObject();
+                                    fieldAudioJsonContent.put("fileName", document_json.getString("name"));
+                                    fieldAudioJsonContent.put("description", "");
+                                    FileManager.getFileManager().writeJSONFile(fieldAudioJson, fieldAudioJsonContent);
+                                }
+                            }
+
+                            // Update corpus list
+                            updateCorpusList();
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
                     });
 
                     vBoxCorpusServer.getChildren().add(btn);
+
                 }
             }
         }

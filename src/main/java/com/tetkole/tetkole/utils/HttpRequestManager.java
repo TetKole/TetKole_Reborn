@@ -23,18 +23,20 @@ public class HttpRequestManager{
 
     private static HttpRequestManager httpRequestManagerInstance;
     private static String apiUrl;
+    public static String servURL;
     private static final int STATUS_OK = 200;
 
-    private HttpRequestManager(String apiUrl) {
-        HttpRequestManager.apiUrl = apiUrl;
+    private HttpRequestManager(String servURL) {
+        HttpRequestManager.servURL = servURL;
+        HttpRequestManager.apiUrl = servURL + "/api";
     }
 
     public static HttpRequestManager getHttpRequestManagerInstance() {
         return httpRequestManagerInstance;
     }
 
-    public static void setHttpRequestManagerInstance(String apiUrl) {
-        HttpRequestManager.httpRequestManagerInstance = new HttpRequestManager(apiUrl);
+    public static void setHttpRequestManagerInstance(String servURL) {
+        HttpRequestManager.httpRequestManagerInstance = new HttpRequestManager(servURL);
     }
 
 
@@ -219,7 +221,27 @@ public class HttpRequestManager{
         answer.put("success", response.statusCode() == STATUS_OK);
         answer.accumulate("body", response.body());
 
-        //System.out.println(answer);
+        return answer;
+    }
+
+    // /api/corpus/{id}/clone get the corpus_state of the corpus
+    public JSONObject getCorpusState(String token, int corpusId) throws Exception {
+        String route = apiUrl + "/corpus/" + corpusId + "/clone";
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .header("Content-Type","application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        JSONObject answer = new JSONObject();
+        answer.put("success", response.statusCode() == STATUS_OK);
+        answer.accumulate("body", response.body());
+
         return answer;
     }
 }
