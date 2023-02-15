@@ -44,11 +44,16 @@ public class HomeSceneController implements Initializable {
     @FXML
     private List<String> corpusListServer;
 
+    private ResourceBundle resources;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        this.resources = resources;
         UpdateCorpusList();
+        UpdateCorpusListServer();
+
+
         try {
             isConnected();
         } catch (Exception e) {
@@ -99,7 +104,7 @@ public class HomeSceneController implements Initializable {
 
         this.corpusList = Corpus.getAllCorpus();
 
-        for(Corpus corpus : this.corpusList) {
+        for (Corpus corpus : this.corpusList) {
 
             // add the Label
             Button btn = new Button(corpus.getName());
@@ -118,35 +123,52 @@ public class HomeSceneController implements Initializable {
         }
     }
 
-    private void UpdateCorpusListServer(String token) throws Exception {
+    private void UpdateCorpusListServer() {
+
         this.vBoxCorpusServer.getChildren().clear();
 
-        Label labelTitleServer = new Label("Corpus Server");
+        Label labelTitleServer = new Label(resources.getString("CorpusServerTitle"));
         labelTitleServer.setStyle("-fx-font-size: 20; -fx-text-fill: white; ");
         this.vBoxCorpusServer.getChildren().add(labelTitleServer);
 
+        if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) {
+            Label labelNeedAuth = new Label(resources.getString("CorpusListNeedAuth"));
+            labelNeedAuth.setStyle("-fx-font-size: 20; -fx-text-fill: white; ");
+            this.vBoxCorpusServer.getChildren().add(labelNeedAuth);
+        } else {
+            String token = AuthenticationManager.getAuthenticationManager().getToken();
 
-        JSONObject jsonCorpus = HttpRequestManager.getHttpRequestManagerInstance().getCorpusList(token);
-        JSONArray array = new JSONArray(jsonCorpus.get("body").toString());
+            JSONObject jsonCorpus = null;
+            try {
+                jsonCorpus = HttpRequestManager.getHttpRequestManagerInstance().getCorpusList(token);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            JSONArray array = new JSONArray(jsonCorpus.get("body").toString());
 
+            for (int i = 0; i < array.length(); i++) {
+                String corpusName = array.get(i).toString();
+                // add the Label
+                Button btn = new Button(corpusName);
+                btn.getStyleClass().add("buttons");
+                btn.getStyleClass().add("grey");
+                btn.setPrefWidth(140);
+                btn.setPrefHeight(50);
 
-        for(int i = 0; i < array.length(); i++) {
-            String corpusName = array.get(i).toString();
-            // add the Label
-            Button btn = new Button(corpusName);
-            btn.getStyleClass().add("buttons");
-            btn.getStyleClass().add("grey");
-            btn.setPrefWidth(140);
-            btn.setPrefHeight(50);
+                btn.setOnMouseClicked(event -> {
+                    System.out.println("Corpus name : " + corpusName);
+                });
 
-            vBoxCorpusServer.getChildren().add(btn);
+                vBoxCorpusServer.getChildren().add(btn);
+            }
         }
+
     }
 
     public void isConnected() throws Exception {
+
         if (AuthenticationManager.getAuthenticationManager().isAuthenticated()) {
 
-            UpdateCorpusListServer(AuthenticationManager.getAuthenticationManager().getToken());
             vBoxButtons.getChildren().remove(btnLogin);
             vBoxButtons.getChildren().remove(btnRegister);
             labelUserName.setText(
