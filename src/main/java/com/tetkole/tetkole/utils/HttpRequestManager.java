@@ -133,7 +133,6 @@ public class HttpRequestManager{
             final HttpEntity reqEntity = MultipartEntityBuilder.create()
                     .addPart("file", fileBody)
                     .addPart("type", type)
-                    .addPart("fileName", fileName)
                     .build();
 
             httppost.setEntity(reqEntity);
@@ -159,9 +158,9 @@ public class HttpRequestManager{
     }
 
 
-    // /api/document/addAnnotation avec dans le body en form-data les fichiers et le doc name.
-    public JSONObject addAnnotation(File audioFile, File jsonFile, String documentName, String token) throws Exception {
-        String uri = apiUrl + "/document/addAnnotation";
+    // /api/document/{docID}/addAnnotation avec dans le body en form-data les fichiers et l'id de l'auteur.
+    public JSONObject addAnnotation(File audioFile, File jsonFile, int docId, String token, int userId) throws Exception {
+        String uri = apiUrl + "/document/" + docId + "/addAnnotation";
 
         JSONObject answer = new JSONObject();
         answer.put("success", false);
@@ -172,12 +171,12 @@ public class HttpRequestManager{
 
             final FileBody audioFileBody = new FileBody(audioFile);
             final FileBody jsonFileBody = new FileBody(jsonFile);
-            final StringBody documentNameBody = new StringBody(documentName, ContentType.TEXT_PLAIN);
+            final StringBody userIdBody = new StringBody(String.valueOf(userId), ContentType.TEXT_PLAIN);
 
             final HttpEntity reqEntity = MultipartEntityBuilder.create()
                     .addPart("audioFile", audioFileBody)
                     .addPart("jsonFile", jsonFileBody)
-                    .addPart("documentName", documentNameBody)
+                    .addPart("userId", userIdBody)
                     .build();
 
             httppost.setEntity(reqEntity);

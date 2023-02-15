@@ -135,6 +135,7 @@ public class HomeSceneController implements Initializable {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+            System.out.println(jsonCorpus.toString());
             JSONArray array = new JSONArray(jsonCorpus.get("body").toString());
 
             for (int i = 0; i < array.length(); i++) {

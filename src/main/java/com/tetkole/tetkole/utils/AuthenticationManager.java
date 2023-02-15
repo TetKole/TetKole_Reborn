@@ -72,4 +72,6 @@ public class AuthenticationManager {
     public String getToken() {
         return this.JWT_TOKEN;
     }
+
+    public int getUserId() { return userId; }
 }
