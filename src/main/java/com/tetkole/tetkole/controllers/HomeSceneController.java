@@ -1,6 +1,7 @@
 package com.tetkole.tetkole.controllers;
 
 import com.tetkole.tetkole.utils.AuthenticationManager;
+import com.tetkole.tetkole.utils.HttpRequestManager;
 import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.models.Corpus;
 import javafx.fxml.FXML;
@@ -9,10 +10,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class HomeSceneController implements Initializable {
 
@@ -22,6 +24,9 @@ public class HomeSceneController implements Initializable {
     private Label labelUserName;
     @FXML
     private VBox vBoxCorpus;
+
+    @FXML
+    private VBox vBoxCorpusServer;
     @FXML
     private VBox vBoxButtons;
 
@@ -36,12 +41,19 @@ public class HomeSceneController implements Initializable {
 
     private List<Corpus> corpusList;
 
+    @FXML
+    private List<String> corpusListServer;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
         UpdateCorpusList();
-        isConnected();
+        try {
+            isConnected();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @FXML
@@ -74,6 +86,8 @@ public class HomeSceneController implements Initializable {
         vBoxButtons.getChildren().remove(labelUserName);
         vBoxButtons.getChildren().add(btnLogin);
         vBoxButtons.getChildren().add(btnRegister);
+        vBoxCorpusServer.getChildren().clear();
+
     }
 
     private void UpdateCorpusList() {
@@ -104,9 +118,35 @@ public class HomeSceneController implements Initializable {
         }
     }
 
-    public void isConnected() {
+    private void UpdateCorpusListServer(String token) throws Exception {
+        this.vBoxCorpusServer.getChildren().clear();
+
+        Label labelTitleServer = new Label("Corpus Server");
+        labelTitleServer.setStyle("-fx-font-size: 20; -fx-text-fill: white; ");
+        this.vBoxCorpusServer.getChildren().add(labelTitleServer);
+
+
+        JSONObject jsonCorpus = HttpRequestManager.getHttpRequestManagerInstance().getCorpusList(token);
+        JSONArray array = new JSONArray(jsonCorpus.get("body").toString());
+
+
+        for(int i = 0; i < array.length(); i++) {
+            String corpusName = array.get(i).toString();
+            // add the Label
+            Button btn = new Button(corpusName);
+            btn.getStyleClass().add("buttons");
+            btn.getStyleClass().add("grey");
+            btn.setPrefWidth(140);
+            btn.setPrefHeight(50);
+
+            vBoxCorpusServer.getChildren().add(btn);
+        }
+    }
+
+    public void isConnected() throws Exception {
         if (AuthenticationManager.getAuthenticationManager().isAuthenticated()) {
 
+            UpdateCorpusListServer(AuthenticationManager.getAuthenticationManager().getToken());
             vBoxButtons.getChildren().remove(btnLogin);
             vBoxButtons.getChildren().remove(btnRegister);
             labelUserName.setText(
@@ -115,8 +155,10 @@ public class HomeSceneController implements Initializable {
             );
 
         } else {
+
             vBoxButtons.getChildren().remove(btnDisconnect);
             vBoxButtons.getChildren().remove(labelUserName);
+            vBoxCorpusServer.getChildren().clear();
         }
     }
 }
