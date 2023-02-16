@@ -18,7 +18,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -52,7 +51,6 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     private Corpus corpus;
     private MediaPlayer mediaPlayer;
     private RecordManager recordManager;
-    private MediaPlayer annotationPlayer;
     private int borderSize = 10;
     private List<HBox> lines = new ArrayList<>();
 
@@ -321,7 +319,6 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             this.lines.remove(line);
             this.vBoxPane.getChildren().remove(line);
             this.fieldAudio.deleteAnnotation(annotation);
-            this.fieldAudio.getAnnotations().remove(annotation);
             this.annotationsVisualization.refresh();
         });
 

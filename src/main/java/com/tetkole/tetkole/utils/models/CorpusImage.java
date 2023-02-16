@@ -4,7 +4,7 @@ import java.io.File;
 
 public class CorpusImage extends Media {
 
-    public CorpusImage(File file) {
-        super(file);
+    public CorpusImage(File file, Corpus corpus) {
+        super(file, corpus);
     }
 }

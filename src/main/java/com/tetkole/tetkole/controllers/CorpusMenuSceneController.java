@@ -13,7 +13,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -40,7 +39,10 @@ public class CorpusMenuSceneController implements Initializable {
     private Label corpusName;
 
     @FXML
-    private Label loadingLabel;
+    private Label loadingLabelPush;
+
+    @FXML
+    private Label loadingLabelPull;
 
     private ResourceBundle resources;
 
@@ -199,7 +201,7 @@ public class CorpusMenuSceneController implements Initializable {
     public void pushInitCoprus() {
         if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) return;
 
-        this.loadingLabel.setVisible(true);
+        this.loadingLabelPush.setVisible(true);
 
         // the push init thread
         new Thread(() -> {
@@ -281,8 +283,13 @@ public class CorpusMenuSceneController implements Initializable {
                 FileManager.getFileManager().writeJSONFile(corpus_state, corpus_content);
             } catch (Exception e) { throw new RuntimeException(e); }
 
-            loadingLabel.setVisible(false);
+            loadingLabelPush.setVisible(false);
 
         }).start();
+    }
+
+
+    public void pullCorpus() {
+        System.out.println("je pull");
     }
 }

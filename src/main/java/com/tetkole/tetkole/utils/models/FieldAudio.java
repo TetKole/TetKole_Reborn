@@ -6,13 +6,13 @@ public class FieldAudio extends Media {
 
     private String description = "";
 
-    public FieldAudio(File file, String description) {
-        super(file);
+    public FieldAudio(File file, String description, Corpus corpus) {
+        super(file, corpus);
         this.description = description;
     }
 
-    public FieldAudio(File file) {
-        this(file, "");
+    public FieldAudio(File file, Corpus corpus) {
+        this(file, "", corpus);
     }
 
     public String getDescription() {

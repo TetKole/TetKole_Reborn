@@ -1,6 +1,7 @@
 package com.tetkole.tetkole.utils;
 
 import com.tetkole.tetkole.utils.models.Corpus;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.swing.filechooser.FileSystemView;
@@ -220,5 +221,20 @@ public class FileManager {
         String path = corpusName + "/" + typeDoc + "/" + fileName;
         downloadFileFromURL(HttpRequestManager.servURL + "/" + path, path);
         FileManager.getFileManager().createFolder(corpusName + "/" + Corpus.folderNameAnnotation, fileName);
+    }
+
+    public void createCorpusModifFile(String corpusName) {
+        File file = new File(this.folderPath + "/" + corpusName + "/corpus_modif.json");
+        JSONObject corpus_modif = new JSONObject();
+        corpus_modif.accumulate("added", new JSONObject());
+        corpus_modif.accumulate("deleted", new JSONObject());
+
+        corpus_modif.getJSONObject("added").put("documents", new JSONArray());
+        corpus_modif.getJSONObject("added").put("annotations", new JSONArray());
+
+        corpus_modif.getJSONObject("deleted").put("documents", new JSONArray());
+        corpus_modif.getJSONObject("deleted").put("annotations", new JSONArray());
+
+        writeJSONFile(file, corpus_modif);
     }
 }
