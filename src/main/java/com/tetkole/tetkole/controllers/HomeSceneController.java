@@ -150,56 +150,7 @@ public class HomeSceneController implements Initializable {
                     btn.setPrefWidth(140);
                     btn.setPrefHeight(50);
 
-                    btn.setOnMouseClicked(event -> {
-                        try {
-                            // Get corpus_state.json from server
-                            JSONObject responseClone = HttpRequestManager.getHttpRequestManagerInstance().getCorpusState(token, corpusJSON.getInt("corpusId"));
-
-                            // TODO faire en sorte si les fichiers ne se télécharge pas en entier quand la co crash
-                            JSONObject corpus_content = new JSONObject(responseClone.get("body").toString());
-                            // Create folders for new corpus
-                            Corpus.createCorpus(corpusName);
-
-                            // Create corpus_state.json
-                            File corpus_state = FileManager.getFileManager().createFile(corpusName, "corpus_state.json");
-                            FileManager.getFileManager().writeJSONFile(corpus_state, corpus_content);
-
-                            // Pour chaque document, télécharger le doc et le move dans le dossier de son type et créer un dossier dans Annotation
-                            JSONArray documents = corpus_content.getJSONArray("documents");
-
-                            for (int i = 0; i < documents.length(); i++) {
-                                JSONObject document_json = documents.getJSONObject(i);
-                                FileManager.getFileManager().downloadDocument(
-                                            document_json.getString("type"),
-                                            corpusName,
-                                            document_json.getString("name")
-                                        );
-                                JSONArray annotations = document_json.getJSONArray("annotations");
-                                for (int j = 0; j < annotations.length(); j++) {
-                                    JSONObject annotation_json = annotations.getJSONObject(j);
-                                    FileManager.getFileManager().downloadAnnotation(
-                                            corpusName,
-                                            document_json.getString("name"),
-                                            annotation_json.getString("name")
-                                    );
-                                }
-                                // TODO revoir le système des annotation écrites
-                                if(document_json.getString("type").equals(Corpus.folderNameFieldAudio)) {
-                                    String fieldAudioJsonName = document_json.getString("name").split("\\.")[0] + ".json";
-                                    File fieldAudioJson = FileManager.getFileManager().createFile(corpusName + "/" + Corpus.folderNameFieldAudio, fieldAudioJsonName);
-                                    JSONObject fieldAudioJsonContent = new JSONObject();
-                                    fieldAudioJsonContent.put("fileName", document_json.getString("name"));
-                                    fieldAudioJsonContent.put("description", "");
-                                    FileManager.getFileManager().writeJSONFile(fieldAudioJson, fieldAudioJsonContent);
-                                }
-                            }
-
-                            // Update corpus list
-                            updateCorpusList();
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
+                    btn.setOnMouseClicked(event -> clone(token, corpusJSON));
 
                     vBoxCorpusServer.getChildren().add(btn);
 
@@ -220,6 +171,58 @@ public class HomeSceneController implements Initializable {
             vBoxButtons.getChildren().remove(btnDisconnect);
             vBoxButtons.getChildren().remove(labelUserName);
             vBoxCorpusServer.getChildren().clear();
+        }
+    }
+
+    private void clone(String token, JSONObject corpusJSON) {
+        try {
+            // Get corpus_state.json from server
+            JSONObject responseClone = HttpRequestManager.getHttpRequestManagerInstance().getCorpusState(token, corpusJSON.getInt("corpusId"));
+            String corpusName = corpusJSON.getString("name");
+
+            // TODO faire en sorte si les fichiers ne se télécharge pas en entier quand la co crash
+            JSONObject corpus_content = new JSONObject(responseClone.get("body").toString());
+            // Create folders for new corpus
+            Corpus.createCorpus(corpusName);
+
+            // Create corpus_state.json
+            File corpus_state = FileManager.getFileManager().createFile(corpusName, "corpus_state.json");
+            FileManager.getFileManager().writeJSONFile(corpus_state, corpus_content);
+
+            // Pour chaque document, télécharger le doc et le move dans le dossier de son type et créer un dossier dans Annotation
+            JSONArray documents = corpus_content.getJSONArray("documents");
+
+            for (int i = 0; i < documents.length(); i++) {
+                JSONObject document_json = documents.getJSONObject(i);
+                FileManager.getFileManager().downloadDocument(
+                        document_json.getString("type"),
+                        corpusName,
+                        document_json.getString("name")
+                );
+                JSONArray annotations = document_json.getJSONArray("annotations");
+                for (int j = 0; j < annotations.length(); j++) {
+                    JSONObject annotation_json = annotations.getJSONObject(j);
+                    FileManager.getFileManager().downloadAnnotation(
+                            corpusName,
+                            document_json.getString("name"),
+                            annotation_json.getString("name")
+                    );
+                }
+                // TODO revoir le système des annotation écrites
+                if(document_json.getString("type").equals(Corpus.folderNameFieldAudio)) {
+                    String fieldAudioJsonName = document_json.getString("name").split("\\.")[0] + ".json";
+                    File fieldAudioJson = FileManager.getFileManager().createFile(corpusName + "/" + Corpus.folderNameFieldAudio, fieldAudioJsonName);
+                    JSONObject fieldAudioJsonContent = new JSONObject();
+                    fieldAudioJsonContent.put("fileName", document_json.getString("name"));
+                    fieldAudioJsonContent.put("description", "");
+                    FileManager.getFileManager().writeJSONFile(fieldAudioJson, fieldAudioJsonContent);
+                }
+            }
+
+            // Update corpus list
+            updateCorpusList();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }
