@@ -1,6 +1,7 @@
 package com.tetkole.tetkole.controllers;
 
 import com.tetkole.tetkole.utils.AuthenticationManager;
+import com.tetkole.tetkole.utils.FileManager;
 import com.tetkole.tetkole.utils.HttpRequestManager;
 import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.models.*;
@@ -232,6 +233,7 @@ public class CorpusMenuSceneController implements Initializable {
             medias.addAll(this.corpus.getCorpusVideos());
             medias.addAll(this.corpus.getCorpusImages());
 
+            // TODO prendre en compte si la co crash
             for (Media m : medias) {
                 String docType = "";
                 if (m instanceof FieldAudio)  docType = "FieldAudio";
@@ -267,6 +269,17 @@ public class CorpusMenuSceneController implements Initializable {
                     System.out.println("POST addAnnotation successfull. Annotation: " + annotation.getFile().getName());
                 }
             }
+
+            JSONObject responseClone = null;
+            try {
+                // Get corpus_state.json from server
+                responseClone = httpRequestManager.getCorpusState(token, corpusId);
+                JSONObject corpus_content = new JSONObject(responseClone.get("body").toString());
+
+                // Create corpus_state.json
+                File corpus_state = FileManager.getFileManager().createFile(this.corpus.getName(), "corpus_state.json");
+                FileManager.getFileManager().writeJSONFile(corpus_state, corpus_content);
+            } catch (Exception e) { throw new RuntimeException(e); }
 
             loadingLabel.setVisible(false);
 
