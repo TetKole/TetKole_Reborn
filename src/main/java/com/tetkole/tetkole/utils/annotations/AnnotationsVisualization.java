@@ -40,18 +40,21 @@ public class AnnotationsVisualization extends Pane {
         annotationsRectanglesMenu.clear();
 
         int i = 0;
-        System.out.println(this.audioEditSceneController.getFieldAudio().getAnnotations().size());
-        for( Annotation annotation : this.audioEditSceneController.getFieldAudio().getAnnotations()) {
+        for (Annotation annotation : this.audioEditSceneController.getFieldAudio().getAnnotations()) {
             double annotationStart = annotation.getStart();
             double annotationEnd = annotation.getEnd();
-            if(!(annotationEnd < this.beginAudio || annotationStart > this.endAudio)){
+
+            if (!(annotationEnd < this.beginAudio || annotationStart > this.endAudio)) {
+
+                if (this.audioEditSceneController.getLines().size() == 0) return;
+
                 Rectangle r = initRectangle(
                         ratioAudio * (annotationStart - this.beginAudio),
                         this.getHeight()/2,
                         ratioAudio * (annotationEnd - this.beginAudio) - ratioAudio * (annotationStart - this.beginAudio),
                         this.audioEditSceneController.getLines().get(i),
                         annotation
-                        );
+                );
 
                 annotationsRectangles.add(r);
                 this.getChildren().add(r);
