@@ -8,7 +8,6 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -130,7 +129,6 @@ public class HttpRequestManager{
 
             final FileBody fileBody = new FileBody(file);
             final StringBody type = new StringBody(docType, ContentType.TEXT_PLAIN);
-            final StringBody fileName = new StringBody(file.getName(), ContentType.TEXT_PLAIN);
 
             final HttpEntity reqEntity = MultipartEntityBuilder.create()
                     .addPart("file", fileBody)
@@ -240,7 +238,27 @@ public class HttpRequestManager{
 
         JSONObject answer = new JSONObject();
         answer.put("success", response.statusCode() == STATUS_OK);
-        answer.accumulate("body", response.body());
+        answer.accumulate("body", new JSONObject(response.body()));
+
+        return answer;
+    }
+
+    public JSONObject getCorpusByName(String name, String token) throws Exception {
+        String route = apiUrl + "/corpus/getByName/" + name;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .header("Content-Type","application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        JSONObject answer = new JSONObject();
+        answer.put("success", response.statusCode() == STATUS_OK);
+        answer.accumulate("body", new JSONObject(response.body()));
 
         return answer;
     }

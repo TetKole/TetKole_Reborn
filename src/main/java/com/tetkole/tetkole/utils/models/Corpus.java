@@ -107,6 +107,7 @@ public class Corpus {
                     double end = jsonObject.getDouble("end");
 
                     // Create annotation
+                    assert audioFile != null;
                     Objects.requireNonNull(media).addAnnotation(new Annotation(audioFile, start, end, folderFieldAudio.getName(), corpus.getName()));
 
                 }
@@ -305,5 +306,14 @@ public class Corpus {
 
     public JSONObject getCorpusModif() {
         return this.corpus_modif;
+    }
+
+    public JSONObject getCorpusState() {
+        File file = new File(FileManager.getFileManager().getFolderPath() + "/" + name + "/corpus_state.json");
+        if (!file.exists()) {
+            System.out.println("corpus state doesn't exist on your computer");
+            return null;
+        }
+        return FileManager.getFileManager().readJSONFile(file);
     }
 }

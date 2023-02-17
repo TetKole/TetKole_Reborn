@@ -181,7 +181,7 @@ public class HomeSceneController implements Initializable {
             String corpusName = corpusJSON.getString("name");
 
             // TODO faire en sorte si les fichiers ne se télécharge pas en entier quand la co crash
-            JSONObject corpus_content = new JSONObject(responseClone.get("body").toString());
+            JSONObject corpus_content = responseClone.getJSONObject("body");
             // Create folders for new corpus
             Corpus.createCorpus(corpusName);
 
