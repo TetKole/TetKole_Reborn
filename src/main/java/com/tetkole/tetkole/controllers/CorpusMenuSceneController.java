@@ -295,28 +295,23 @@ public class CorpusMenuSceneController implements Initializable {
 
     public void pullCorpus() {
         if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) return;
-        System.out.println("je pull");
+        System.out.println("Start Pulling");
         this.loadingLabelPull.setVisible(true);
 
         pullThreadRunning = true;
 
-        // the push init thread
         new Thread(() -> {
             try {
                 // Get the infos we need
                 HttpRequestManager httpRequestManager = HttpRequestManager.getHttpRequestManagerInstance();
                 String token = AuthenticationManager.getAuthenticationManager().getToken();
 
-                // Get corpus id from server
-                JSONObject responseGetByName = httpRequestManager.getCorpusByName(this.corpus.getName(), token);
-                if (!responseGetByName.getBoolean("success")) {
-                    System.out.println("the corpus doesn't exist on server");
-                    return;
-                }
+
+                JSONObject localCorpusState = this.corpus.getCorpusState();
+                int corpusId = localCorpusState.getInt("corpusId");
 
                 // Get corpus_state.json from server
-                JSONObject jsonCorpus = responseGetByName.getJSONObject("body");
-                JSONObject responseGetCorpusState = httpRequestManager.getCorpusState(token, jsonCorpus.getInt("corpusId"));
+                JSONObject responseGetCorpusState = httpRequestManager.getCorpusState(token, corpusId);
 
                 if (!responseGetCorpusState.getBoolean("success")) {
                     System.out.println("error when fetching Corpus State from server");
@@ -324,7 +319,7 @@ public class CorpusMenuSceneController implements Initializable {
                 }
 
                 JSONObject serverCorpusState = responseGetCorpusState.getJSONObject("body");
-                JSONObject localCorpusState = this.corpus.getCorpusState();
+
                 this.tempCorpusStateForPull = serverCorpusState;
 
                 /*
@@ -432,7 +427,7 @@ public class CorpusMenuSceneController implements Initializable {
         updateImagesList();
         updateFieldAudioList();
 
-        System.out.println("Pull DONE");
+        System.out.println("Pull Done");
     }
 
     private boolean existOnDocArray(JSONObject docOnServer, JSONArray docs) {

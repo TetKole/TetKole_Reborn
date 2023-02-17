@@ -260,13 +260,18 @@ public class Corpus {
         File fieldAudiosFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + getName() + "/" + folderNameFieldAudio);
         for (File audioFile : Objects.requireNonNull(fieldAudiosFolder.listFiles(file -> !file.getName().endsWith("json")))) {
 
-            File jsonFile = Objects.requireNonNull(fieldAudiosFolder.listFiles(file ->
+            //TODO annotation ecrite
+            File[] jsonFiles = fieldAudiosFolder.listFiles(file ->
                     file.getName().endsWith("json")
-            ))[0];
+            );
 
-            JSONObject jsonObject = FileManager.getFileManager().readJSONFile(jsonFile);
+            String description = "";
+            if (jsonFiles != null && jsonFiles.length > 0) {
+                JSONObject jsonObject = FileManager.getFileManager().readJSONFile(jsonFiles[0]);
+                description = jsonObject.getString("description");
+            }
 
-            fieldAudios.add(new FieldAudio(audioFile, jsonObject.getString("description"), this));
+            fieldAudios.add(new FieldAudio(audioFile, description, this));
         }
 
         /* Manage videos in Videos Folder */

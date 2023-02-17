@@ -242,24 +242,4 @@ public class HttpRequestManager{
 
         return answer;
     }
-
-    public JSONObject getCorpusByName(String name, String token) throws Exception {
-        String route = apiUrl + "/corpus/getByName/" + name;
-
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .GET()
-                .header("Content-Type","application/json")
-                .header("Authorization", "Bearer " + token)
-                .uri(URI.create(route))
-                .build();
-
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        JSONObject answer = new JSONObject();
-        answer.put("success", response.statusCode() == STATUS_OK);
-        answer.accumulate("body", new JSONObject(response.body()));
-
-        return answer;
-    }
 }
