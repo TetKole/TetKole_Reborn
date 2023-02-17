@@ -40,6 +40,7 @@ public class AnnotationsVisualization extends Pane {
         annotationsRectanglesMenu.clear();
 
         int i = 0;
+        System.out.println(this.audioEditSceneController.getFieldAudio().getAnnotations().size());
         for( Annotation annotation : this.audioEditSceneController.getFieldAudio().getAnnotations()) {
             double annotationStart = annotation.getStart();
             double annotationEnd = annotation.getEnd();

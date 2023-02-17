@@ -42,6 +42,13 @@ public abstract class Media {
         this.corpus.writeCorpusModif();
     }
 
+    /**
+     * This method should only be used when loading a corpus
+     */
+    public void addAnnotationInit(Annotation annotation) {
+        this.annotations.add(annotation);
+    }
+
     public void deleteAnnotation(Annotation annotation) {
         for (Annotation a : this.annotations) {
             if (a.equals(annotation)) {
