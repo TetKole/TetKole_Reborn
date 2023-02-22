@@ -31,7 +31,6 @@ public class WaveVisualization extends WaveFormPane {
 			
 			// Canvas Width
 			this.setWidthPane(newValue.intValue());
-			System.out.println("Width listener : " + width);
 			
 			// Draw single line
 			if (getWaveService().getResultingWaveform() != null)

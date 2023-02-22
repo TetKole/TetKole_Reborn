@@ -269,25 +269,36 @@ public class WaveFormService extends Service<Boolean> {
 			private float[] processAmplitudes(int[] sourcePcmData) {
 				//The width of the resulting waveform panel
 				int width = (int) waveVisualization.width;
-				System.out.println("Width Service : " + width);
 				float[] waveData = new float[width];
-				int samplesPerPixel = sourcePcmData.length / width;
+				float samplesPerPixel = (float)sourcePcmData.length / (float)width;
 				
 				//Calculate
 				float nValue;
 				for (int w = 0; w < width; w++) {
 					
 					//For performance keep it here
-					int c = w * samplesPerPixel;
+					float c = w * samplesPerPixel;
 					nValue = 0.0f;
 					
 					//Keep going
 					for (int s = 0; s < samplesPerPixel; s++) {
-						nValue += ( Math.abs(sourcePcmData[c + s]) / 65536.0f );
+						float index = c + s;
+						int wholePart = (int) Math.floor(index);
+						float decimalPart = index - wholePart;
+						float leftValue;
+						float rightValue;
+						if(wholePart != sourcePcmData.length - 1) {
+							leftValue = sourcePcmData[wholePart] * (1 - decimalPart);
+							rightValue = sourcePcmData[wholePart + 1] * decimalPart;
+						} else {
+							leftValue = sourcePcmData[wholePart];
+							rightValue = 0;
+						}
+						nValue += ( (leftValue + rightValue) / 65536.0f );
 					}
 					
 					//Set WaveData
-					waveData[w] = nValue / samplesPerPixel;
+					waveData[w] = (float) (nValue / samplesPerPixel);
 				}
 				return waveData;
 			}
