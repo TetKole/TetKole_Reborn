@@ -287,11 +287,11 @@ public class WaveFormService extends Service<Boolean> {
 						float decimalPart = index - wholePart;
 						float leftValue;
 						float rightValue;
-						if(wholePart != sourcePcmData.length - 1) {
+						if(wholePart < sourcePcmData.length - 1) {
 							leftValue = sourcePcmData[wholePart] * (1 - decimalPart);
 							rightValue = sourcePcmData[wholePart + 1] * decimalPart;
 						} else {
-							leftValue = sourcePcmData[wholePart];
+							leftValue = sourcePcmData[wholePart - 1];
 							rightValue = 0;
 						}
 						nValue += ( (leftValue + rightValue) / 65536.0f );
