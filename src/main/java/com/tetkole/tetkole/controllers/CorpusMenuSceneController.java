@@ -1,6 +1,7 @@
 package com.tetkole.tetkole.controllers;
 
 import com.tetkole.tetkole.utils.AuthenticationManager;
+import com.tetkole.tetkole.utils.FileManager;
 import com.tetkole.tetkole.utils.HttpRequestManager;
 import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.models.*;
@@ -12,6 +13,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -38,9 +40,15 @@ public class CorpusMenuSceneController implements Initializable {
     private Label corpusName;
 
     @FXML
-    private Label loadingLabel;
+    private Label loadingLabelPush;
+
+    @FXML
+    private Label loadingLabelPull;
 
     private ResourceBundle resources;
+
+    private volatile boolean pullThreadRunning;
+    private JSONObject tempCorpusStateForPull;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -155,6 +163,12 @@ public class CorpusMenuSceneController implements Initializable {
         labelTitle.setStyle("-fx-font-size: 20; -fx-text-fill: white; ");
         this.vBoxVideos.getChildren().add(labelTitle);
 
+        Label labelLimitVideo = new Label(resources.getString("LimitVideo"));
+        labelLimitVideo.setStyle("-fx-font-size: 15; -fx-text-fill: white; -fx-text-alignment: CENTER");
+        labelLimitVideo.setPrefWidth(240);
+        labelLimitVideo.setWrapText(true);
+        this.vBoxVideos.getChildren().add(labelLimitVideo);
+
         for(CorpusVideo video : this.corpus.getCorpusVideos()) {
 
             // add the Label
@@ -188,10 +202,10 @@ public class CorpusMenuSceneController implements Initializable {
     }
 
 
-    public void pushInitCoprus() {
+    public void pushInitCorpus() {
         if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) return;
 
-        this.loadingLabel.setVisible(true);
+        this.loadingLabelPush.setVisible(true);
 
         // the push init thread
         new Thread(() -> {
@@ -199,6 +213,7 @@ public class CorpusMenuSceneController implements Initializable {
             // Get the infos we need
             HttpRequestManager httpRequestManager = HttpRequestManager.getHttpRequestManagerInstance();
             String token = AuthenticationManager.getAuthenticationManager().getToken();
+            int userId = AuthenticationManager.getAuthenticationManager().getUserId();
 
             // Add Corpus
 
@@ -224,6 +239,7 @@ public class CorpusMenuSceneController implements Initializable {
             medias.addAll(this.corpus.getCorpusVideos());
             medias.addAll(this.corpus.getCorpusImages());
 
+            // TODO prendre en compte si la co crash
             for (Media m : medias) {
                 String docType = "";
                 if (m instanceof FieldAudio)  docType = "FieldAudio";
@@ -241,20 +257,15 @@ public class CorpusMenuSceneController implements Initializable {
                 }
                 int docId = responseAddDocument.getJSONObject("body").getInt("docId");
                 System.out.println("POST addDocument successfull. Document: " + m.getName() + " | Id: " + docId);
-            }
 
-
-            // Add Annotations
-
-            for (Media m : medias) {
+                // Add Annotations
                 for (Annotation annotation : m.getAnnotations()) {
 
                     File jsonFile = annotation.getJsonFile();
-                    String documentName = annotation.getDocumentName();
 
                     JSONObject responseAddAnnotation;
                     try {
-                        responseAddAnnotation = httpRequestManager.addAnnotation(annotation.getFile(), jsonFile, documentName, token);
+                        responseAddAnnotation = httpRequestManager.addAnnotation(annotation.getFile(), jsonFile, docId, token, userId);
                     } catch (Exception e) { throw new RuntimeException(e); }
 
                     if (!responseAddAnnotation.getBoolean("success")) {
@@ -265,8 +276,253 @@ public class CorpusMenuSceneController implements Initializable {
                 }
             }
 
-            loadingLabel.setVisible(false);
+            JSONObject responseClone;
+            try {
+                // Get corpus_state.json from server
+                responseClone = httpRequestManager.getCorpusState(token, corpusId);
+                JSONObject corpus_content = new JSONObject(responseClone.get("body").toString());
+
+                // Create corpus_state.json
+                File corpus_state = FileManager.getFileManager().createFile(this.corpus.getName(), "corpus_state.json");
+                FileManager.getFileManager().writeJSONFile(corpus_state, corpus_content);
+            } catch (Exception e) { throw new RuntimeException(e); }
+
+            loadingLabelPush.setVisible(false);
 
         }).start();
+    }
+
+
+    public void pullCorpus() {
+        if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) return;
+        System.out.println("Start Pulling");
+        this.loadingLabelPull.setVisible(true);
+
+        pullThreadRunning = true;
+
+        new Thread(() -> {
+            try {
+                // Get the infos we need
+                HttpRequestManager httpRequestManager = HttpRequestManager.getHttpRequestManagerInstance();
+                String token = AuthenticationManager.getAuthenticationManager().getToken();
+
+
+                JSONObject localCorpusState = this.corpus.getCorpusState();
+                int corpusId = localCorpusState.getInt("corpusId");
+
+                // Get corpus_state.json from server
+                JSONObject responseGetCorpusState = httpRequestManager.getCorpusState(token, corpusId);
+
+                if (!responseGetCorpusState.getBoolean("success")) {
+                    System.out.println("error when fetching Corpus State from server");
+                    return;
+                }
+
+                JSONObject serverCorpusState = responseGetCorpusState.getJSONObject("body");
+
+                this.tempCorpusStateForPull = serverCorpusState;
+
+                /*
+                System.out.println("serverCorpusState");
+                System.out.println(serverCorpusState);
+                System.out.println("localCorpusState");
+                System.out.println(localCorpusState);
+                */
+
+                // on compare les deux corpus state
+                JSONArray serveurDocs = serverCorpusState.getJSONArray("documents");
+                JSONArray localDocs = localCorpusState.getJSONArray("documents");
+                JSONObject diffDocs = new JSONObject();
+                diffDocs.put("documents", new JSONArray());
+                diffDocs.put("annotations", new JSONArray());
+
+                /*
+                diffDocs
+                {
+                    "documents": [
+                        {
+                            "id": 2,
+                            "type": "Images",
+                            "name": "image.jpg"
+                        },
+                        {
+                            "id": 4,
+                            "type": "FieldAudio",
+                            "name": "audio.mp3"
+                        }
+                    ],
+                    "annotations": [
+                        {
+                            "id": 2,
+                            "name": "annotation_15-02-2023_11h40m34s_939.wav",
+                            "document": "audio.mp3"
+                        }
+                    ]
+                }*/
+
+                // on regarde si les docs sur serveur existe en local
+                for (int i=0; i < serveurDocs.length(); i++) {
+                    JSONObject doc = serveurDocs.getJSONObject(i);
+
+                    // si le doc existe pas, on l'ajoute a diffDocs
+                    boolean docExistOnLocal = existOnDocArray(doc, localDocs);
+                    if (!docExistOnLocal) {
+                        JSONObject newDoc = new JSONObject();
+                        newDoc.put("id", doc.getInt("docId"));
+                        newDoc.put("name", doc.getString("name"));
+                        newDoc.put("type", doc.get("type"));
+                        diffDocs.getJSONArray("documents").put(newDoc);
+                    }
+
+                    // idem pour les annotations
+                    JSONArray serverAnnotations = doc.getJSONArray("annotations");
+                    // si le doc exist en local, on compare les tableaux d'annotation
+                    // sinon, on ajoute toutes les annotations du serveur sur le diffDocs
+                    if (docExistOnLocal) {
+                        JSONArray localAnnotations = findLocalAnnotations(doc, localDocs);
+                        for (int j=0; j<serverAnnotations.length(); j++) {
+                            JSONObject a = serverAnnotations.getJSONObject(j);
+                            if (!existOnAnnotationArray(a, localAnnotations)) {
+                                JSONObject newAnnotation = new JSONObject();
+                                newAnnotation.put("id", a.get("annotationId"));
+                                newAnnotation.put("name", a.get("name"));
+                                newAnnotation.put("document", doc.get("name"));
+                                diffDocs.getJSONArray("annotations").put(newAnnotation);
+                            }
+                        }
+                    } else {
+                        for(int j=0; j<serverAnnotations.length(); j++) {
+                            JSONObject annotation = serverAnnotations.getJSONObject(j);
+                            JSONObject newAnnotation = new JSONObject();
+                            newAnnotation.put("id", annotation.get("annotationId"));
+                            newAnnotation.put("name", annotation.get("name"));
+                            newAnnotation.put("document", doc.get("name"));
+                            diffDocs.getJSONArray("annotations").put(newAnnotation);
+                        }
+                    }
+
+                }
+
+                fetchCorpusDiff(diffDocs);
+
+                pullThreadRunning = false;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+        }).start();
+
+        while (pullThreadRunning) {
+            Thread.onSpinWait();
+        }
+
+        this.loadingLabelPull.setVisible(false);
+
+        FileManager fileManager = FileManager.getFileManager();
+        File newCorpusState = new File(fileManager.getFolderPath() + "/" + this.corpus.getName() + "/corpus_state.json");
+        fileManager.writeJSONFile(newCorpusState, this.tempCorpusStateForPull);
+        this.corpus.reload();
+
+        updateVideosList();
+        updateImagesList();
+        updateFieldAudioList();
+
+        System.out.println("Pull Done");
+    }
+
+    private boolean existOnDocArray(JSONObject docOnServer, JSONArray docs) {
+        int id = docOnServer.getInt("docId");
+        String name = docOnServer.getString("name");
+
+        for (int i=0; i < docs.length(); i++) {
+            JSONObject doc = docs.getJSONObject(i);
+            if (doc.getInt("docId") == id && doc.getString("name").equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private JSONArray findLocalAnnotations(JSONObject doc, JSONArray localDocs) {
+        int id = doc.getInt("docId");
+        String name = doc.getString("name");
+
+        for (int i=0; i<localDocs.length(); i++) {
+            if (localDocs.getJSONObject(i).getString("name").equals(name) && localDocs.getJSONObject(i).getInt("docId") == id) {
+                return localDocs.getJSONObject(i).getJSONArray("annotations");
+            }
+        }
+        return new JSONArray();
+    }
+
+    private boolean existOnAnnotationArray(JSONObject a, JSONArray annotations) {
+        int id = a.getInt("annotationId");
+        String name = a.getString("name");
+
+        for (int i=0; i<annotations.length(); i++) {
+            if (annotations.getJSONObject(i).getInt("annotationId") == id && annotations.getJSONObject(i).getString("name").equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get diffDocs from server and place them correctly in corpus file system, then update corpus_state.
+     * @param diffDocs docs to fetch from server
+     */
+    private void fetchCorpusDiff(JSONObject diffDocs) {
+         /*
+            diffDocs
+            {
+                "documents": [
+                    {
+                        "id": 2,
+                        "type": "Images",
+                        "name": "image.jpg"
+                    },
+                    {
+                        "id": 4,
+                        "type": "FieldAudio",
+                        "name": "audio.mp3"
+                    }
+                ],
+                "annotations": [
+                    {
+                        "id": 2,
+                        "name": "annotation_15-02-2023_11h40m34s_939.wav",
+                        "document": "audio.mp3"
+                    }
+                ]
+            }*/
+
+        //System.out.println("diffDocs");
+        //System.out.println(diffDocs);
+
+        FileManager fileManager = FileManager.getFileManager();
+
+        JSONArray documents = diffDocs.getJSONArray("documents");
+        JSONArray annotations = diffDocs.getJSONArray("annotations");
+
+        try {
+            for (int i=0; i<documents.length(); i++) {
+                String fileName = documents.getJSONObject(i).getString("name");
+                String type = documents.getJSONObject(i).getString("type");
+
+                fileManager.downloadDocument(type, this.corpus.getName(), fileName);
+            }
+
+            for (int i=0; i<annotations.length(); i++) {
+                String fileName = annotations.getJSONObject(i).getString("name");
+                String docName = annotations.getJSONObject(i).getString("document");
+
+                fileManager.downloadAnnotation(this.corpus.getName(), docName, fileName);
+            }
+
+            this.loadingLabelPull.setVisible(false);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

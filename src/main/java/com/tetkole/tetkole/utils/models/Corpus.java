@@ -26,11 +26,13 @@ public class Corpus {
      * ONLY USE this method to create a new corpus
      */
     public static void createCorpus(String name) {
-        FileManager.getFileManager().createFolder(name);
-        FileManager.getFileManager().createFolder(name, folderNameFieldAudio);
-        FileManager.getFileManager().createFolder(name, folderNameCorpusImage);
-        FileManager.getFileManager().createFolder(name, folderNameCorpusVideo);
-        FileManager.getFileManager().createFolder(name, folderNameAnnotation);
+        FileManager fileManager = FileManager.getFileManager();
+        fileManager.createFolder(name);
+        fileManager.createFolder(name, folderNameFieldAudio);
+        fileManager.createFolder(name, folderNameCorpusImage);
+        fileManager.createFolder(name, folderNameCorpusVideo);
+        fileManager.createFolder(name, folderNameAnnotation);
+        fileManager.createCorpusModifFile(name);
     }
 
 
@@ -44,76 +46,7 @@ public class Corpus {
         for (File corpusFolder : Objects.requireNonNull(new File(FileManager.getFileManager().getFolderPath()).listFiles())) {
 
             Corpus corpus = new Corpus(corpusFolder.getName());
-
-            /* Manage fieldAudios in FieldAudios Folder */
-            File fieldAudiosFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + corpus.getName() + "/" + folderNameFieldAudio);
-            for (File audioFile : Objects.requireNonNull(fieldAudiosFolder.listFiles(file -> !file.getName().endsWith("json")))) {
-
-                File jsonFile = Objects.requireNonNull(fieldAudiosFolder.listFiles(file ->
-                        file.getName().endsWith("json")
-                ))[0];
-
-                JSONObject jsonObject = FileManager.getFileManager().readJSONFile(jsonFile);
-
-                corpus.fieldAudios.add(new FieldAudio(audioFile, jsonObject.getString("description")));
-            }
-
-            for (File file : Objects.requireNonNull(fieldAudiosFolder.listFiles())) {
-                String fileName = file.getName();
-                int extIndex = fileName.lastIndexOf('.');
-
-                if(fileName.substring(extIndex + 1).equals("json")) {
-
-                }
-            }
-
-            /* Manage videos in Videos Folder */
-            File videosFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + corpus.getName() + "/" + folderNameCorpusVideo);
-            for (File file : Objects.requireNonNull(videosFolder.listFiles())) {
-                corpus.corpusVideos.add(new CorpusVideo(file));
-            }
-
-            /* Manage images in Images Folder */
-            File imagesFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + corpus.getName() + "/" + folderNameCorpusImage);
-            for (File file : Objects.requireNonNull(imagesFolder.listFiles())) {
-                corpus.corpusImages.add(new CorpusImage(file));
-            }
-
-
-            /* Manage annotations in Annotations Folder */
-            File annotationsFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + corpus.getName() + "/" + folderNameAnnotation);
-
-            for (File folderFieldAudio : Objects.requireNonNull(annotationsFolder.listFiles())) {
-                // we get the field audio corresponding to the folder
-                Media media = corpus.getMediaByName(folderFieldAudio.getName());
-
-                // Loop on every annotation in the folder
-                for (File annotationFolder : Objects.requireNonNull(folderFieldAudio.listFiles())) {
-
-                    // Search for json and wave files for each annotation
-                    File jsonFile = null;
-                    File audioFile = null;
-                    // this for only loop twice, we can't predict file names here, so we need a for :(
-                    for (File file : Objects.requireNonNull(annotationFolder.listFiles())) {
-                        if (file.getName().endsWith(".json")) {
-                            jsonFile = file;
-                        }
-                        if (file.getName().endsWith(".wav")) {
-                            audioFile = file;
-                        }
-                    }
-
-                    // Read JSON
-                    JSONObject jsonObject = FileManager.getFileManager().readJSONFile(Objects.requireNonNull(jsonFile));
-                    double start = jsonObject.getDouble("start");
-                    double end = jsonObject.getDouble("end");
-
-                    // Create annotation
-                    Objects.requireNonNull(media).addAnnotation(new Annotation(audioFile, start, end, folderFieldAudio.getName(), corpus.getName()));
-
-                }
-            }
-
+            corpus.load();
             corpusList.add(corpus);
         }
 
@@ -129,6 +62,8 @@ public class Corpus {
     private List<FieldAudio> fieldAudios;
     private List<CorpusImage> corpusImages;
     private List<CorpusVideo> corpusVideos;
+
+    private JSONObject corpus_modif;
 
 
     public Corpus(String name) {
@@ -164,13 +99,20 @@ public class Corpus {
             // creates corresponding JSON File
             FileManager.getFileManager().createJSONFile(newName, Map.of("description", ""), String.format("/%s/FieldAudio", this.getName()));
 
-            // create new CorpusImage
-            FieldAudio fieldAudio = new FieldAudio(file);
+            // create new FieldAudio
+            FieldAudio fieldAudio = new FieldAudio(file, this);
 
             // create annotation's folder for this media
             FileManager.getFileManager().createFolder("/" + this.name + "/" + folderNameAnnotation, fieldAudio.getName());
 
             this.fieldAudios.add(fieldAudio);
+
+            // corpus_modif
+            JSONObject modif = new JSONObject();
+            modif.put("type", Corpus.folderNameFieldAudio);
+            modif.put("name", fieldAudio.getName());
+            this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
+            this.writeCorpusModif();
         } else {
             Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
             Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
@@ -194,13 +136,20 @@ public class Corpus {
             newName = newName.replaceAll("\\p{InCombiningDiacriticalMarks}", "");
             file = FileManager.getFileManager().renameFile(file, newName);
 
-            // create new CorpusImage
-            CorpusVideo video = new CorpusVideo(file);
+            // create new CorpusVideos
+            CorpusVideo video = new CorpusVideo(file, this);
 
             // create annotation's folder for this media
             FileManager.getFileManager().createFolder("/" + this.name + "/" + folderNameAnnotation, video.getName());
 
             this.corpusVideos.add(video);
+
+            // corpus_modif
+            JSONObject modif = new JSONObject();
+            modif.put("type", Corpus.folderNameCorpusVideo);
+            modif.put("name", video.getName());
+            this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
+            this.writeCorpusModif();
         } else {
             Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
             Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
@@ -226,12 +175,19 @@ public class Corpus {
             file = FileManager.getFileManager().renameFile(file, newName);
 
             // create new CorpusImage
-            CorpusImage image = new CorpusImage(file);
+            CorpusImage image = new CorpusImage(file, this);
 
             // create annotation's folder for this media
             FileManager.getFileManager().createFolder("/" + this.name + "/" + folderNameAnnotation, image.getName());
 
             this.corpusImages.add(image);
+
+            // corpus_modif
+            JSONObject modif = new JSONObject();
+            modif.put("type", Corpus.folderNameCorpusImage);
+            modif.put("name", image.getName());
+            this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
+            this.writeCorpusModif();
         } else {
             Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
             Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
@@ -274,5 +230,103 @@ public class Corpus {
             }
         }
         return null;
+    }
+
+    public void writeCorpusModif() {
+        File file = new File(FileManager.getFileManager().getFolderPath() + "/" + name + "/corpus_modif.json");
+        FileManager.getFileManager().writeJSONFile(file, corpus_modif);
+    }
+
+    public JSONObject getCorpusModif() {
+        return this.corpus_modif;
+    }
+
+    public JSONObject getCorpusState() {
+        File file = new File(FileManager.getFileManager().getFolderPath() + "/" + name + "/corpus_state.json");
+        if (!file.exists()) {
+            System.out.println("corpus state doesn't exist on your computer");
+            return null;
+        }
+        return FileManager.getFileManager().readJSONFile(file);
+    }
+
+    private void load() {
+        // get the corpus_modif.json
+        corpus_modif = FileManager.getFileManager().readJSONFile(
+                new File(FileManager.getFileManager().getFolderPath() + "/" + getName() + "/corpus_modif.json")
+        );
+
+        /* Manage fieldAudios in FieldAudios Folder */
+        File fieldAudiosFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + getName() + "/" + folderNameFieldAudio);
+        for (File audioFile : Objects.requireNonNull(fieldAudiosFolder.listFiles(file -> !file.getName().endsWith("json")))) {
+
+            //TODO annotation ecrite
+            File[] jsonFiles = fieldAudiosFolder.listFiles(file ->
+                    file.getName().endsWith("json")
+            );
+
+            String description = "";
+            if (jsonFiles != null && jsonFiles.length > 0) {
+                JSONObject jsonObject = FileManager.getFileManager().readJSONFile(jsonFiles[0]);
+                description = jsonObject.getString("description");
+            }
+
+            fieldAudios.add(new FieldAudio(audioFile, description, this));
+        }
+
+        /* Manage videos in Videos Folder */
+        File videosFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + getName() + "/" + folderNameCorpusVideo);
+        for (File file : Objects.requireNonNull(videosFolder.listFiles())) {
+            corpusVideos.add(new CorpusVideo(file, this));
+        }
+
+        /* Manage images in Images Folder */
+        File imagesFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + getName() + "/" + folderNameCorpusImage);
+        for (File file : Objects.requireNonNull(imagesFolder.listFiles())) {
+            corpusImages.add(new CorpusImage(file, this));
+        }
+
+
+        /* Manage annotations in Annotations Folder */
+        File annotationsFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + getName() + "/" + folderNameAnnotation);
+
+        for (File folderFieldAudio : Objects.requireNonNull(annotationsFolder.listFiles())) {
+            // we get the field audio corresponding to the folder
+            Media media = getMediaByName(folderFieldAudio.getName());
+
+            // Loop on every annotation in the folder
+            for (File annotationFolder : Objects.requireNonNull(folderFieldAudio.listFiles())) {
+
+                // Search for json and wave files for each annotation
+                File jsonFile = null;
+                File audioFile = null;
+                // this for only loop twice, we can't predict file names here, so we need a for :(
+                for (File file : Objects.requireNonNull(annotationFolder.listFiles())) {
+                    if (file.getName().endsWith(".json")) {
+                        jsonFile = file;
+                    }
+                    if (file.getName().endsWith(".wav")) {
+                        audioFile = file;
+                    }
+                }
+
+                // Read JSON
+                JSONObject jsonObject = FileManager.getFileManager().readJSONFile(Objects.requireNonNull(jsonFile));
+                double start = jsonObject.getDouble("start");
+                double end = jsonObject.getDouble("end");
+
+                // Create annotation
+                assert audioFile != null;
+                Objects.requireNonNull(media).addAnnotationInit(new Annotation(audioFile, start, end, folderFieldAudio.getName(), getName()));
+            }
+        }
+    }
+
+    public void reload() {
+        this.corpus_modif = null;
+        this.fieldAudios = new ArrayList<>();
+        this.corpusImages = new ArrayList<>();
+        this.corpusVideos = new ArrayList<>();
+        this.load();
     }
 }

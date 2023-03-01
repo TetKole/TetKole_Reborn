@@ -22,18 +22,20 @@ public class HttpRequestManager{
 
     private static HttpRequestManager httpRequestManagerInstance;
     private static String apiUrl;
+    public static String servURL;
     private static final int STATUS_OK = 200;
 
-    private HttpRequestManager(String apiUrl) {
-        HttpRequestManager.apiUrl = apiUrl;
+    private HttpRequestManager(String servURL) {
+        HttpRequestManager.servURL = servURL;
+        HttpRequestManager.apiUrl = servURL + "/api";
     }
 
     public static HttpRequestManager getHttpRequestManagerInstance() {
         return httpRequestManagerInstance;
     }
 
-    public static void setHttpRequestManagerInstance(String apiUrl) {
-        HttpRequestManager.httpRequestManagerInstance = new HttpRequestManager(apiUrl);
+    public static void setHttpRequestManagerInstance(String servURL) {
+        HttpRequestManager.httpRequestManagerInstance = new HttpRequestManager(servURL);
     }
 
 
@@ -127,12 +129,10 @@ public class HttpRequestManager{
 
             final FileBody fileBody = new FileBody(file);
             final StringBody type = new StringBody(docType, ContentType.TEXT_PLAIN);
-            final StringBody fileName = new StringBody(file.getName(), ContentType.TEXT_PLAIN);
 
             final HttpEntity reqEntity = MultipartEntityBuilder.create()
                     .addPart("file", fileBody)
                     .addPart("type", type)
-                    .addPart("fileName", fileName)
                     .build();
 
             httppost.setEntity(reqEntity);
@@ -158,9 +158,9 @@ public class HttpRequestManager{
     }
 
 
-    // /api/document/addAnnotation avec dans le body en form-data les fichiers et le doc name.
-    public JSONObject addAnnotation(File audioFile, File jsonFile, String documentName, String token) throws Exception {
-        String uri = apiUrl + "/document/addAnnotation";
+    // /api/document/{docID}/addAnnotation avec dans le body en form-data les fichiers et l'id de l'auteur.
+    public JSONObject addAnnotation(File audioFile, File jsonFile, int docId, String token, int userId) throws Exception {
+        String uri = apiUrl + "/document/" + docId + "/addAnnotation";
 
         JSONObject answer = new JSONObject();
         answer.put("success", false);
@@ -171,12 +171,12 @@ public class HttpRequestManager{
 
             final FileBody audioFileBody = new FileBody(audioFile);
             final FileBody jsonFileBody = new FileBody(jsonFile);
-            final StringBody documentNameBody = new StringBody(documentName, ContentType.TEXT_PLAIN);
+            final StringBody userIdBody = new StringBody(String.valueOf(userId), ContentType.TEXT_PLAIN);
 
             final HttpEntity reqEntity = MultipartEntityBuilder.create()
                     .addPart("audioFile", audioFileBody)
                     .addPart("jsonFile", jsonFileBody)
-                    .addPart("documentName", documentNameBody)
+                    .addPart("userId", userIdBody)
                     .build();
 
             httppost.setEntity(reqEntity);
@@ -198,6 +198,48 @@ public class HttpRequestManager{
         }
 
         //System.out.println(answer);
+        return answer;
+    }
+
+    // /api/corpus/list get all corpus name in a list
+    public JSONObject getCorpusList(String token) throws Exception {
+        String route = apiUrl + "/corpus/list";
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .header("Content-Type","application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        JSONObject answer = new JSONObject();
+        answer.put("success", response.statusCode() == STATUS_OK);
+        answer.accumulate("body", response.body());
+
+        return answer;
+    }
+
+    // /api/corpus/{id}/clone get the corpus_state of the corpus
+    public JSONObject getCorpusState(String token, int corpusId) throws Exception {
+        String route = apiUrl + "/corpus/" + corpusId + "/clone";
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .header("Content-Type","application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        JSONObject answer = new JSONObject();
+        answer.put("success", response.statusCode() == STATUS_OK);
+        answer.accumulate("body", new JSONObject(response.body()));
+
         return answer;
     }
 }
