@@ -1,6 +1,8 @@
 package com.tetkole.tetkole.utils.wave;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 import java.beans.PropertyChangeListener;
@@ -15,7 +17,7 @@ public class WaveFormPane extends ResizableCanvas {
 
 	private final float[] defaultWave;
 	private float[] waveData;
-	private Color backgroundColor;
+	private final Color backgroundColor;
 	private Color foregroundColor;
 	private Color transparentForeground;
 	private final Color mouseXColor = Color.rgb(255, 255, 255, 0.7);
@@ -30,11 +32,15 @@ public class WaveFormPane extends ResizableCanvas {
 	private boolean rightBorderDragged = false;
 	private double rightBorderTime;
 	protected double totalTime;
-	private PropertyChangeSupport support;
+	private final PropertyChangeSupport support;
 	private final GraphicsContext gc = getGraphicsContext2D();
 	private double beginAudio = 0;
 	private double endAudio;
-	private static double borderSize = 10;
+	private static final double borderSize = 10;
+
+	private boolean controlDragged = false;
+
+
 
 	/**
 	 * Constructor
@@ -43,6 +49,9 @@ public class WaveFormPane extends ResizableCanvas {
 	 * @param height
 	 */
 	public WaveFormPane(int width, int height) {
+		setFocusTraversable(true);
+		addEventFilter(MouseEvent.ANY, (e) -> requestFocus());
+
 		defaultWave = new float[width];
 		this.setWidthPane(width);
 		this.setHeightPane(height);
@@ -61,15 +70,22 @@ public class WaveFormPane extends ResizableCanvas {
 
 		// we look for a click on left border or right border
 		setOnMousePressed(event -> {
-			// click on left border
-			if (event.getX() >= leftBorderXPosition && event.getX() <= leftBorderXPosition + borderSize) {
-				leftBorderDragged = true;
-			}
+			if (event.isControlDown()) {
+				leftBorderXPosition = Math.max(Math.min(event.getX(), rightBorderXPosition - borderSize), 0);
+				this.setLeftBorderTime(leftBorderXPosition / this.getRatioAudio() + this.beginAudio);
+				controlDragged = true;
+			} else {
+				// click on left border
+				if (event.getX() >= leftBorderXPosition && event.getX() <= leftBorderXPosition + borderSize) {
+					leftBorderDragged = true;
+				}
 
-			// click on right border
-			if (event.getX() >= rightBorderXPosition && event.getX() <= rightBorderXPosition + borderSize) {
-				rightBorderDragged = true;
+				// click on right border
+				if (event.getX() >= rightBorderXPosition && event.getX() <= rightBorderXPosition + borderSize) {
+					rightBorderDragged = true;
+				}
 			}
+			paintWaveForm();
 		});
 
 		// we drag a border if it was clicked
@@ -77,7 +93,7 @@ public class WaveFormPane extends ResizableCanvas {
 			setMouseXPosition((int) event.getX());
 
 			if (rightBorderDragged) {
-				rightBorderXPosition = Math.min(Math.max(event.getX(), leftBorderXPosition + borderSize),  getWidth() - borderSize);
+				rightBorderXPosition = Math.min(Math.max(event.getX(), leftBorderXPosition + borderSize), getWidth() - borderSize);
 				this.setRightBorderTime((rightBorderXPosition + borderSize) / this.getRatioAudio() + this.beginAudio);
 			}
 
@@ -100,9 +116,28 @@ public class WaveFormPane extends ResizableCanvas {
 				}
 			}
 
+			if (controlDragged) {
+				rightBorderXPosition = Math.min(Math.max(event.getX(), leftBorderXPosition + borderSize), getWidth() - borderSize);
+				this.setRightBorderTime((rightBorderXPosition + borderSize) / this.getRatioAudio() + this.beginAudio);
+				this.setCurrentXPositionMediaPlayer(leftBorderXPosition);
+				controlDragged = false;
+			}
+
 			leftBorderDragged = false;
 			rightBorderDragged = false;
 			paintWaveForm();
+		});
+
+
+		setOnKeyReleased(event -> {
+			if (event.getCode() == KeyCode.CONTROL && controlDragged) {
+				System.out.println("Control released");
+				controlDragged = false;
+				rightBorderXPosition = Math.min(Math.max(getMouseXPosition(), leftBorderXPosition + borderSize), getWidth() - borderSize);
+				this.setRightBorderTime((rightBorderXPosition + borderSize) / this.getRatioAudio() + this.beginAudio);
+				this.setCurrentXPositionMediaPlayer(leftBorderXPosition);
+				paintWaveForm();
+			}
 		});
 
 		// we set the mouseXPosition on hover
@@ -152,6 +187,10 @@ public class WaveFormPane extends ResizableCanvas {
 
 	public void setMouseXPosition(double mouseXPosition) {
 		this.mouseXPosition = mouseXPosition;
+	}
+
+	public double getMouseXPosition() {
+		return this.mouseXPosition;
 	}
 
 	public double getLeftBorderXPosition() {
