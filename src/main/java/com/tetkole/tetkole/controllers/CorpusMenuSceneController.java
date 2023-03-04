@@ -1,5 +1,6 @@
 package com.tetkole.tetkole.controllers;
 
+import com.tetkole.tetkole.components.CustomButton;
 import com.tetkole.tetkole.utils.AuthenticationManager;
 import com.tetkole.tetkole.utils.FileManager;
 import com.tetkole.tetkole.utils.HttpRequestManager;
@@ -8,6 +9,7 @@ import com.tetkole.tetkole.utils.models.*;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -20,6 +22,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class CorpusMenuSceneController implements Initializable {
@@ -85,6 +88,10 @@ public class CorpusMenuSceneController implements Initializable {
 
         for(FieldAudio fa : this.corpus.getFieldAudios()) {
 
+            HBox line = new HBox();
+            line.setAlignment(Pos.CENTER);
+            line.setSpacing(20);
+
             // add the field audio
             Button btn = new Button(fa.getName());
             btn.getStyleClass().add("buttons");
@@ -98,7 +105,16 @@ public class CorpusMenuSceneController implements Initializable {
                 SceneManager.getSceneManager().changeScene("AudioEditScene.fxml");
             });
 
-            this.vBoxFieldAudios.getChildren().add(btn);
+            CustomButton btnEdit = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/edit.png")).toExternalForm());
+
+            btnEdit.setOnMouseClicked(event -> {
+                //TODO
+            });
+
+            line.getChildren().add(btn);
+            line.getChildren().add(btnEdit);
+
+            this.vBoxFieldAudios.getChildren().add(line);
         }
 
         Button btn = new Button(resources.getString("AddFieldAudio"));
@@ -125,6 +141,10 @@ public class CorpusMenuSceneController implements Initializable {
 
         for(CorpusImage image : this.corpus.getCorpusImages()) {
 
+            HBox line = new HBox();
+            line.setAlignment(Pos.CENTER);
+            line.setSpacing(20);
+
             // add the Label
             Button btn = new Button(image.getName());
             btn.getStyleClass().add("buttons");
@@ -138,7 +158,16 @@ public class CorpusMenuSceneController implements Initializable {
                 SceneManager.getSceneManager().changeScene("ImageScene.fxml");
             });
 
-            this.vBoxImages.getChildren().add(btn);
+            CustomButton btnEdit = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/edit.png")).toExternalForm());
+
+            btnEdit.setOnMouseClicked(event -> {
+                //TODO
+            });
+
+            line.getChildren().add(btn);
+            line.getChildren().add(btnEdit);
+
+            this.vBoxFieldAudios.getChildren().add(line);
         }
 
         Button btn = new Button(resources.getString("AddImage"));
@@ -171,6 +200,10 @@ public class CorpusMenuSceneController implements Initializable {
 
         for(CorpusVideo video : this.corpus.getCorpusVideos()) {
 
+            HBox line = new HBox();
+            line.setAlignment(Pos.CENTER);
+            line.setSpacing(20);
+
             // add the Label
             Button btn = new Button(video.getName());
             btn.getStyleClass().add("buttons");
@@ -184,7 +217,16 @@ public class CorpusMenuSceneController implements Initializable {
                 SceneManager.getSceneManager().changeScene("VideoScene.fxml");
             });
 
-            this.vBoxVideos.getChildren().add(btn);
+            CustomButton btnEdit = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/edit.png")).toExternalForm());
+
+            btnEdit.setOnMouseClicked(event -> {
+                //TODO
+            });
+
+            line.getChildren().add(btn);
+            line.getChildren().add(btnEdit);
+
+            this.vBoxFieldAudios.getChildren().add(line);
         }
 
         Button btn = new Button(resources.getString("AddVideo"));

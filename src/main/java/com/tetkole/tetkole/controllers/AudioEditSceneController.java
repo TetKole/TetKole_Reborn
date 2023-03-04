@@ -3,6 +3,7 @@ package com.tetkole.tetkole.controllers;
 import com.tetkole.tetkole.components.CustomButton;
 import com.tetkole.tetkole.utils.FileManager;
 import com.tetkole.tetkole.utils.RecordManager;
+import com.tetkole.tetkole.utils.StaticEnvVariable;
 import com.tetkole.tetkole.utils.annotations.AnnotationsVisualization;
 import com.tetkole.tetkole.utils.models.Annotation;
 import com.tetkole.tetkole.utils.models.FieldAudio;
@@ -51,7 +52,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     private Corpus corpus;
     private MediaPlayer mediaPlayer;
     private RecordManager recordManager;
-    private int borderSize = 10;
+    private int borderSize = StaticEnvVariable.borderSize;
     private List<HBox> lines = new ArrayList<>();
 
     // Graphics
@@ -329,8 +330,17 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
         // add the Label
         Label label = new Label(annotation.getName());
-        label.setStyle("-fx-text-fill: white;");
+        label.setStyle("-fx-text-fill: white; -fx-text-alignment: CENTER");
+        label.setPrefWidth(200);
+        label.setWrapText(true);
         line.getChildren().add(label);
+
+        CustomButton btnEdit = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/edit.png")).toExternalForm());
+        line.getChildren().add(btnEdit);
+
+        btnEdit.setOnAction(event -> {
+            //TODO
+        });
 
         // add the Play/Pause Button
         CustomButton btnPlayPause = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());

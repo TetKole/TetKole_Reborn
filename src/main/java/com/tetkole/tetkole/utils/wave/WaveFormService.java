@@ -15,6 +15,7 @@ import javax.sound.sampled.AudioFormat.Encoding;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 
+import com.tetkole.tetkole.utils.StaticEnvVariable;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import ws.schild.jave.Encoder;
@@ -40,7 +41,7 @@ public class WaveFormService extends Service<Boolean> {
 	private int arrayWaveLength;
 	private int beginArrayWaveLength = 0;
 	private int endArrayWaveLength;
-	private static double borderSize = 10;
+	private static double borderSize = StaticEnvVariable.borderSize;
 	
 	public enum WaveFormJob {
 		AMPLITUDES_AND_WAVEFORM, WAVEFORM

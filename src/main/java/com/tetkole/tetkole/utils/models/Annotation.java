@@ -1,18 +1,13 @@
 package com.tetkole.tetkole.utils.models;
 
 import com.tetkole.tetkole.utils.FileManager;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.util.Duration;
 
 import java.io.File;
-import java.util.Objects;
 
 public class Annotation {
     private File file;
-
     private MediaPlayer mediaPlayer;
     private final double start;
     private final double end;

@@ -1,5 +1,6 @@
 package com.tetkole.tetkole.utils.wave;
 
+import com.tetkole.tetkole.utils.StaticEnvVariable;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
@@ -36,7 +37,7 @@ public class WaveFormPane extends ResizableCanvas {
 	private final GraphicsContext gc = getGraphicsContext2D();
 	private double beginAudio = 0;
 	private double endAudio;
-	private static final double borderSize = 10;
+	private static final double borderSize = StaticEnvVariable.borderSize;
 
 	private boolean controlDragged = false;
 
@@ -142,7 +143,7 @@ public class WaveFormPane extends ResizableCanvas {
 
 		// we set the mouseXPosition on hover
 		setOnMouseMoved(event -> {
-			if (event.getX() > leftBorderXPosition + 10 && event.getX() < rightBorderXPosition) {
+			if (event.getX() > leftBorderXPosition + borderSize && event.getX() < rightBorderXPosition) {
 				setMouseXPosition(event.getX());
 				paintWaveForm();
 			}
@@ -372,13 +373,13 @@ public class WaveFormPane extends ResizableCanvas {
 		if (this.leftBorderXPosition < (getWidth() / 4)) {
 			return this.leftBorderXPosition + 25;
 		} else {
-			return this.leftBorderXPosition - 110;
+			return this.leftBorderXPosition - 100 - borderSize;
 		}
 	}
 
 	public double posRightStrokeText() {
 		if (this.rightBorderXPosition > ((getWidth() / 4) * 3)) {
-			return this.rightBorderXPosition - 110;
+			return this.rightBorderXPosition - 100 - borderSize;
 		} else {
 			return this.rightBorderXPosition + 25;
 		}
