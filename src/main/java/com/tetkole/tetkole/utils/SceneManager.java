@@ -118,6 +118,10 @@ public class SceneManager {
         currentModalStage.close();
     }
 
+    public void closeAlertModal() {
+        currentModalStage.close();
+    }
+
     public String getModalParameterValue() {
         return modalParameterValue;
     }

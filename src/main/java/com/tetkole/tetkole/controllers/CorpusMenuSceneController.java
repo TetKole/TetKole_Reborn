@@ -202,9 +202,113 @@ public class CorpusMenuSceneController implements Initializable {
     }
 
 
-    public void pushInitCorpus() {
+    public void onClickPush() {
         if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) return;
 
+        if (this.corpus.getCorpusState() != null) {
+            this.push();
+        } else {
+            this.pushInit();
+        }
+    }
+
+    private void push() {
+        HttpRequestManager httpRequestManager = HttpRequestManager.getHttpRequestManagerInstance();
+        String token = AuthenticationManager.getAuthenticationManager().getToken();
+
+        final int corpusId = this.corpus.getCorpusId();
+        final JSONObject localState = this.corpus.getCorpusState();
+
+        try {
+            // Get corpus_state.json from server
+            JSONObject responseClone = httpRequestManager.getCorpusState(token, corpusId);
+            JSONObject serverState = new JSONObject(responseClone.get("body").toString());
+
+            if ((serverState.toString()).equals(localState.toString())) {
+                // you can push
+
+                JSONObject modifs = this.corpus.getCorpusModif();
+
+                JSONArray deletedAnnotations = modifs.getJSONObject("deleted").getJSONArray("annotations");
+                JSONArray deletedDocuments = modifs.getJSONObject("deleted").getJSONArray("documents");
+                JSONArray addedDocuments = modifs.getJSONObject("added").getJSONArray("documents");
+                JSONArray addedAnnotations = modifs.getJSONObject("added").getJSONArray("annotations");
+
+                // step 1 : delete annotations
+                for (int i=0; i<deletedAnnotations.length(); i++) {
+                    JSONObject annotation = deletedAnnotations.getJSONObject(i);
+                    httpRequestManager.deleteAnnotation(annotation.getInt("docId"), annotation.getInt("id"), token);
+                }
+
+                // step 2 : delete document
+                for (int i=0; i<deletedDocuments.length(); i++) {
+                    JSONObject document = deletedDocuments.getJSONObject(i);
+                    httpRequestManager.deleteDocument(document.getInt("id"), token);
+                }
+
+                // step 3 : add document
+                for (int i=0; i<addedDocuments.length(); i++) {
+                    JSONObject document = addedDocuments.getJSONObject(i);
+                    String type = document.getString("type");
+                    File file = new File(
+                            FileManager.getFileManager().getFolderPath() + "/"
+                                    + this.corpus.getName() + "/"
+                                    + type + "/"
+                                    + document.getString("name")
+                    );
+                    httpRequestManager.addDocument(this.corpus.getCorpusId(), file, type, token);
+                }
+
+                // step 4 : add annotation
+                for (int i=0; i<addedAnnotations.length(); i++) {
+                    JSONObject annotation = addedAnnotations.getJSONObject(i);
+                    String path = FileManager.getFileManager().getFolderPath() + "/"
+                            + this.corpus.getName() + "/"
+                            + Corpus.folderNameAnnotation + "/"
+                            + annotation.getString("document") + "/"
+                            + annotation.getString("name") + "/";
+
+                    File audioFile = new File(path + annotation.getString("name"));
+
+                    String[] pathSplit = annotation.getString("name").split("\\.");
+                    String jsonFileName = "";
+                    for (int j=0; j<pathSplit.length - 1; j++) {
+                        jsonFileName += pathSplit[j];
+                    }
+                    jsonFileName += ".json";
+
+                    File jsonFile  = new File(path + jsonFileName);
+
+                    int docId = annotation.getInt("docId");
+                    if (docId == -1) {
+                        docId = httpRequestManager.getDocIdByName(annotation.getString("document"), token);
+                    }
+                    httpRequestManager.addAnnotation(audioFile, jsonFile, docId, token, AuthenticationManager.getAuthenticationManager().getUserId());
+
+                    // update corpus state
+                    JSONObject corpusStateResponse = httpRequestManager.getCorpusState(token, corpusId);
+                    JSONObject newServerState = new JSONObject(corpusStateResponse.get("body").toString());
+                    this.corpus.writeCorpusState(newServerState);
+
+                    // clean corpus modif
+                    FileManager.getFileManager().createCorpusModifFile(this.corpus.getName());
+
+                    System.out.println("push done");
+                }
+
+
+            } else {
+                // you need to pull
+                SceneManager.getSceneManager().showNewModal(
+                        "modals/AlertModalScene.fxml",
+                        this.resources.getString("NidDePoule")
+                );
+            }
+
+        } catch (Exception e) { throw new RuntimeException(e); }
+    }
+
+    private void pushInit() {
         this.loadingLabelPush.setVisible(true);
 
         // the push init thread

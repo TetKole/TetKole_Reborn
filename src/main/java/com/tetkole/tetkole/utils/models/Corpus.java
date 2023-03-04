@@ -108,11 +108,13 @@ public class Corpus {
             this.fieldAudios.add(fieldAudio);
 
             // corpus_modif
-            JSONObject modif = new JSONObject();
-            modif.put("type", Corpus.folderNameFieldAudio);
-            modif.put("name", fieldAudio.getName());
-            this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
-            this.writeCorpusModif();
+            if (this.getCorpusState() != null) {
+                JSONObject modif = new JSONObject();
+                modif.put("type", Corpus.folderNameFieldAudio);
+                modif.put("name", fieldAudio.getName());
+                this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
+                this.writeCorpusModif();
+            }
         } else {
             Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
             Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
@@ -145,11 +147,13 @@ public class Corpus {
             this.corpusVideos.add(video);
 
             // corpus_modif
-            JSONObject modif = new JSONObject();
-            modif.put("type", Corpus.folderNameCorpusVideo);
-            modif.put("name", video.getName());
-            this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
-            this.writeCorpusModif();
+            if (this.getCorpusState() != null) {
+                JSONObject modif = new JSONObject();
+                modif.put("type", Corpus.folderNameCorpusVideo);
+                modif.put("name", video.getName());
+                this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
+                this.writeCorpusModif();
+            }
         } else {
             Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
             Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
@@ -183,11 +187,13 @@ public class Corpus {
             this.corpusImages.add(image);
 
             // corpus_modif
-            JSONObject modif = new JSONObject();
-            modif.put("type", Corpus.folderNameCorpusImage);
-            modif.put("name", image.getName());
-            this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
-            this.writeCorpusModif();
+            if (this.getCorpusState() != null) {
+                JSONObject modif = new JSONObject();
+                modif.put("type", Corpus.folderNameCorpusImage);
+                modif.put("name", image.getName());
+                this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
+                this.writeCorpusModif();
+            }
         } else {
             Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
             Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
@@ -233,6 +239,7 @@ public class Corpus {
     }
 
     public void writeCorpusModif() {
+        // before calling this method, please be sure that there is a valid corpus_state (ie that the corpus exist on the server)
         File file = new File(FileManager.getFileManager().getFolderPath() + "/" + name + "/corpus_modif.json");
         FileManager.getFileManager().writeJSONFile(file, corpus_modif);
     }
@@ -248,6 +255,22 @@ public class Corpus {
             return null;
         }
         return FileManager.getFileManager().readJSONFile(file);
+    }
+
+    public void writeCorpusState(JSONObject newState) {
+        File file = new File(FileManager.getFileManager().getFolderPath() + "/" + name + "/corpus_state.json");
+        if (!file.exists()) {
+            System.out.println("corpus state doesn't exist on your computer");
+            return;
+        }
+
+        FileManager.getFileManager().writeJSONFile(file, newState);
+    }
+
+    public int getCorpusId() {
+        JSONObject state = this.getCorpusState();
+        if (state == null) return -1;
+        return state.getInt("corpusId");
     }
 
     private void load() {

@@ -17,6 +17,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
+import static java.lang.Integer.parseInt;
+
 
 public class HttpRequestManager{
 
@@ -241,5 +243,71 @@ public class HttpRequestManager{
         answer.accumulate("body", new JSONObject(response.body()));
 
         return answer;
+    }
+
+
+    public boolean deleteAnnotation(int documentId, int annotationId, String token) {
+        String route = apiUrl + "/document/" + documentId + "/" + annotationId;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .DELETE()
+                .header("Content-Type","application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) { throw new RuntimeException(e); }
+
+        JSONObject answer = new JSONObject(response.body());
+
+        //System.out.println(answer);
+        return answer.getBoolean("success");
+    }
+
+    public boolean deleteDocument(int documentId, String token) {
+        String route = apiUrl + "/document/" + documentId;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .DELETE()
+                .header("Content-Type","application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) { throw new RuntimeException(e); }
+
+        JSONObject answer = new JSONObject(response.body());
+
+        //System.out.println(answer);
+        return answer.getBoolean("success");
+    }
+
+    public int getDocIdByName(String docName, String token) {
+        String route = apiUrl + "/document/name/" + docName;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .header("Content-Type","application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) { throw new RuntimeException(e); }
+
+        //System.out.println(response.body());
+
+        return parseInt(response.body());
     }
 }

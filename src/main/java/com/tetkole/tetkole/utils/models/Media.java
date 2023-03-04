@@ -34,12 +34,15 @@ public abstract class Media {
     public void addAnnotation(Annotation annotation) {
         this.annotations.add(annotation);
 
-        // corpus_modif
-        JSONObject modif = new JSONObject();
-        modif.put("document", this.getName());
-        modif.put("name", annotation.getName());
-        this.corpus.getCorpusModif().getJSONObject("added").getJSONArray("annotations").put(modif);
-        this.corpus.writeCorpusModif();
+        if (this.corpus.getCorpusState() != null) {
+            // corpus_modif
+            JSONObject modif = new JSONObject();
+            modif.put("document", this.getName());
+            modif.put("name", annotation.getName());
+            modif.put("docId", this.getId());
+            this.corpus.getCorpusModif().getJSONObject("added").getJSONArray("annotations").put(modif);
+            this.corpus.writeCorpusModif();
+        }
     }
 
     /**
@@ -53,7 +56,9 @@ public abstract class Media {
         for (Annotation a : this.annotations) {
             if (a.equals(annotation)) {
 
-                deleteFromCorpusModif(annotation);
+                if (this.corpus.getCorpusState() != null) {
+                    deleteFromCorpusModif(annotation);
+                }
 
                 annotation.delete();
                 this.annotations.remove(annotation);
@@ -87,12 +92,52 @@ public abstract class Media {
         else
         {
             // else -> add the annotation in the deleted section
+
+            // get annotation's id
+            int id = -1;
+
+            JSONObject corpus_state = this.corpus.getCorpusState();
+            JSONArray documents = corpus_state.getJSONArray("documents");
+
+            for (int i=0; i<documents.length(); i++) {
+                JSONObject document = documents.getJSONObject(i);
+                JSONArray annotations = document.getJSONArray("annotations");
+
+                for (int j=0; j<annotations.length(); j++) {
+                    JSONObject tmpAnnotation = annotations.getJSONObject(j);
+                    if (tmpAnnotation.getString("name").equals(annotation.getName())) {
+                        id = tmpAnnotation.getInt("annotationId");
+                        break;
+                    }
+                }
+            }
+
+            if (id == -1) {
+                System.err.println("this annotations does not have an ID -- deleteFromCorpusModif() in Media.java");
+            }
+
             JSONObject modif = new JSONObject();
-            modif.put("document", this.getName());
             modif.put("name", annotation.getName());
+            modif.put("id", id);
+            modif.put("docName", this.getName());
+            modif.put("docId", this.getId());
             corpus_modif.getJSONObject("deleted").getJSONArray("annotations").put(modif);
         }
 
         this.corpus.writeCorpusModif();
+    }
+
+    public int getId() {
+        JSONObject corpus_state = this.corpus.getCorpusState();
+        JSONArray documents = corpus_state.getJSONArray("documents");
+
+        for (int i=0; i< documents.length(); i++) {
+            JSONObject document = documents.getJSONObject(i);
+            if (document.getString("name").equals(this.getName())) {
+                return document.getInt("docId");
+            }
+        }
+
+        return -1;
     }
 }
