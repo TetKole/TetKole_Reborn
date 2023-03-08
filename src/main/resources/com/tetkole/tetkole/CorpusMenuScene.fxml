@@ -23,7 +23,7 @@
 
             <HBox alignment="TOP_CENTER" spacing="10.0" >
                 <VBox alignment="TOP_CENTER" spacing="5" >
-                    <Button onAction="#pushInitCorpus" prefHeight="60" prefWidth="150" styleClass="buttons, blue" text="%Push"/>
+                    <Button onAction="#onClickPush" prefHeight="60" prefWidth="150" styleClass="buttons, blue" text="%Push"/>
                     <Label fx:id="loadingLabelPush" style="-fx-text-fill: white; -fx-font-size: 15px;" text="%Loading" visible="false"/>
                 </VBox>
                 <VBox alignment="TOP_CENTER" spacing="5" >
