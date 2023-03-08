@@ -119,7 +119,7 @@ public class HttpRequestManager{
 
 
     // /api/corpus/{corpusId}/addDocument avec dans le body en form-data les fichiers.
-    public JSONObject addDocument(int corpusId, File file, String docType, String token) throws Exception {
+    public JSONObject addDocument(int corpusId, File file, String docType, String token) {
         String uri = apiUrl + "/corpus/" + corpusId + "/addDocument";
 
         JSONObject answer = new JSONObject();
@@ -153,6 +153,8 @@ public class HttpRequestManager{
 
                 return true;
             });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         //System.out.println(answer);
@@ -161,7 +163,7 @@ public class HttpRequestManager{
 
 
     // /api/document/{docID}/addAnnotation avec dans le body en form-data les fichiers et l'id de l'auteur.
-    public JSONObject addAnnotation(File audioFile, File jsonFile, int docId, String token, int userId) throws Exception {
+    public JSONObject addAnnotation(File audioFile, File jsonFile, int docId, String token, int userId) {
         String uri = apiUrl + "/document/" + docId + "/addAnnotation";
 
         JSONObject answer = new JSONObject();
@@ -197,6 +199,8 @@ public class HttpRequestManager{
 
                 return true;
             });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         //System.out.println(answer);
@@ -225,7 +229,7 @@ public class HttpRequestManager{
     }
 
     // /api/corpus/{id}/clone get the corpus_state of the corpus
-    public JSONObject getCorpusState(String token, int corpusId) throws Exception {
+    public JSONObject getCorpusState(String token, int corpusId) {
         String route = apiUrl + "/corpus/" + corpusId + "/clone";
 
         HttpClient client = HttpClient.newHttpClient();
@@ -236,7 +240,12 @@ public class HttpRequestManager{
                 .uri(URI.create(route))
                 .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = null;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         JSONObject answer = new JSONObject();
         answer.put("success", response.statusCode() == STATUS_OK);

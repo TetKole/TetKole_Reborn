@@ -213,13 +213,17 @@ public class CorpusMenuSceneController implements Initializable {
     }
 
     private void push() {
-        HttpRequestManager httpRequestManager = HttpRequestManager.getHttpRequestManagerInstance();
-        String token = AuthenticationManager.getAuthenticationManager().getToken();
+        this.loadingLabelPush.setVisible(true);
 
-        final int corpusId = this.corpus.getCorpusId();
-        final JSONObject localState = this.corpus.getCorpusState();
+        // the push thread
+        new Thread(() -> {
 
-        try {
+            HttpRequestManager httpRequestManager = HttpRequestManager.getHttpRequestManagerInstance();
+            String token = AuthenticationManager.getAuthenticationManager().getToken();
+
+            final int corpusId = this.corpus.getCorpusId();
+            final JSONObject localState = this.corpus.getCorpusState();
+
             // Get corpus_state.json from server
             JSONObject responseClone = httpRequestManager.getCorpusState(token, corpusId);
             JSONObject serverState = new JSONObject(responseClone.get("body").toString());
@@ -304,8 +308,9 @@ public class CorpusMenuSceneController implements Initializable {
                         this.resources.getString("NidDePoule")
                 );
             }
+            loadingLabelPush.setVisible(false);
 
-        } catch (Exception e) { throw new RuntimeException(e); }
+        }).start();
     }
 
     private void pushInit() {
