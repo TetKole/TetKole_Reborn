@@ -236,5 +236,6 @@ public class FileManager {
         corpus_modif.getJSONObject("deleted").put("annotations", new JSONArray());
 
         writeJSONFile(file, corpus_modif);
+        System.out.println("help");
     }
 }
