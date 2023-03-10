@@ -184,7 +184,11 @@ public class FileManager {
         File[] allContents = folderToDelete.listFiles();
         if (allContents != null) {
             for (File file : allContents) {
-                this.deleteFile(file);
+                if (file.isDirectory()) {
+                    deleteFolder(file);
+                } else {
+                    this.deleteFile(file);
+                }
             }
         }
         if (!folderToDelete.delete()) {

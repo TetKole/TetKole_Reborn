@@ -48,6 +48,7 @@ public class CorpusMenuSceneController implements Initializable {
     private ResourceBundle resources;
 
     private volatile boolean pullThreadRunning;
+    private volatile boolean doYouNeedPull;
     private JSONObject tempCorpusStateForPull;
 
     @Override
@@ -217,6 +218,7 @@ public class CorpusMenuSceneController implements Initializable {
      */
     private void push() {
         this.loadingLabelPush.setVisible(true);
+        this.doYouNeedPull = false;
 
         // the push thread
         new Thread(() -> {
@@ -305,15 +307,23 @@ public class CorpusMenuSceneController implements Initializable {
                 System.out.println("push done");
 
             } else {
-                // you need to pull
-                SceneManager.getSceneManager().showNewModal(
-                        "modals/AlertModalScene.fxml",
-                        this.resources.getString("NidDePoule")
-                );
+                this.doYouNeedPull = true;
             }
-            loadingLabelPush.setVisible(false);
+
 
         }).start();
+
+
+        while (this.doYouNeedPull) {
+            Thread.onSpinWait();
+        }
+
+        this.loadingLabelPush.setVisible(false);
+        // you need to pull
+        SceneManager.getSceneManager().showNewModal(
+                "modals/AlertModalScene.fxml",
+                this.resources.getString("NidDePoule")
+        );
     }
 
     /**
@@ -441,10 +451,13 @@ public class CorpusMenuSceneController implements Initializable {
                 JSONArray serveurDocs = serverCorpusState.getJSONArray("documents");
                 JSONArray localDocs = localCorpusState.getJSONArray("documents");
 
-                JSONObject diffDocs = existOnFirstAndNotOnSecond(serveurDocs, localDocs);
+                // get docs and annotations from server that do not exist on local
+                JSONObject docsToDownload = existOnFirstAndNotOnSecond(serveurDocs, localDocs);
+                fetchCorpusDiff(docsToDownload);
 
-                // Download docs and annotations from server
-                fetchCorpusDiff(diffDocs);
+                // get docs and annotations from local that do not exist on the server anymore
+                JSONObject docsToDelete = existOnFirstAndNotOnSecond(localDocs, serveurDocs);
+                deleteCorpusDiff(docsToDelete);
 
                 pullThreadRunning = false;
             } catch (Exception e) {
@@ -496,11 +509,127 @@ public class CorpusMenuSceneController implements Initializable {
 
                 fileManager.downloadAnnotation(this.corpus.getName(), docName, fileName);
             }
-
-            this.loadingLabelPull.setVisible(false);
-
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+
+    /**
+     * Delete documents (and annotations) that exist locally but do not exist on the server anymore.
+     * @param docsToDelete docs to delete locally
+     */
+    private void deleteCorpusDiff(JSONObject docsToDelete) {
+        FileManager fileManager = FileManager.getFileManager();
+
+        JSONArray documents = docsToDelete.getJSONArray("documents");
+        JSONArray annotations = docsToDelete.getJSONArray("annotations");
+
+        // we need to clear all annotations to delete some of them,
+        // clear an annotation means use .dispose() on it's MediaPlayer.
+        this.corpus.clearAnnotationsObjects();
+        this.corpus.clearMediasObjects(); // same on document's files (FieldAudios, Images, Videos)
+
+        // delete annotations
+        for (int i=0; i<annotations.length(); i++) {
+            String name = annotations.getJSONObject(i).getString("name");
+            String docName = annotations.getJSONObject(i).getString("document");
+            String path = fileManager.getFolderPath() + "/"
+                    + this.corpus.getName() + "/"
+                    + Corpus.folderNameAnnotation + "/"
+                    + docName + "/"
+                    + name;
+            File folder = new File(path);
+            fileManager.deleteFolder(folder);
+        }
+
+        // delete docs
+        for (int i=0; i<documents.length(); i++) {
+            // delete the doc
+            String name = documents.getJSONObject(i).getString("name");
+            String type = documents.getJSONObject(i).getString("type");
+            int id = documents.getJSONObject(i).getInt("id");
+            String path = fileManager.getFolderPath() + "/"
+                    + this.corpus.getName() + "/"
+                    + type + "/"
+                    + name;
+            File folder = new File(path);
+            fileManager.deleteFile(folder);
+
+            // delete it's annotations
+            String annotationPath = fileManager.getFolderPath() + "/"
+                    + this.corpus.getName() + "/"
+                    + Corpus.folderNameAnnotation + "/"
+                    + name;
+            File annotationsfolder = new File(annotationPath);
+            fileManager.deleteFolder(annotationsfolder);
+
+
+            // When deleting a doc, we need to delete mentions of this doc in corpus_modif file.
+            JSONObject corpusModif = this.corpus.getCorpusModif();
+
+            // -> delete added annotation
+            JSONObject added = corpusModif.getJSONObject("added");
+            JSONArray addedAnnotations = added.getJSONArray("annotations");
+            for (int j=0; j<addedAnnotations.length(); j++) {
+                JSONObject annotation = addedAnnotations.getJSONObject(j);
+                if (annotation.getString("document").equals(name)) {
+                    addedAnnotations.remove(j);
+                    added.put("annotations", addedAnnotations);
+                    corpusModif.put("added", added);
+                    System.out.println("delete " + name + " annotation from corpus modif");
+                }
+            }
+
+            // -> delete deleted annotation
+            JSONObject deleted = corpusModif.getJSONObject("deleted");
+            JSONArray deletedAnnotations = deleted.getJSONArray("annotations");
+            for (int j=0; j<deletedAnnotations.length(); j++) {
+                JSONObject annotation = deletedAnnotations.getJSONObject(j);
+                if (annotation.getInt("docId") == id ) {
+                    deletedAnnotations.remove(j);
+                    deleted.put("annotations", deletedAnnotations);
+                    corpusModif.put("deleted", deleted);
+                }
+            }
+
+
+            // TODO il faut faire plus de test sur cette fonction y'a des comportements bizarre
+            /*
+
+            des fois ça marche, des fois non
+            je parle de l'ensemble de la fonction deleteCorpusDiff()
+            des fois j'ai
+            Cannot delete directory annotation_10-03-2023_16h41m59s_328.wav
+            et ça marche quand même, des fois non
+
+            pour tester :
+            créer un corpus avec 2 docs et une annotations par docs, push ça sur le serveur
+            sur le serveur, delete le premier doc et delete l'annotation du deuxième doc (pensez a tous delete correctement dans le file système)
+            puis refaire un pull depuis le front
+
+            */
+
+
+
+            // -> delete updated document
+            // TODO ANTOINE pour le rename
+            /*
+            JSONObject updated = corpusModif.getJSONObject("updated");
+            JSONArray updatedDocuments = updated.getJSONArray("documents");
+            for (int j=0; j<updatedDocuments.length(); j++) {
+                JSONObject document = updatedDocuments.getJSONObject(j);
+                if (document.getString("document").equals(name)) {
+                    updatedDocuments.remove(j);
+                    updated.put("documents", updatedDocuments);
+                    corpusModif.put("updated", updated);
+                }
+            }
+            */
+
+
+            System.out.println(corpusModif);
+            this.corpus.writeCorpusModif(corpusModif);
         }
     }
 

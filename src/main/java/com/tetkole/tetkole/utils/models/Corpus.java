@@ -240,8 +240,13 @@ public class Corpus {
 
     public void writeCorpusModif() {
         // before calling this method, please be sure that there is a valid corpus_state (ie that the corpus exist on the server)
+        writeCorpusModif(corpus_modif);
+    }
+
+    public void writeCorpusModif(JSONObject newCorpusModif) {
+        // before calling this method, please be sure that there is a valid corpus_state (ie that the corpus exist on the server)
         File file = new File(FileManager.getFileManager().getFolderPath() + "/" + name + "/corpus_modif.json");
-        FileManager.getFileManager().writeJSONFile(file, corpus_modif);
+        FileManager.getFileManager().writeJSONFile(file, newCorpusModif);
     }
 
     public JSONObject getCorpusModif() {
@@ -351,5 +356,30 @@ public class Corpus {
         this.corpusImages = new ArrayList<>();
         this.corpusVideos = new ArrayList<>();
         this.load();
+    }
+
+
+    public void clearAnnotationsObjects() {
+        List<Media> medias = new ArrayList<>(fieldAudios);
+        medias.addAll(corpusVideos);
+        medias.addAll(corpusImages);
+
+        for (Media m : medias) {
+            m.clearAnnotations();
+        }
+    }
+
+    public void clearMediasObjects() {
+        List<Media> medias = new ArrayList<>(fieldAudios);
+        medias.addAll(corpusVideos);
+        medias.addAll(corpusImages);
+
+        for (Media m : medias) {
+            m.clearFile();
+            m = null;
+        }
+        fieldAudios.clear();
+        corpusVideos.clear();
+        corpusImages.clear();
     }
 }

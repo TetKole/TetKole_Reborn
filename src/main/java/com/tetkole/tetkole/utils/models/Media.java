@@ -140,4 +140,14 @@ public abstract class Media {
 
         return -1;
     }
+
+    public void clearAnnotations() {
+        for (Annotation annotation: annotations) {
+            annotation.getMediaPlayer().dispose();
+        }
+    }
+
+    public void clearFile() {
+        this.file = null;
+    }
 }
