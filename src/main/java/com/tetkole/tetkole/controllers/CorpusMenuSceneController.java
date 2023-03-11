@@ -109,7 +109,10 @@ public class CorpusMenuSceneController implements Initializable {
             CustomButton btnEdit = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/edit.png")).toExternalForm());
 
             btnEdit.setOnMouseClicked(event -> {
-                //TODO
+                String[] faName = fa.getName().split("\\.");
+                String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", faName[0], resources.getString("RenameAudio"));
+                corpus.renameDocument(fa, newName + '.' + faName[1]);
+                this.updateFieldAudioList();
             });
 
             line.getChildren().add(btn);
@@ -162,7 +165,10 @@ public class CorpusMenuSceneController implements Initializable {
             CustomButton btnEdit = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/edit.png")).toExternalForm());
 
             btnEdit.setOnMouseClicked(event -> {
-                //TODO
+                String[] imageName = image.getName().split("\\.");
+                String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", imageName[0], resources.getString("RenameImage"));
+                corpus.renameDocument(image, newName + '.' + imageName[1]);
+                this.updateImagesList();
             });
 
             line.getChildren().add(btn);
@@ -221,7 +227,10 @@ public class CorpusMenuSceneController implements Initializable {
             CustomButton btnEdit = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/edit.png")).toExternalForm());
 
             btnEdit.setOnMouseClicked(event -> {
-                //TODO
+                String[] videoName = video.getName().split("\\.");
+                String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", videoName[0], resources.getString("RenameVideo"));
+                corpus.renameDocument(video, newName + '.' + videoName[1]);
+                this.updateVideosList();
             });
 
             line.getChildren().add(btn);
@@ -364,6 +373,7 @@ public class CorpusMenuSceneController implements Initializable {
         // you need to pull
         SceneManager.getSceneManager().showNewModal(
                 "modals/AlertModalScene.fxml",
+                this.resources.getString("NidDePoule"),
                 this.resources.getString("NidDePoule")
         );
     }

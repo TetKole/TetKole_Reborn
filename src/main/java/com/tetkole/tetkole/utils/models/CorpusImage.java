@@ -6,5 +6,6 @@ public class CorpusImage extends Media {
 
     public CorpusImage(File file, Corpus corpus) {
         super(file, corpus);
+        this.setTypeDocument(TypeDocument.Images);
     }
 }

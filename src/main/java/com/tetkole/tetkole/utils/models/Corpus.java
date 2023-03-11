@@ -382,4 +382,57 @@ public class Corpus {
         corpusVideos.clear();
         corpusImages.clear();
     }
+    
+    public void updateNameDocCorpusModif(Media doc, String newName) {
+        JSONObject modif = new JSONObject();
+        modif.put("id", doc.getId());
+        modif.put("newName", newName);
+        this.corpus_modif.getJSONObject("updated").getJSONArray("documents").put(modif);
+    }
+
+    public void updateNameAnnotationCorpusModif(Annotation doc, String newName) {
+        JSONObject modif = new JSONObject();
+        modif.put("id", doc.getId());
+        modif.put("newName", newName);
+        this.corpus_modif.getJSONObject("updated").getJSONArray("annotations").put(modif);
+    }
+
+    public void renameAnnotation(Annotation annotation, String newName) {
+        // Modification du corpus_modif.json
+        if(this.getCorpusState() != null) {
+            if(annotation.getId() == -1) {
+                // TODO si le document a été modifié mais toujours pas push sur le serveur
+            } else {
+                updateNameAnnotationCorpusModif(annotation, newName);
+                // TODO si le document est re re nommé
+            }
+
+        }
+
+        // Renommer le document
+        annotation.renameAnnotation(newName);
+    }
+
+    public void renameDocument(Media doc, String newName) {
+
+        // Renommer le fichier audio lié dans chaque annotation dans le JSON
+        for (Annotation annotation: doc.getAnnotations()
+        ) {
+            annotation.renameDocName(newName);
+        }
+
+        // Modification du corpus_modif.json
+        if(this.getCorpusState() != null) {
+            if(doc.getId() == -1) {
+                // TODO si le document a été modifié mais toujours pas push sur le serveur
+            } else {
+                updateNameDocCorpusModif(doc, newName);
+                // TODO si le document est re re nommé
+            }
+
+        }
+
+        // Renommer le document
+        doc.renameMedia(newName, this.getName());
+    }
 }

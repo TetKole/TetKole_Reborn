@@ -2,6 +2,7 @@ package com.tetkole.tetkole.utils.annotations;
 
 import com.tetkole.tetkole.components.CustomButton;
 import com.tetkole.tetkole.controllers.AudioEditSceneController;
+import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.models.Annotation;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -80,13 +81,13 @@ public class AnnotationsVisualization extends Pane {
         CustomButton btnPlayPause = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());
         CustomButton btnRecord = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/reRecord.png")).toExternalForm());
         CustomButton btnDelete = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/trash.png")).toExternalForm());
-        CustomButton btnEdit = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/edit.png")).toExternalForm());
+        //CustomButton btnEdit = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/edit.png")).toExternalForm());
         Button btnClose = new Button("X");
 
         btnPlayPause.resizeImage(10);
         btnRecord.resizeImage(10);
         btnDelete.resizeImage(10);
-        btnEdit.resizeImage(10);
+        //btnEdit.resizeImage(10);
 
         btnPlayPause.setOnAction(((Button)line.getChildren().get(3)).getOnAction());
         btnRecord.setOnAction(((Button)line.getChildren().get(1)).getOnAction());
@@ -96,12 +97,18 @@ public class AnnotationsVisualization extends Pane {
             this.audioEditSceneController.getFieldAudio().deleteAnnotation(annotation);
             this.refresh();
         });
+
+        /* TODO Faire en sorte de connaitre le corpus
         btnEdit.setOnAction(event -> {
-            //TODO
-        });
+            String[] annotationName = annotation.getName().split("\\.");
+            String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", annotationName[0], resources.getString("RenameAnnotation"));
+            System.out.println(newName + '.' + annotationName[1]);
+            corpus.renameAnnotation(annotation, newName + '.' + annotationName[1]);
+        });*/
+
         btnClose.setOnAction(event -> this.closePopup());
 
-        HBox hbox = new HBox(btnPlayPause, btnRecord, btnDelete, btnEdit, btnClose);
+        HBox hbox = new HBox(btnPlayPause, btnRecord, btnDelete/*, btnEdit*/, btnClose);
         hbox.setSpacing(3);
         hbox.setPadding(new Insets(3));
         hbox.setStyle(
