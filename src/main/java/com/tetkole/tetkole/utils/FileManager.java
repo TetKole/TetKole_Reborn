@@ -184,7 +184,11 @@ public class FileManager {
         File[] allContents = folderToDelete.listFiles();
         if (allContents != null) {
             for (File file : allContents) {
-                this.deleteFile(file);
+                if (file.isDirectory()) {
+                    deleteFolder(file);
+                } else {
+                    this.deleteFile(file);
+                }
             }
         }
         if (!folderToDelete.delete()) {
@@ -236,5 +240,6 @@ public class FileManager {
         corpus_modif.getJSONObject("deleted").put("annotations", new JSONArray());
 
         writeJSONFile(file, corpus_modif);
+        System.out.println("help");
     }
 }

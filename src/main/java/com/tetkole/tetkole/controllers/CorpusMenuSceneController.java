@@ -51,6 +51,7 @@ public class CorpusMenuSceneController implements Initializable {
     private ResourceBundle resources;
 
     private volatile boolean pullThreadRunning;
+    private volatile boolean doYouNeedPull;
     private JSONObject tempCorpusStateForPull;
 
     @Override
@@ -254,8 +255,12 @@ public class CorpusMenuSceneController implements Initializable {
         }
     }
 
+    /**
+     * Push your change on the server if you have the same corpus_state than the server.
+     */
     private void push() {
         this.loadingLabelPush.setVisible(true);
+        this.doYouNeedPull = false;
 
         // the push thread
         new Thread(() -> {
@@ -314,15 +319,16 @@ public class CorpusMenuSceneController implements Initializable {
                             + annotation.getString("document") + "/"
                             + annotation.getString("name") + "/";
 
+                    // get the audio file from the name
                     File audioFile = new File(path + annotation.getString("name"));
 
+                    // get the json file from the name
                     String[] pathSplit = annotation.getString("name").split("\\.");
-                    String jsonFileName = "";
+                    StringBuilder jsonFileName = new StringBuilder();
                     for (int j=0; j<pathSplit.length - 1; j++) {
-                        jsonFileName += pathSplit[j];
+                        jsonFileName.append(pathSplit[j]);
                     }
-                    jsonFileName += ".json";
-
+                    jsonFileName.append(".json");
                     File jsonFile  = new File(path + jsonFileName);
 
                     int docId = annotation.getInt("docId");
@@ -330,31 +336,41 @@ public class CorpusMenuSceneController implements Initializable {
                         docId = httpRequestManager.getDocIdByName(annotation.getString("document"), token);
                     }
                     httpRequestManager.addAnnotation(audioFile, jsonFile, docId, token, AuthenticationManager.getAuthenticationManager().getUserId());
-
-                    // update corpus state
-                    JSONObject corpusStateResponse = httpRequestManager.getCorpusState(token, corpusId);
-                    JSONObject newServerState = new JSONObject(corpusStateResponse.get("body").toString());
-                    this.corpus.writeCorpusState(newServerState);
-
-                    // clean corpus modif
-                    FileManager.getFileManager().createCorpusModifFile(this.corpus.getName());
-
-                    System.out.println("push done");
                 }
 
+                // update corpus state
+                JSONObject corpusStateResponse = httpRequestManager.getCorpusState(token, corpusId);
+                JSONObject newServerState = new JSONObject(corpusStateResponse.get("body").toString());
+                this.corpus.writeCorpusState(newServerState);
+
+                // clean corpus modif
+                FileManager.getFileManager().createCorpusModifFile(this.corpus.getName());
+
+                System.out.println("push done");
 
             } else {
-                // you need to pull
-                SceneManager.getSceneManager().showNewModal(
-                        "modals/AlertModalScene.fxml",
-                        this.resources.getString("NidDePoule")
-                );
+                this.doYouNeedPull = true;
             }
-            loadingLabelPush.setVisible(false);
+
 
         }).start();
+
+
+        while (this.doYouNeedPull) {
+            Thread.onSpinWait();
+        }
+
+        this.loadingLabelPush.setVisible(false);
+        // you need to pull
+        SceneManager.getSceneManager().showNewModal(
+                "modals/AlertModalScene.fxml",
+                this.resources.getString("NidDePoule")
+        );
     }
 
+    /**
+     * Push a new corpus on the server.
+     */
     private void pushInit() {
         this.loadingLabelPush.setVisible(true);
 
@@ -390,7 +406,6 @@ public class CorpusMenuSceneController implements Initializable {
             medias.addAll(this.corpus.getCorpusVideos());
             medias.addAll(this.corpus.getCorpusImages());
 
-            // TODO prendre en compte si la co crash
             for (Media m : medias) {
                 String docType = "";
                 if (m instanceof FieldAudio)  docType = "FieldAudio";
@@ -444,6 +459,9 @@ public class CorpusMenuSceneController implements Initializable {
     }
 
 
+    /**
+     * Fetch change from the server on your local.
+     */
     public void pullCorpus() {
         if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) return;
         System.out.println("Start Pulling");
@@ -457,13 +475,11 @@ public class CorpusMenuSceneController implements Initializable {
                 HttpRequestManager httpRequestManager = HttpRequestManager.getHttpRequestManagerInstance();
                 String token = AuthenticationManager.getAuthenticationManager().getToken();
 
-
                 JSONObject localCorpusState = this.corpus.getCorpusState();
                 int corpusId = localCorpusState.getInt("corpusId");
 
                 // Get corpus_state.json from server
                 JSONObject responseGetCorpusState = httpRequestManager.getCorpusState(token, corpusId);
-
                 if (!responseGetCorpusState.getBoolean("success")) {
                     System.out.println("error when fetching Corpus State from server");
                     return;
@@ -473,88 +489,17 @@ public class CorpusMenuSceneController implements Initializable {
 
                 this.tempCorpusStateForPull = serverCorpusState;
 
-                /*
-                System.out.println("serverCorpusState");
-                System.out.println(serverCorpusState);
-                System.out.println("localCorpusState");
-                System.out.println(localCorpusState);
-                */
-
                 // on compare les deux corpus state
                 JSONArray serveurDocs = serverCorpusState.getJSONArray("documents");
                 JSONArray localDocs = localCorpusState.getJSONArray("documents");
-                JSONObject diffDocs = new JSONObject();
-                diffDocs.put("documents", new JSONArray());
-                diffDocs.put("annotations", new JSONArray());
 
-                /*
-                diffDocs
-                {
-                    "documents": [
-                        {
-                            "id": 2,
-                            "type": "Images",
-                            "name": "image.jpg"
-                        },
-                        {
-                            "id": 4,
-                            "type": "FieldAudio",
-                            "name": "audio.mp3"
-                        }
-                    ],
-                    "annotations": [
-                        {
-                            "id": 2,
-                            "name": "annotation_15-02-2023_11h40m34s_939.wav",
-                            "document": "audio.mp3"
-                        }
-                    ]
-                }*/
+                // get docs and annotations from server that do not exist on local
+                JSONObject docsToDownload = existOnFirstAndNotOnSecond(serveurDocs, localDocs);
+                fetchCorpusDiff(docsToDownload);
 
-                // on regarde si les docs sur serveur existe en local
-                for (int i=0; i < serveurDocs.length(); i++) {
-                    JSONObject doc = serveurDocs.getJSONObject(i);
-
-                    // si le doc existe pas, on l'ajoute a diffDocs
-                    boolean docExistOnLocal = existOnDocArray(doc, localDocs);
-                    if (!docExistOnLocal) {
-                        JSONObject newDoc = new JSONObject();
-                        newDoc.put("id", doc.getInt("docId"));
-                        newDoc.put("name", doc.getString("name"));
-                        newDoc.put("type", doc.get("type"));
-                        diffDocs.getJSONArray("documents").put(newDoc);
-                    }
-
-                    // idem pour les annotations
-                    JSONArray serverAnnotations = doc.getJSONArray("annotations");
-                    // si le doc exist en local, on compare les tableaux d'annotation
-                    // sinon, on ajoute toutes les annotations du serveur sur le diffDocs
-                    if (docExistOnLocal) {
-                        JSONArray localAnnotations = findLocalAnnotations(doc, localDocs);
-                        for (int j=0; j<serverAnnotations.length(); j++) {
-                            JSONObject a = serverAnnotations.getJSONObject(j);
-                            if (!existOnAnnotationArray(a, localAnnotations)) {
-                                JSONObject newAnnotation = new JSONObject();
-                                newAnnotation.put("id", a.get("annotationId"));
-                                newAnnotation.put("name", a.get("name"));
-                                newAnnotation.put("document", doc.get("name"));
-                                diffDocs.getJSONArray("annotations").put(newAnnotation);
-                            }
-                        }
-                    } else {
-                        for(int j=0; j<serverAnnotations.length(); j++) {
-                            JSONObject annotation = serverAnnotations.getJSONObject(j);
-                            JSONObject newAnnotation = new JSONObject();
-                            newAnnotation.put("id", annotation.get("annotationId"));
-                            newAnnotation.put("name", annotation.get("name"));
-                            newAnnotation.put("document", doc.get("name"));
-                            diffDocs.getJSONArray("annotations").put(newAnnotation);
-                        }
-                    }
-
-                }
-
-                fetchCorpusDiff(diffDocs);
+                // get docs and annotations from local that do not exist on the server anymore
+                JSONObject docsToDelete = existOnFirstAndNotOnSecond(localDocs, serveurDocs);
+                deleteCorpusDiff(docsToDelete);
 
                 pullThreadRunning = false;
             } catch (Exception e) {
@@ -581,75 +526,12 @@ public class CorpusMenuSceneController implements Initializable {
         System.out.println("Pull Done");
     }
 
-    private boolean existOnDocArray(JSONObject docOnServer, JSONArray docs) {
-        int id = docOnServer.getInt("docId");
-        String name = docOnServer.getString("name");
-
-        for (int i=0; i < docs.length(); i++) {
-            JSONObject doc = docs.getJSONObject(i);
-            if (doc.getInt("docId") == id && doc.getString("name").equals(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private JSONArray findLocalAnnotations(JSONObject doc, JSONArray localDocs) {
-        int id = doc.getInt("docId");
-        String name = doc.getString("name");
-
-        for (int i=0; i<localDocs.length(); i++) {
-            if (localDocs.getJSONObject(i).getString("name").equals(name) && localDocs.getJSONObject(i).getInt("docId") == id) {
-                return localDocs.getJSONObject(i).getJSONArray("annotations");
-            }
-        }
-        return new JSONArray();
-    }
-
-    private boolean existOnAnnotationArray(JSONObject a, JSONArray annotations) {
-        int id = a.getInt("annotationId");
-        String name = a.getString("name");
-
-        for (int i=0; i<annotations.length(); i++) {
-            if (annotations.getJSONObject(i).getInt("annotationId") == id && annotations.getJSONObject(i).getString("name").equals(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     /**
-     * Get diffDocs from server and place them correctly in corpus file system, then update corpus_state.
+     * Get diffDocs from server and place them correctly in corpus file system.
      * @param diffDocs docs to fetch from server
      */
     private void fetchCorpusDiff(JSONObject diffDocs) {
-         /*
-            diffDocs
-            {
-                "documents": [
-                    {
-                        "id": 2,
-                        "type": "Images",
-                        "name": "image.jpg"
-                    },
-                    {
-                        "id": 4,
-                        "type": "FieldAudio",
-                        "name": "audio.mp3"
-                    }
-                ],
-                "annotations": [
-                    {
-                        "id": 2,
-                        "name": "annotation_15-02-2023_11h40m34s_939.wav",
-                        "document": "audio.mp3"
-                    }
-                ]
-            }*/
-
-        //System.out.println("diffDocs");
-        //System.out.println(diffDocs);
-
         FileManager fileManager = FileManager.getFileManager();
 
         JSONArray documents = diffDocs.getJSONArray("documents");
@@ -669,11 +551,260 @@ public class CorpusMenuSceneController implements Initializable {
 
                 fileManager.downloadAnnotation(this.corpus.getName(), docName, fileName);
             }
-
-            this.loadingLabelPull.setVisible(false);
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    /**
+     * Delete documents (and annotations) that exist locally but do not exist on the server anymore.
+     * @param docsToDelete docs to delete locally
+     */
+    private void deleteCorpusDiff(JSONObject docsToDelete) {
+        FileManager fileManager = FileManager.getFileManager();
+
+        JSONArray documents = docsToDelete.getJSONArray("documents");
+        JSONArray annotations = docsToDelete.getJSONArray("annotations");
+
+        // we need to clear all annotations to delete some of them,
+        // clear an annotation means use .dispose() on it's MediaPlayer.
+        this.corpus.clearAnnotationsObjects();
+        this.corpus.clearMediasObjects(); // same on document's files (FieldAudios, Images, Videos)
+
+        // delete annotations
+        for (int i=0; i<annotations.length(); i++) {
+            String name = annotations.getJSONObject(i).getString("name");
+            String docName = annotations.getJSONObject(i).getString("document");
+            String path = fileManager.getFolderPath() + "/"
+                    + this.corpus.getName() + "/"
+                    + Corpus.folderNameAnnotation + "/"
+                    + docName + "/"
+                    + name;
+            File folder = new File(path);
+            fileManager.deleteFolder(folder);
+        }
+
+        // delete docs
+        for (int i=0; i<documents.length(); i++) {
+            // delete the doc
+            String name = documents.getJSONObject(i).getString("name");
+            String type = documents.getJSONObject(i).getString("type");
+            int id = documents.getJSONObject(i).getInt("id");
+            String path = fileManager.getFolderPath() + "/"
+                    + this.corpus.getName() + "/"
+                    + type + "/"
+                    + name;
+            File folder = new File(path);
+            fileManager.deleteFile(folder);
+
+            // delete it's annotations
+            String annotationPath = fileManager.getFolderPath() + "/"
+                    + this.corpus.getName() + "/"
+                    + Corpus.folderNameAnnotation + "/"
+                    + name;
+            File annotationsfolder = new File(annotationPath);
+            fileManager.deleteFolder(annotationsfolder);
+
+
+            // When deleting a doc, we need to delete mentions of this doc in corpus_modif file.
+            JSONObject corpusModif = this.corpus.getCorpusModif();
+
+            // -> delete added annotation
+            JSONObject added = corpusModif.getJSONObject("added");
+            JSONArray addedAnnotations = added.getJSONArray("annotations");
+            for (int j=0; j<addedAnnotations.length(); j++) {
+                JSONObject annotation = addedAnnotations.getJSONObject(j);
+                if (annotation.getString("document").equals(name)) {
+                    addedAnnotations.remove(j);
+                    added.put("annotations", addedAnnotations);
+                    corpusModif.put("added", added);
+                    System.out.println("delete " + name + " annotation from corpus modif");
+                }
+            }
+
+            // -> delete deleted annotation
+            JSONObject deleted = corpusModif.getJSONObject("deleted");
+            JSONArray deletedAnnotations = deleted.getJSONArray("annotations");
+            for (int j=0; j<deletedAnnotations.length(); j++) {
+                JSONObject annotation = deletedAnnotations.getJSONObject(j);
+                if (annotation.getInt("docId") == id ) {
+                    deletedAnnotations.remove(j);
+                    deleted.put("annotations", deletedAnnotations);
+                    corpusModif.put("deleted", deleted);
+                }
+            }
+
+
+            // TODO il faut faire plus de test sur cette fonction y'a des comportements bizarre
+            /*
+
+            des fois ça marche, des fois non
+            je parle de l'ensemble de la fonction deleteCorpusDiff()
+            des fois j'ai
+            Cannot delete directory annotation_10-03-2023_16h41m59s_328.wav
+            et ça marche quand même, des fois non
+
+            pour tester :
+            créer un corpus avec 2 docs et une annotations par docs, push ça sur le serveur
+            sur le serveur, delete le premier doc et delete l'annotation du deuxième doc (pensez a tous delete correctement dans le file système)
+            puis refaire un pull depuis le front
+
+            */
+
+
+
+            // -> delete updated document
+            // TODO ANTOINE pour le rename
+            /*
+            JSONObject updated = corpusModif.getJSONObject("updated");
+            JSONArray updatedDocuments = updated.getJSONArray("documents");
+            for (int j=0; j<updatedDocuments.length(); j++) {
+                JSONObject document = updatedDocuments.getJSONObject(j);
+                if (document.getString("document").equals(name)) {
+                    updatedDocuments.remove(j);
+                    updated.put("documents", updatedDocuments);
+                    corpusModif.put("updated", updated);
+                }
+            }
+            */
+
+
+            System.out.println(corpusModif);
+            this.corpus.writeCorpusModif(corpusModif);
+        }
+    }
+
+
+    /**
+     * This function build and return an array called diffDocs.
+     * The documents (and annotations) present in this array are the documents (and annotations) present in the first array parameter
+     * but not present in the second array parameter.
+     */
+    private JSONObject existOnFirstAndNotOnSecond(JSONArray firstArray, JSONArray secondArray) {
+        /*
+        diffDocs
+        {
+            "documents": [
+                {
+                    "id": 2,
+                    "type": "Images",
+                    "name": "image.jpg"
+                },
+                {
+                    "id": 4,
+                    "type": "FieldAudio",
+                    "name": "audio.mp3"
+                }
+            ],
+            "annotations": [
+                {
+                    "id": 2,
+                    "name": "annotation_15-02-2023_11h40m34s_939.wav",
+                    "document": "audio.mp3"
+                }
+            ]
+        }
+        */
+
+        JSONObject diffDocs = new JSONObject();
+        diffDocs.put("documents", new JSONArray());
+        diffDocs.put("annotations", new JSONArray());
+
+
+        // on regarde si les docs sur serveur existe en local
+        for (int i=0; i < firstArray.length(); i++) {
+            JSONObject doc = firstArray.getJSONObject(i);
+
+            // si le doc existe pas, on l'ajoute a diffDocs
+            boolean docExistOnLocal = existInDocumentsArray(doc, secondArray);
+
+            if (!docExistOnLocal) {
+                JSONObject newDoc = new JSONObject();
+                newDoc.put("id", doc.getInt("docId"));
+                newDoc.put("name", doc.getString("name"));
+                newDoc.put("type", doc.get("type"));
+                diffDocs.getJSONArray("documents").put(newDoc);
+            }
+
+            // idem pour les annotations
+            JSONArray serverAnnotations = doc.getJSONArray("annotations");
+            // si le doc exist en local, on compare les tableaux d'annotation
+            // sinon, on ajoute toutes les annotations du serveur sur le diffDocs
+            if (docExistOnLocal) {
+                JSONArray localAnnotations = findLocalAnnotations(doc, secondArray);
+                for (int j=0; j<serverAnnotations.length(); j++) {
+                    JSONObject a = serverAnnotations.getJSONObject(j);
+                    if (!existInAnnotationsArray(a, localAnnotations)) {
+                        JSONObject newAnnotation = new JSONObject();
+                        newAnnotation.put("id", a.get("annotationId"));
+                        newAnnotation.put("name", a.get("name"));
+                        newAnnotation.put("document", doc.get("name"));
+                        diffDocs.getJSONArray("annotations").put(newAnnotation);
+                    }
+                }
+            } else {
+                for(int j=0; j<serverAnnotations.length(); j++) {
+                    JSONObject annotation = serverAnnotations.getJSONObject(j);
+                    JSONObject newAnnotation = new JSONObject();
+                    newAnnotation.put("id", annotation.get("annotationId"));
+                    newAnnotation.put("name", annotation.get("name"));
+                    newAnnotation.put("document", doc.get("name"));
+                    diffDocs.getJSONArray("annotations").put(newAnnotation);
+                }
+            }
+
+        }
+        return diffDocs;
+    }
+
+    /**
+     * Return true if document exist in documents array, else false.
+     */
+    private boolean existInDocumentsArray(JSONObject document, JSONArray documents) {
+        int id = document.getInt("docId");
+        String name = document.getString("name");
+
+        for (int i=0; i < documents.length(); i++) {
+            JSONObject doc = documents.getJSONObject(i);
+            if (doc.getInt("docId") == id && doc.getString("name").equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Return true if annotation exist in annotations array, else false.
+     */
+    private boolean existInAnnotationsArray(JSONObject annotation, JSONArray annotations) {
+        int id = annotation.getInt("annotationId");
+        String name = annotation.getString("name");
+
+        for (int i=0; i<annotations.length(); i++) {
+            JSONObject a = annotations.getJSONObject(i);
+            if (a.getInt("annotationId") == id && a.getString("name").equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Return the locals annotations from the local document corresponding to the document from server.
+     * Return an empty array if the document is not found.
+     * It's used to compare annotations from local and server of a document.
+     */
+    private JSONArray findLocalAnnotations(JSONObject docFromServer, JSONArray localDocs) {
+        int id = docFromServer.getInt("docId");
+        String name = docFromServer.getString("name");
+
+        for (int i=0; i<localDocs.length(); i++) {
+            JSONObject localDoc = localDocs.getJSONObject(i);
+            if (localDoc.getString("name").equals(name) && localDoc.getInt("docId") == id) {
+                return localDoc.getJSONArray("annotations");
+            }
+        }
+        return new JSONArray();
     }
 }
