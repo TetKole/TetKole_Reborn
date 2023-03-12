@@ -343,6 +343,12 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         Label label = new Label(annotation.getName());
         label.setStyle("-fx-text-fill: white;");
         line.getChildren().add(label);
+        // goToAnnotation on double click from side panel
+        label.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                goToAnnotation(annotation.getStart(), annotation.getEnd());
+            }
+        });
 
         // add the Play/Pause Button
         CustomButton btnPlayPause = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());

@@ -107,7 +107,7 @@ public class AnnotationsVisualization extends Pane {
         );
 
         r.setOnMousePressed(event -> {
-            //if double click print double
+            //Go to annotation
             if(event.getClickCount() == 2){
                 audioEditSceneController.goToAnnotation(annotation.getStart(), annotation.getEnd());
             }
