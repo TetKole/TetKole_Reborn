@@ -4,6 +4,7 @@ import com.tetkole.tetkole.utils.FileManager;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -384,37 +385,138 @@ public class Corpus {
     }
     
     public void updateNameDocCorpusModif(Media doc, String newName) {
-        JSONObject modif = new JSONObject();
-        modif.put("id", doc.getId());
-        modif.put("newName", newName);
-        this.corpus_modif.getJSONObject("updated").getJSONArray("documents").put(modif);
+        String lastName = doc.getName();
+        JSONObject updated = this.corpus_modif.getJSONObject("updated");
+        JSONArray documents = updated.getJSONArray("documents");
+        boolean found = false;
+        for (int i = 0; i < documents.length(); i++) {
+            JSONObject currentDoc = documents.getJSONObject(i);
+            if(currentDoc.getString("newName").equals(lastName)) {
+                currentDoc.put("newName", newName);
+                documents.put(i, currentDoc);
+                found = true;
+                break;
+            }
+        }
+
+        if(found == false) {
+            JSONObject modif = new JSONObject();
+            modif.put("id", doc.getId());
+            modif.put("newName", newName);
+            documents.put(modif);
+        }
+
+        updated.put("documents", documents);
+        this.corpus_modif.put("updated", updated);
+        this.writeCorpusModif();
     }
 
-    public void updateNameAnnotationCorpusModif(Annotation doc, String newName) {
+    public void updateNameAnnotationCorpusModif(Annotation annotation, String newName) {
+        String lastName = annotation.getName();
+        JSONObject updated = this.corpus_modif.getJSONObject("updated");
+        JSONArray annotations = updated.getJSONArray("annotations");
         JSONObject modif = new JSONObject();
-        modif.put("id", doc.getId());
+        modif.put("id", annotation.getId());
         modif.put("newName", newName);
-        this.corpus_modif.getJSONObject("updated").getJSONArray("annotations").put(modif);
+        annotations.put(modif);
+        this.corpus_modif.put("updated", updated);
+        this.writeCorpusModif();
+    }
+
+    public void renameAddedDoc(Media doc, String newName) {
+        String lastName = doc.getName();
+
+        JSONObject updated_modif = this.corpus_modif.getJSONObject("updated");
+        JSONArray documents = updated_modif.getJSONArray("documents");
+        for (int i = 0; i < documents.length(); i++) {
+            JSONObject currentDoc = documents.getJSONObject(i);
+            if(currentDoc.getString("newName").equals(lastName)) {
+                currentDoc.put("newName", newName);
+                documents.put(i, currentDoc);
+                updated_modif.put("documents", documents);
+                this.corpus_modif.put("updated", updated_modif);
+                this.writeCorpusModif();
+            }
+        }
+
+        JSONObject added_modif = this.corpus_modif.getJSONObject("added");
+
+        documents = added_modif.getJSONArray("documents");
+        for (int i = 0; i < documents.length(); i++) {
+            JSONObject currentDoc = documents.getJSONObject(i);
+            if(currentDoc.getString("name").equals(lastName)) {
+                currentDoc.put("name", newName);
+                documents.put(i, currentDoc);
+                added_modif.put("documents", documents);
+                break;
+            }
+        }
+
+        JSONArray annotations = added_modif.getJSONArray("annotations");
+        for (int i = 0; i < annotations.length(); i++) {
+            JSONObject currentAnnot = annotations.getJSONObject(i);
+            if(currentAnnot.getString("document").equals(lastName)) {
+                currentAnnot.put("document", newName);
+                annotations.put(i, currentAnnot);
+            }
+        }
+        added_modif.put("annotations", annotations);
+
+        this.corpus_modif.put("added", added_modif);
+        this.writeCorpusModif();
+    }
+
+    public void renameAddedAnnotation(Annotation annotation, String newName) {
+        String lastName = annotation.getName();
+        String docName = annotation.getFieldAudioName();
+
+        JSONObject updated_modif = this.corpus_modif.getJSONObject("updated");
+        JSONArray annotations = updated_modif.getJSONArray("annotations");
+        for (int i = 0; i < annotations.length(); i++) {
+            JSONObject currentAnnot = annotations.getJSONObject(i);
+            if(currentAnnot.getString("newName").equals(lastName)) {
+                currentAnnot.put("newName", newName);
+                annotations.put(i, currentAnnot);
+                updated_modif.put("annotations", annotations);
+                this.corpus_modif.put("updated", updated_modif);
+                this.writeCorpusModif();
+                return;
+            }
+        }
+
+        JSONObject added_modif = this.corpus_modif.getJSONObject("added");
+        annotations = added_modif.getJSONArray("annotations");
+        for (int i = 0; i < annotations.length(); i++) {
+            JSONObject currentAnnot = annotations.getJSONObject(i);
+            if(currentAnnot.getString("document").equals(docName)
+                    && currentAnnot.getString("name").equals(lastName)) {
+                currentAnnot.put("name", newName);
+                annotations.put(i, currentAnnot);
+            }
+        }
+        added_modif.put("annotations", annotations);
+
+        this.corpus_modif.put("added", added_modif);
+        this.writeCorpusModif();
     }
 
     public void renameAnnotation(Annotation annotation, String newName) {
         // Modification du corpus_modif.json
         if(this.getCorpusState() != null) {
             if(annotation.getId() == -1) {
-                // TODO si le document a été modifié mais toujours pas push sur le serveur
+                renameAddedAnnotation(annotation, newName);
             } else {
                 updateNameAnnotationCorpusModif(annotation, newName);
-                // TODO si le document est re re nommé
             }
 
         }
-
         // Renommer le document
         annotation.renameAnnotation(newName);
     }
 
     public void renameDocument(Media doc, String newName) {
 
+        // TODO renomer le fichier de l'annotation écrite
         // Renommer le fichier audio lié dans chaque annotation dans le JSON
         for (Annotation annotation: doc.getAnnotations()
         ) {
@@ -424,12 +526,10 @@ public class Corpus {
         // Modification du corpus_modif.json
         if(this.getCorpusState() != null) {
             if(doc.getId() == -1) {
-                // TODO si le document a été modifié mais toujours pas push sur le serveur
+                renameAddedDoc(doc, newName);
             } else {
                 updateNameDocCorpusModif(doc, newName);
-                // TODO si le document est re re nommé
             }
-
         }
 
         // Renommer le document

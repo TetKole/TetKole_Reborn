@@ -3,6 +3,7 @@ package com.tetkole.tetkole.utils.models;
 import com.tetkole.tetkole.utils.FileManager;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -65,16 +66,20 @@ public class Annotation {
 
     public void renameAnnotation(String newName) {
         this.mediaPlayer.dispose();
+        this.mediaPlayer = null;
+
         File jsonFile = this.getJsonFile();
         JSONObject jsonObject =  FileManager.getFileManager().readJSONFile(jsonFile);
         jsonObject.put("recordName", newName);
-        File lastFile = this.file;
-        this.file = null;
         FileManager.getFileManager().writeJSONFile(jsonFile, jsonObject);
+
         FileManager.getFileManager().renameFile(jsonFile, newName.split("\\.")[0] + ".json");
-        FileManager.getFileManager().renameFile(lastFile, newName);
-        FileManager.getFileManager().renameDirectoryAnnotation(lastFile.getName(), corpusName, fieldAudioName, newName);
+
+        String lastName = this.file.getName();
+        FileManager.getFileManager().renameFile(this.file, newName);
+        FileManager.getFileManager().renameDirectoryAnnotation(lastName, corpusName, fieldAudioName, newName);
         this.file = FileManager.getFileManager().getAnnotationFile(newName, corpusName, fieldAudioName);
+        this.mediaPlayer = new MediaPlayer(new Media(file.toURI().toString()));
     }
 
     public void renameDocName(String newDocName) {
@@ -83,6 +88,7 @@ public class Annotation {
         jsonObject.put("fileName", newDocName);
         FileManager.getFileManager().writeJSONFile(jsonFile, jsonObject);
         this.fieldAudioName = newDocName;
+        this.file = FileManager.getFileManager().getAnnotationFile(this.getName(), this.corpusName, this.fieldAudioName);
     }
 
     public int getId() {
@@ -112,5 +118,9 @@ public class Annotation {
         }
 
         return -1;
+    }
+
+    public String getFieldAudioName() {
+        return fieldAudioName;
     }
 }

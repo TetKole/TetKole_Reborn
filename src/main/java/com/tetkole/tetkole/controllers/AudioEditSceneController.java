@@ -338,12 +338,13 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         CustomButton btnEdit = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/edit.png")).toExternalForm());
         line.getChildren().add(btnEdit);
 
-        //TODO reload les lines
         btnEdit.setOnAction(event -> {
             String[] annotationName = annotation.getName().split("\\.");
             String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", annotationName[0], resources.getString("RenameAnnotation"));
-            System.out.println(newName + '.' + annotationName[1]);
-            corpus.renameAnnotation(annotation, newName + '.' + annotationName[1]);
+            if(newName != annotationName[0] && newName != "") {
+                corpus.renameAnnotation(annotation, newName + '.' + annotationName[1]);
+                label.setText(newName + "." + annotationName[1]);
+            }
         });
 
         // add the Play/Pause Button

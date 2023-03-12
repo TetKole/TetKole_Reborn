@@ -33,10 +33,6 @@ public abstract class Media {
         return this.annotations;
     }
 
-    public TypeDocument getTypeDocument() {
-        return typeDocument;
-    }
-
     public void setTypeDocument(TypeDocument typeDocument) {
         this.typeDocument = typeDocument;
     }
@@ -164,12 +160,12 @@ public abstract class Media {
     public void renameMedia(String newName, String corpusName) {
         this.clearAnnotations();
         String lastName = this.getName();
-        for (Annotation annotation: this.getAnnotations()
-             ) {
-            annotation.renameDocName(newName);
-        }
         File file = this.getFile();
         this.file = FileManager.getFileManager().renameFile(file, newName);
         FileManager.getFileManager().renameDirectoryDocument(lastName, corpusName, newName);
+        for (Annotation annotation: this.getAnnotations()
+        ) {
+            annotation.renameDocName(newName);
+        }
     }
 }

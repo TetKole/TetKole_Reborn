@@ -183,8 +183,12 @@ public class FileManager {
      * Rename file's name to newName.
      */
     public File renameFile(File file, String newName) {
-        file.renameTo(new File(file.getParentFile() + "/" + newName));
-        return new File(file.getParentFile() + "/" + newName);
+        String separator = this.os.contains("nux") || this.os.contains("mac") ? "/" : "\\";
+
+        System.gc();
+
+        file.renameTo(new File(file.getParentFile() + separator + newName));
+        return new File(file.getParentFile() + separator + newName);
     }
 
     /**
@@ -273,11 +277,9 @@ public class FileManager {
         if (files != null) {
             for (int i = 0; i < files.length; i++) {
                 File destAnnot = new File(destPath + separator + files[i].getName());
-                System.out.println(destPath + separator + files[i].getName());
                 destAnnot.mkdir();
                 File[] filesAnnot = files[i].listFiles();
                 for (int j = 0; j < filesAnnot.length; j++) {
-                    System.out.println(destAnnot.getPath());
                     this.absoluteCopyFile(filesAnnot[j], destAnnot.getPath() + separator + filesAnnot[j].getName());
                 }
             }
@@ -288,7 +290,7 @@ public class FileManager {
 
     public File getAnnotationFile(String annotationName, String corpusName, String fieldAudioName) {
         String separator = this.os.contains("nux") || this.os.contains("mac") ? "/" : "\\";
-        return new File(this.folderPath + separator + corpusName + separator + TypeDocument.Annotations + separator + fieldAudioName + separator + annotationName + separator + annotationName);
+        return new File(this.folderPath + separator + corpusName + separator + TypeDocument.Annotations + separator + fieldAudioName + separator + annotationName + separator + annotationName );
     }
 
     public void renameDirectoryAnnotation(String annotationName, String corpusName, String fieldAudioName, String newName) {
@@ -300,7 +302,6 @@ public class FileManager {
         File[] files = source.listFiles();
         if (files != null) {
             for (int j = 0; j < files.length; j++) {
-                System.out.println(dest.getPath());
                 this.absoluteCopyFile(files[j], dest.getPath() + separator + files[j].getName());
             }
         }
