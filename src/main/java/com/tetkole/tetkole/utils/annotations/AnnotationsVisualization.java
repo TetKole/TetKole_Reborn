@@ -107,6 +107,10 @@ public class AnnotationsVisualization extends Pane {
         );
 
         r.setOnMousePressed(event -> {
+            //Go to annotation
+            if(event.getClickCount() == 2){
+                audioEditSceneController.goToAnnotation(annotation.getStart(), annotation.getEnd());
+            }
             if(this.getChildren().contains(hbox)){
                 this.getChildren().remove(hbox);
                 actualAnnotationMenu = null;
