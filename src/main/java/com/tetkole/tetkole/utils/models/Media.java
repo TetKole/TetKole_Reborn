@@ -1,5 +1,6 @@
 package com.tetkole.tetkole.utils.models;
 
+import com.tetkole.tetkole.utils.FileManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -12,6 +13,7 @@ public abstract class Media {
     private File file;
     private List<Annotation> annotations;
     private Corpus corpus;
+    private TypeDocument typeDocument;
 
     public Media(File file, Corpus corpus) {
         this.file = file;
@@ -29,6 +31,10 @@ public abstract class Media {
 
     public List<Annotation> getAnnotations() {
         return this.annotations;
+    }
+
+    public void setTypeDocument(TypeDocument typeDocument) {
+        this.typeDocument = typeDocument;
     }
 
     public void addAnnotation(Annotation annotation) {
@@ -149,5 +155,17 @@ public abstract class Media {
 
     public void clearFile() {
         this.file = null;
+    }
+
+    public void renameMedia(String newName, String corpusName) {
+        this.clearAnnotations();
+        String lastName = this.getName();
+        File file = this.getFile();
+        this.file = FileManager.getFileManager().renameFile(file, newName);
+        FileManager.getFileManager().renameDirectoryDocument(lastName, corpusName, newName);
+        for (Annotation annotation: this.getAnnotations()
+        ) {
+            annotation.renameDocName(newName);
+        }
     }
 }

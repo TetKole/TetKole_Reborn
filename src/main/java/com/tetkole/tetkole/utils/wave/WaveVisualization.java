@@ -88,7 +88,6 @@ public class WaveVisualization extends WaveFormPane {
 
 	public void setTotalTime(double seconds) {
 		this.initTotalTime(seconds);
-		// set up number of wave for the audio, 200 wave per seconds
 		this.waveService.setArrayWaveLength((int)this.totalTime * StaticEnvVariable.zoomRange);
 	}
 	
