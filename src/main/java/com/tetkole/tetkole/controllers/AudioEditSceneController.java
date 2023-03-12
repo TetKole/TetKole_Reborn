@@ -207,8 +207,20 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     }
 
     public void onScroll(ScrollEvent scrollEvent) {
+        //print scroll event
         this.mediaPlayer.stop();
         this.waveVisualization.setRangeZoom(scrollEvent);
+        this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
+                this.waveVisualization.getBeginAudio(),
+                this.waveVisualization.getEndAudio());
+        this.annotationsVisualization.drawAnnotations();
+    }
+
+    public void goToAnnotation(double begin, double end) {
+        this.mediaPlayer.stop();
+        this.waveVisualization.setLeftBorderTime(begin);
+        this.waveVisualization.setRightBorderTime(end);
+        this.waveVisualization.unZoom();
         this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
                 this.waveVisualization.getBeginAudio(),
                 this.waveVisualization.getEndAudio());
