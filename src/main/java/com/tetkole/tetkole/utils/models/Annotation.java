@@ -104,9 +104,27 @@ public class Annotation {
         JSONObject jsonObject =  FileManager.getFileManager().readJSONFile(jsonFile);
         String recordName = jsonObject.getString("recordName");
 
+        int docId = -1;
+
+        File fileModif = new File(FileManager.getFileManager().getFolderPath() + "/" + corpusName + "/corpus_modif.json");
+        if (file.exists()) {
+            JSONObject corpus_modif = FileManager.getFileManager().readJSONFile(fileModif);
+            JSONArray documentsUpdated = corpus_modif.getJSONObject("updated").getJSONArray("documents");
+            for (int i = 0; i < documentsUpdated.length(); i++) {
+                JSONObject document = documentsUpdated.getJSONObject(i);
+                System.out.println(documentsUpdated);
+                if(document.getString("newName").equals(this.fieldAudioName)) {
+                    docId = document.getInt("id");
+                    break;
+                }
+            }
+        }
+
+        System.out.println(docId);
+
         for (int i=0; i< documents.length(); i++) {
             JSONObject document = documents.getJSONObject(i);
-            if (document.getString("name").equals(this.fieldAudioName)) {
+            if (document.getString("name").equals(this.fieldAudioName) || document.getInt("docId") == docId) {
                 JSONArray annotations = document.getJSONArray("annotations");
                 for (int j=0; j< annotations.length(); j++) {
                     JSONObject annotation = annotations.getJSONObject(j);

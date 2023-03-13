@@ -144,6 +144,15 @@ public abstract class Media {
             }
         }
 
+        JSONObject corpus_modif = this.corpus.getCorpusModif();
+        documents = corpus_modif.getJSONObject("updated").getJSONArray("documents");
+        for (int i=0; i< documents.length(); i++) {
+            JSONObject document = documents.getJSONObject(i);
+            if (document.getString("newName").equals(this.getName())) {
+                return document.getInt("id");
+            }
+        }
+
         return -1;
     }
 
@@ -161,6 +170,7 @@ public abstract class Media {
         this.clearAnnotations();
         String lastName = this.getName();
         File file = this.getFile();
+        FileManager.getFileManager().renameAnnotEcrite(corpusName, this.getName(), this.typeDocument, newName);
         this.file = FileManager.getFileManager().renameFile(file, newName);
         FileManager.getFileManager().renameDirectoryDocument(lastName, corpusName, newName);
         for (Annotation annotation: this.getAnnotations()

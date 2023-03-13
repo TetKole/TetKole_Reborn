@@ -387,6 +387,7 @@ public class Corpus {
     public void updateNameDocCorpusModif(Media doc, String newName) {
         String lastName = doc.getName();
         JSONObject updated = this.corpus_modif.getJSONObject("updated");
+        JSONObject added = this.corpus_modif.getJSONObject("added");
         JSONArray documents = updated.getJSONArray("documents");
         boolean found = false;
         for (int i = 0; i < documents.length(); i++) {
@@ -399,6 +400,15 @@ public class Corpus {
             }
         }
 
+        JSONArray annotations = added.getJSONArray("annotations");
+        for (int i = 0; i < annotations.length(); i++) {
+            JSONObject currentAnnot = annotations.getJSONObject(i);
+            if(currentAnnot.getString("document").equals(lastName)) {
+                currentAnnot.put("document", newName);
+                annotations.put(i, currentAnnot);
+            }
+        }
+
         if(found == false) {
             JSONObject modif = new JSONObject();
             modif.put("id", doc.getId());
@@ -406,13 +416,14 @@ public class Corpus {
             documents.put(modif);
         }
 
+        added.put("annotations", annotations);
         updated.put("documents", documents);
         this.corpus_modif.put("updated", updated);
+        this.corpus_modif.put("added", added);
         this.writeCorpusModif();
     }
 
     public void updateNameAnnotationCorpusModif(Annotation annotation, String newName) {
-        String lastName = annotation.getName();
         JSONObject updated = this.corpus_modif.getJSONObject("updated");
         JSONArray annotations = updated.getJSONArray("annotations");
         JSONObject modif = new JSONObject();

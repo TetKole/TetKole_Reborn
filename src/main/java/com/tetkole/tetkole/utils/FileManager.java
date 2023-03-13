@@ -192,6 +192,19 @@ public class FileManager {
     }
 
     /**
+     * Rename file's name to newName.
+     */
+    public void renameAnnotEcrite(String corpusName, String docName, TypeDocument typeDocument, String newName) {
+        String separator = this.os.contains("nux") || this.os.contains("mac") ? "/" : "\\";
+
+        System.gc();
+
+        File fileAnnot = new File(this.folderPath + separator + corpusName + separator + typeDocument + separator + docName.split("\\.")[0] + ".json");
+
+        fileAnnot.renameTo(new File(fileAnnot.getParentFile() + separator + newName.split("\\.")[0] + ".json"));
+    }
+
+    /**
      * Delete file
      */
     public void deleteFile(File fileToDelete) {
