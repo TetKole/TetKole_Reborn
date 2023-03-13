@@ -527,7 +527,6 @@ public class Corpus {
 
     public void renameDocument(Media doc, String newName) {
 
-        // TODO renomer le fichier de l'annotation écrite
         // Renommer le fichier audio lié dans chaque annotation dans le JSON
         for (Annotation annotation: doc.getAnnotations()
         ) {
