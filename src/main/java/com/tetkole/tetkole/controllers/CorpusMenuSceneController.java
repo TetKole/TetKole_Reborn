@@ -293,20 +293,34 @@ public class CorpusMenuSceneController implements Initializable {
                 JSONArray deletedDocuments = modifs.getJSONObject("deleted").getJSONArray("documents");
                 JSONArray addedDocuments = modifs.getJSONObject("added").getJSONArray("documents");
                 JSONArray addedAnnotations = modifs.getJSONObject("added").getJSONArray("annotations");
+                JSONArray updatedDocuments = modifs.getJSONObject("updated").getJSONArray("documents");
+                JSONArray updatedAnnotations = modifs.getJSONObject("updated").getJSONArray("annotations");
 
-                // step 1 : delete annotations
+                // step 1 : update annotations
+                for (int i=0; i<updatedAnnotations.length(); i++) {
+                    JSONObject annotation = updatedAnnotations.getJSONObject(i);
+                    httpRequestManager.renameAnnotation(annotation.getInt("id"), token, annotation.getString("newName"));
+                }
+
+                // step 2 : update document
+                for (int i=0; i<updatedDocuments.length(); i++) {
+                    JSONObject document = updatedDocuments.getJSONObject(i);
+                    httpRequestManager.renameDocument(document.getInt("id"), token, document.getString("newName"));
+                }
+
+                // step 3 : delete annotations
                 for (int i=0; i<deletedAnnotations.length(); i++) {
                     JSONObject annotation = deletedAnnotations.getJSONObject(i);
                     httpRequestManager.deleteAnnotation(annotation.getInt("docId"), annotation.getInt("id"), token);
                 }
 
-                // step 2 : delete document
+                // step 4 : delete document
                 for (int i=0; i<deletedDocuments.length(); i++) {
                     JSONObject document = deletedDocuments.getJSONObject(i);
                     httpRequestManager.deleteDocument(document.getInt("id"), token);
                 }
 
-                // step 3 : add document
+                // step 5 : add document
                 for (int i=0; i<addedDocuments.length(); i++) {
                     JSONObject document = addedDocuments.getJSONObject(i);
                     String type = document.getString("type");
@@ -319,7 +333,7 @@ public class CorpusMenuSceneController implements Initializable {
                     httpRequestManager.addDocument(this.corpus.getCorpusId(), file, type, token);
                 }
 
-                // step 4 : add annotation
+                // step 6 : add annotation
                 for (int i=0; i<addedAnnotations.length(); i++) {
                     JSONObject annotation = addedAnnotations.getJSONObject(i);
                     String path = FileManager.getFileManager().getFolderPath() + "/"

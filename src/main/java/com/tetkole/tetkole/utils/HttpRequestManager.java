@@ -277,12 +277,61 @@ public class HttpRequestManager{
         return answer.getBoolean("success");
     }
 
+    public boolean renameAnnotation(int annotationId, String token, String newName) {
+        String route = apiUrl + "/document/annotation/" + annotationId;
+        JSONObject json = new JSONObject();
+        json.put("newName", newName);
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .PUT(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
+                .header("Content-Type","application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) { throw new RuntimeException(e); }
+
+        JSONObject answer = new JSONObject(response.body());
+
+        //System.out.println(answer);
+        System.out.println(answer);
+        return answer.getBoolean("success");
+    }
+
     public boolean deleteDocument(int documentId, String token) {
         String route = apiUrl + "/document/" + documentId;
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .DELETE()
+                .header("Content-Type","application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) { throw new RuntimeException(e); }
+
+        JSONObject answer = new JSONObject(response.body());
+
+        //System.out.println(answer);
+        return answer.getBoolean("success");
+    }
+
+    public boolean renameDocument(int documentId, String token, String newName) {
+        String route = apiUrl + "/document/" + documentId;
+        JSONObject json = new JSONObject();
+        json.put("newName", newName);
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .PUT(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
                 .header("Content-Type","application/json")
                 .header("Authorization", "Bearer " + token)
                 .uri(URI.create(route))

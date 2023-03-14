@@ -120,14 +120,13 @@ public class Annotation {
             }
         }
 
-        System.out.println(docId);
-
         for (int i=0; i< documents.length(); i++) {
             JSONObject document = documents.getJSONObject(i);
             if (document.getString("name").equals(this.fieldAudioName) || document.getInt("docId") == docId) {
                 JSONArray annotations = document.getJSONArray("annotations");
                 for (int j=0; j< annotations.length(); j++) {
                     JSONObject annotation = annotations.getJSONObject(j);
+                    System.out.println("Record :" + recordName + " JSON : " + annotation.get("name"));
                     if(annotation.get("name").equals(recordName)) {
                         return annotation.getInt("annotationId");
                     }
