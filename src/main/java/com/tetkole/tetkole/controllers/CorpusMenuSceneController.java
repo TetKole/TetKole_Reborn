@@ -51,6 +51,7 @@ public class CorpusMenuSceneController implements Initializable {
     private ResourceBundle resources;
 
     private volatile boolean pullThreadRunning;
+    private volatile boolean pushThreadRunning;
     private volatile boolean doYouNeedPull;
     private JSONObject tempCorpusStateForPull;
 
@@ -111,8 +112,10 @@ public class CorpusMenuSceneController implements Initializable {
             btnEdit.setOnMouseClicked(event -> {
                 String[] faName = fa.getName().split("\\.");
                 String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", faName[0], resources.getString("RenameAudio"));
-                corpus.renameDocument(fa, newName + '.' + faName[1]);
-                this.updateFieldAudioList();
+                if(!newName.equals(faName[0]) && !newName.isEmpty()) {
+                    corpus.renameDocument(fa, newName + '.' + faName[1]);
+                    this.updateFieldAudioList();
+                }
             });
 
             line.getChildren().add(btn);
@@ -167,8 +170,10 @@ public class CorpusMenuSceneController implements Initializable {
             btnEdit.setOnMouseClicked(event -> {
                 String[] imageName = image.getName().split("\\.");
                 String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", imageName[0], resources.getString("RenameImage"));
-                corpus.renameDocument(image, newName + '.' + imageName[1]);
-                this.updateImagesList();
+                if(!newName.equals(imageName[0]) && !newName.isEmpty()) {
+                    corpus.renameDocument(image, newName + '.' + imageName[1]);
+                    this.updateImagesList();
+                }
             });
 
             line.getChildren().add(btn);
@@ -229,8 +234,10 @@ public class CorpusMenuSceneController implements Initializable {
             btnEdit.setOnMouseClicked(event -> {
                 String[] videoName = video.getName().split("\\.");
                 String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", videoName[0], resources.getString("RenameVideo"));
-                corpus.renameDocument(video, newName + '.' + videoName[1]);
-                this.updateVideosList();
+                if(!newName.equals(videoName[0]) && !newName.isEmpty()) {
+                    corpus.renameDocument(video, newName + '.' + videoName[1]);
+                    this.updateVideosList();
+                }
             });
 
             line.getChildren().add(btn);
@@ -270,6 +277,7 @@ public class CorpusMenuSceneController implements Initializable {
     private void push() {
         this.loadingLabelPush.setVisible(true);
         this.doYouNeedPull = false;
+        this.pushThreadRunning = true;
 
         // the push thread
         new Thread(() -> {
@@ -375,21 +383,24 @@ public class CorpusMenuSceneController implements Initializable {
                 this.doYouNeedPull = true;
             }
 
-
+            this.pushThreadRunning = false;
         }).start();
 
 
-        while (this.doYouNeedPull) {
+        while (this.pushThreadRunning) {
             Thread.onSpinWait();
         }
 
         this.loadingLabelPush.setVisible(false);
+
         // you need to pull
-        SceneManager.getSceneManager().showNewModal(
-                "modals/AlertModalScene.fxml",
-                this.resources.getString("NidDePoule"),
-                this.resources.getString("NidDePoule")
-        );
+        if (this.doYouNeedPull) {
+            SceneManager.getSceneManager().showNewModal(
+                    "modals/AlertModalScene.fxml",
+                    this.resources.getString("NidDePoule"),
+                    this.resources.getString("NidDePoule")
+            );
+        }
     }
 
     /**

@@ -359,7 +359,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         btnEdit.setOnAction(event -> {
             String[] annotationName = annotation.getName().split("\\.");
             String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", annotationName[0], resources.getString("RenameAnnotation"));
-            if(newName != annotationName[0] && newName != "") {
+            if(!newName.equals(annotationName[0]) && !newName.isEmpty()) {
                 corpus.renameAnnotation(annotation, newName + '.' + annotationName[1]);
                 label.setText(newName + "." + annotationName[1]);
             }
