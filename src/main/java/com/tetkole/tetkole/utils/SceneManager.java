@@ -19,9 +19,10 @@ public class SceneManager {
     private String currentResourceName;
     private Map<String, Object> sceneArguments;
     private final Map<String, Object> wantedArguments;
-
     private Stage currentModalStage;
     private String modalParameterValue;
+    private String modalDescriptionValue;
+
 
     private SceneManager(Stage stage) {
         this.stage = stage;
@@ -85,8 +86,9 @@ public class SceneManager {
         loadScene(currentResourceName, stage.getScene().getWidth(), stage.getScene().getHeight());
     }
 
-    public String showNewModal(String resourceName, String modalParameter) {
+    public String showNewModal(String resourceName, String modalParameter, String modalDescription) {
         this.modalParameterValue = modalParameter;
+        this.modalDescriptionValue = modalDescription;
         try {
             final Stage dialog = new Stage();
             dialog.setResizable(false);
@@ -118,8 +120,16 @@ public class SceneManager {
         currentModalStage.close();
     }
 
+    public void closeAlertModal() {
+        currentModalStage.close();
+    }
+
     public String getModalParameterValue() {
         return modalParameterValue;
+    }
+
+    public String getModalDescriptionValue() {
+        return modalDescriptionValue;
     }
 
     public Locale getCurrentLocale() {

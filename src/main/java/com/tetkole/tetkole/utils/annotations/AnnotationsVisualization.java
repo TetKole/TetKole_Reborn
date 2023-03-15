@@ -2,6 +2,7 @@ package com.tetkole.tetkole.utils.annotations;
 
 import com.tetkole.tetkole.components.CustomButton;
 import com.tetkole.tetkole.controllers.AudioEditSceneController;
+import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.models.Annotation;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -80,23 +81,27 @@ public class AnnotationsVisualization extends Pane {
         CustomButton btnPlayPause = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());
         CustomButton btnRecord = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/reRecord.png")).toExternalForm());
         CustomButton btnDelete = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/trash.png")).toExternalForm());
+        CustomButton btnEdit = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/edit.png")).toExternalForm());
         Button btnClose = new Button("X");
 
         btnPlayPause.resizeImage(10);
         btnRecord.resizeImage(10);
         btnDelete.resizeImage(10);
+        btnEdit.resizeImage(10);
 
-        btnPlayPause.setOnAction(((Button)line.getChildren().get(3)).getOnAction());
+        btnPlayPause.setOnAction(((Button)line.getChildren().get(4)).getOnAction());
         btnRecord.setOnAction(((Button)line.getChildren().get(1)).getOnAction());
+        btnEdit.setOnAction(((Button)line.getChildren().get(3)).getOnAction());
         btnDelete.setOnAction(e -> {
             this.audioEditSceneController.getLines().remove(line);
             this.audioEditSceneController.getvBoxPane().getChildren().remove(line);
             this.audioEditSceneController.getFieldAudio().deleteAnnotation(annotation);
             this.refresh();
         });
+
         btnClose.setOnAction(event -> this.closePopup());
 
-        HBox hbox = new HBox(btnPlayPause, btnRecord, btnDelete, btnClose);
+        HBox hbox = new HBox(btnPlayPause, btnRecord, btnDelete, btnEdit, btnClose);
         hbox.setSpacing(3);
         hbox.setPadding(new Insets(3));
         hbox.setStyle(
@@ -107,6 +112,10 @@ public class AnnotationsVisualization extends Pane {
         );
 
         r.setOnMousePressed(event -> {
+            //Go to annotation
+            if(event.getClickCount() == 2){
+                audioEditSceneController.goToAnnotation(annotation.getStart(), annotation.getEnd());
+            }
             if(this.getChildren().contains(hbox)){
                 this.getChildren().remove(hbox);
                 actualAnnotationMenu = null;

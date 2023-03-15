@@ -9,6 +9,7 @@ public class FieldAudio extends Media {
     public FieldAudio(File file, String description, Corpus corpus) {
         super(file, corpus);
         this.description = description;
+        this.setTypeDocument(TypeDocument.FieldAudio);
     }
 
     public FieldAudio(File file, Corpus corpus) {

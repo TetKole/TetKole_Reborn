@@ -3,6 +3,7 @@ package com.tetkole.tetkole.controllers;
 import com.tetkole.tetkole.components.CustomButton;
 import com.tetkole.tetkole.utils.FileManager;
 import com.tetkole.tetkole.utils.RecordManager;
+import com.tetkole.tetkole.utils.StaticEnvVariable;
 import com.tetkole.tetkole.utils.annotations.AnnotationsVisualization;
 import com.tetkole.tetkole.utils.models.Annotation;
 import com.tetkole.tetkole.utils.models.FieldAudio;
@@ -51,7 +52,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     private Corpus corpus;
     private MediaPlayer mediaPlayer;
     private RecordManager recordManager;
-    private int borderSize = 10;
+    private int borderSize = StaticEnvVariable.borderSize;
     private List<HBox> lines = new ArrayList<>();
 
     // Graphics
@@ -207,8 +208,20 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     }
 
     public void onScroll(ScrollEvent scrollEvent) {
+        //print scroll event
         this.mediaPlayer.stop();
         this.waveVisualization.setRangeZoom(scrollEvent);
+        this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
+                this.waveVisualization.getBeginAudio(),
+                this.waveVisualization.getEndAudio());
+        this.annotationsVisualization.drawAnnotations();
+    }
+
+    public void goToAnnotation(double begin, double end) {
+        this.mediaPlayer.stop();
+        this.waveVisualization.setLeftBorderTime(begin);
+        this.waveVisualization.setRightBorderTime(end);
+        this.waveVisualization.unZoom();
         this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
                 this.waveVisualization.getBeginAudio(),
                 this.waveVisualization.getEndAudio());
@@ -329,8 +342,28 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
         // add the Label
         Label label = new Label(annotation.getName());
-        label.setStyle("-fx-text-fill: white;");
+        label.setStyle("-fx-text-fill: white; -fx-text-alignment: CENTER");
+        label.setPrefWidth(200);
+        label.setWrapText(true);
         line.getChildren().add(label);
+        // goToAnnotation on double click from side panel
+        label.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 2) {
+                goToAnnotation(annotation.getStart(), annotation.getEnd());
+            }
+        });
+
+        CustomButton btnEdit = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/edit.png")).toExternalForm());
+        line.getChildren().add(btnEdit);
+
+        btnEdit.setOnAction(event -> {
+            String[] annotationName = annotation.getName().split("\\.");
+            String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", annotationName[0], resources.getString("RenameAnnotation"));
+            if(!newName.equals(annotationName[0]) && !newName.isEmpty()) {
+                corpus.renameAnnotation(annotation, newName + '.' + annotationName[1]);
+                label.setText(newName + "." + annotationName[1]);
+            }
+        });
 
         // add the Play/Pause Button
         CustomButton btnPlayPause = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());
@@ -390,7 +423,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     }
 
     public void onEditDescriptionButtonClick(ActionEvent actionEvent) {
-        String description = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", this.fieldAudio.getDescription());
+        String description = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", this.fieldAudio.getDescription(), resources.getString("EditDescription"));
 
         this.fieldAudio.setDescription(description);
 

@@ -1,6 +1,8 @@
 package com.tetkole.tetkole.utils;
 
 import com.tetkole.tetkole.utils.models.Corpus;
+import com.tetkole.tetkole.utils.models.Media;
+import com.tetkole.tetkole.utils.models.TypeDocument;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -15,6 +17,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Map;
 
@@ -113,6 +116,19 @@ public class FileManager {
         }
     }
 
+    /**
+     * Copy file to destPath
+     * @param destPath ALL THE PARAMETER PATH MUST BE RELATIVE
+     */
+    public File absoluteCopyFile(File fileToCopy, String destPath) {
+        try {
+            Path newFilePath = Files.copy(fileToCopy.toPath(), (new File(destPath).toPath()), StandardCopyOption.REPLACE_EXISTING);
+            return newFilePath.toFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     /**
      * Create a json file
@@ -167,8 +183,25 @@ public class FileManager {
      * Rename file's name to newName.
      */
     public File renameFile(File file, String newName) {
-        file.renameTo(new File(file.getParentFile() + "/" + newName));
-        return new File(file.getParentFile() + "/" + newName);
+        String separator = this.os.contains("nux") || this.os.contains("mac") ? "/" : "\\";
+
+        System.gc();
+
+        file.renameTo(new File(file.getParentFile() + separator + newName));
+        return new File(file.getParentFile() + separator + newName);
+    }
+
+    /**
+     * Rename file's name to newName.
+     */
+    public void renameAnnotEcrite(String corpusName, String docName, TypeDocument typeDocument, String newName) {
+        String separator = this.os.contains("nux") || this.os.contains("mac") ? "/" : "\\";
+
+        System.gc();
+
+        File fileAnnot = new File(this.folderPath + separator + corpusName + separator + typeDocument + separator + docName.split("\\.")[0] + ".json");
+
+        fileAnnot.renameTo(new File(fileAnnot.getParentFile() + separator + newName.split("\\.")[0] + ".json"));
     }
 
     /**
@@ -184,7 +217,11 @@ public class FileManager {
         File[] allContents = folderToDelete.listFiles();
         if (allContents != null) {
             for (File file : allContents) {
-                this.deleteFile(file);
+                if (file.isDirectory()) {
+                    deleteFolder(file);
+                } else {
+                    this.deleteFile(file);
+                }
             }
         }
         if (!folderToDelete.delete()) {
@@ -228,6 +265,7 @@ public class FileManager {
         JSONObject corpus_modif = new JSONObject();
         corpus_modif.accumulate("added", new JSONObject());
         corpus_modif.accumulate("deleted", new JSONObject());
+        corpus_modif.accumulate("updated", new JSONObject());
 
         corpus_modif.getJSONObject("added").put("documents", new JSONArray());
         corpus_modif.getJSONObject("added").put("annotations", new JSONArray());
@@ -235,6 +273,51 @@ public class FileManager {
         corpus_modif.getJSONObject("deleted").put("documents", new JSONArray());
         corpus_modif.getJSONObject("deleted").put("annotations", new JSONArray());
 
+        corpus_modif.getJSONObject("updated").put("documents", new JSONArray());
+        corpus_modif.getJSONObject("updated").put("annotations", new JSONArray());
+
         writeJSONFile(file, corpus_modif);
+        System.out.println("help");
+    }
+
+    public void renameDirectoryDocument(String docName, String corpusName, String newName) {
+        String separator = this.os.contains("nux") || this.os.contains("mac") ? "/" : "\\";
+        String destPath = this.folderPath + separator + corpusName + separator + TypeDocument.Annotations + separator + newName;
+        File source = new File(this.folderPath + separator + corpusName + separator + TypeDocument.Annotations + separator + docName);
+        File dest = new File(destPath);
+        dest.mkdir();
+        File[] files = source.listFiles();
+        if (files != null) {
+            for (int i = 0; i < files.length; i++) {
+                File destAnnot = new File(destPath + separator + files[i].getName());
+                destAnnot.mkdir();
+                File[] filesAnnot = files[i].listFiles();
+                for (int j = 0; j < filesAnnot.length; j++) {
+                    this.absoluteCopyFile(filesAnnot[j], destAnnot.getPath() + separator + filesAnnot[j].getName());
+                }
+            }
+        }
+        this.deleteFolder(source);
+
+    }
+
+    public File getAnnotationFile(String annotationName, String corpusName, String fieldAudioName) {
+        String separator = this.os.contains("nux") || this.os.contains("mac") ? "/" : "\\";
+        return new File(this.folderPath + separator + corpusName + separator + TypeDocument.Annotations + separator + fieldAudioName + separator + annotationName + separator + annotationName );
+    }
+
+    public void renameDirectoryAnnotation(String annotationName, String corpusName, String fieldAudioName, String newName) {
+        String separator = this.os.contains("nux") || this.os.contains("mac") ? "/" : "\\";
+        String destPath = this.folderPath + separator + corpusName + separator + TypeDocument.Annotations + separator + fieldAudioName + separator + newName;
+        File source = new File(this.folderPath + separator + corpusName + separator + TypeDocument.Annotations + separator + fieldAudioName + separator + annotationName);
+        File dest = new File(destPath);
+        dest.mkdir();
+        File[] files = source.listFiles();
+        if (files != null) {
+            for (int j = 0; j < files.length; j++) {
+                this.absoluteCopyFile(files[j], dest.getPath() + separator + files[j].getName());
+            }
+        }
+        this.deleteFolder(source);
     }
 }

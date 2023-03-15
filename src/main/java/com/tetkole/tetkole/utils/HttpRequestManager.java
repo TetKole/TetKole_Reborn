@@ -17,6 +17,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 
+import static java.lang.Integer.parseInt;
+
 
 public class HttpRequestManager{
 
@@ -117,7 +119,7 @@ public class HttpRequestManager{
 
 
     // /api/corpus/{corpusId}/addDocument avec dans le body en form-data les fichiers.
-    public JSONObject addDocument(int corpusId, File file, String docType, String token) throws Exception {
+    public JSONObject addDocument(int corpusId, File file, String docType, String token) {
         String uri = apiUrl + "/corpus/" + corpusId + "/addDocument";
 
         JSONObject answer = new JSONObject();
@@ -151,6 +153,8 @@ public class HttpRequestManager{
 
                 return true;
             });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         //System.out.println(answer);
@@ -159,7 +163,7 @@ public class HttpRequestManager{
 
 
     // /api/document/{docID}/addAnnotation avec dans le body en form-data les fichiers et l'id de l'auteur.
-    public JSONObject addAnnotation(File audioFile, File jsonFile, int docId, String token, int userId) throws Exception {
+    public JSONObject addAnnotation(File audioFile, File jsonFile, int docId, String token, int userId) {
         String uri = apiUrl + "/document/" + docId + "/addAnnotation";
 
         JSONObject answer = new JSONObject();
@@ -195,6 +199,8 @@ public class HttpRequestManager{
 
                 return true;
             });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         //System.out.println(answer);
@@ -223,7 +229,7 @@ public class HttpRequestManager{
     }
 
     // /api/corpus/{id}/clone get the corpus_state of the corpus
-    public JSONObject getCorpusState(String token, int corpusId) throws Exception {
+    public JSONObject getCorpusState(String token, int corpusId) {
         String route = apiUrl + "/corpus/" + corpusId + "/clone";
 
         HttpClient client = HttpClient.newHttpClient();
@@ -234,12 +240,132 @@ public class HttpRequestManager{
                 .uri(URI.create(route))
                 .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = null;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         JSONObject answer = new JSONObject();
         answer.put("success", response.statusCode() == STATUS_OK);
         answer.accumulate("body", new JSONObject(response.body()));
 
         return answer;
+    }
+
+
+    public boolean deleteAnnotation(int documentId, int annotationId, String token) {
+        String route = apiUrl + "/document/" + documentId + "/" + annotationId;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .DELETE()
+                .header("Content-Type","application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) { throw new RuntimeException(e); }
+
+        JSONObject answer = new JSONObject(response.body());
+
+        //System.out.println(answer);
+        return answer.getBoolean("success");
+    }
+
+    public boolean renameAnnotation(int annotationId, String token, String newName) {
+        String route = apiUrl + "/document/annotation/" + annotationId;
+        JSONObject json = new JSONObject();
+        json.put("newName", newName);
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .PUT(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
+                .header("Content-Type","application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) { throw new RuntimeException(e); }
+
+        JSONObject answer = new JSONObject(response.body());
+
+        //System.out.println(answer);
+        System.out.println(answer);
+        return answer.getBoolean("success");
+    }
+
+    public boolean deleteDocument(int documentId, String token) {
+        String route = apiUrl + "/document/" + documentId;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .DELETE()
+                .header("Content-Type","application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) { throw new RuntimeException(e); }
+
+        JSONObject answer = new JSONObject(response.body());
+
+        //System.out.println(answer);
+        return answer.getBoolean("success");
+    }
+
+    public boolean renameDocument(int documentId, String token, String newName) {
+        String route = apiUrl + "/document/" + documentId;
+        JSONObject json = new JSONObject();
+        json.put("newName", newName);
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .PUT(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
+                .header("Content-Type","application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) { throw new RuntimeException(e); }
+
+        JSONObject answer = new JSONObject(response.body());
+
+        //System.out.println(answer);
+        return answer.getBoolean("success");
+    }
+
+    public int getDocIdByName(String docName, String token) {
+        String route = apiUrl + "/document/name/" + docName;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .header("Content-Type","application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) { throw new RuntimeException(e); }
+
+        //System.out.println(response.body());
+
+        return parseInt(response.body());
     }
 }

@@ -6,7 +6,7 @@
 
 <VBox fx:controller="com.tetkole.tetkole.controllers.modals.AudioDescriptionEditSceneController" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="10.0" styleClass="background_color" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label style="-fx-text-fill: white; -fx-font-size: 20px" text="%EditDescription" textAlignment="CENTER" />
+      <Label fx:id="descriptionModalTextField" style="-fx-text-fill: white; -fx-font-size: 20px" textAlignment="CENTER" />
       <TextField fx:id="descriptionTextField"/>
       <Button mnemonicParsing="false" onAction="#OnConfirmButtonClick" styleClass="buttons, blue" text="%Confirm" />
    </children>

@@ -4,6 +4,7 @@ import com.tetkole.tetkole.utils.FileManager;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -108,11 +109,13 @@ public class Corpus {
             this.fieldAudios.add(fieldAudio);
 
             // corpus_modif
-            JSONObject modif = new JSONObject();
-            modif.put("type", Corpus.folderNameFieldAudio);
-            modif.put("name", fieldAudio.getName());
-            this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
-            this.writeCorpusModif();
+            if (this.getCorpusState() != null) {
+                JSONObject modif = new JSONObject();
+                modif.put("type", Corpus.folderNameFieldAudio);
+                modif.put("name", fieldAudio.getName());
+                this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
+                this.writeCorpusModif();
+            }
         } else {
             Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
             Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
@@ -145,11 +148,13 @@ public class Corpus {
             this.corpusVideos.add(video);
 
             // corpus_modif
-            JSONObject modif = new JSONObject();
-            modif.put("type", Corpus.folderNameCorpusVideo);
-            modif.put("name", video.getName());
-            this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
-            this.writeCorpusModif();
+            if (this.getCorpusState() != null) {
+                JSONObject modif = new JSONObject();
+                modif.put("type", Corpus.folderNameCorpusVideo);
+                modif.put("name", video.getName());
+                this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
+                this.writeCorpusModif();
+            }
         } else {
             Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
             Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
@@ -183,11 +188,13 @@ public class Corpus {
             this.corpusImages.add(image);
 
             // corpus_modif
-            JSONObject modif = new JSONObject();
-            modif.put("type", Corpus.folderNameCorpusImage);
-            modif.put("name", image.getName());
-            this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
-            this.writeCorpusModif();
+            if (this.getCorpusState() != null) {
+                JSONObject modif = new JSONObject();
+                modif.put("type", Corpus.folderNameCorpusImage);
+                modif.put("name", image.getName());
+                this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
+                this.writeCorpusModif();
+            }
         } else {
             Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
             Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
@@ -233,8 +240,14 @@ public class Corpus {
     }
 
     public void writeCorpusModif() {
+        // before calling this method, please be sure that there is a valid corpus_state (ie that the corpus exist on the server)
+        writeCorpusModif(corpus_modif);
+    }
+
+    public void writeCorpusModif(JSONObject newCorpusModif) {
+        // before calling this method, please be sure that there is a valid corpus_state (ie that the corpus exist on the server)
         File file = new File(FileManager.getFileManager().getFolderPath() + "/" + name + "/corpus_modif.json");
-        FileManager.getFileManager().writeJSONFile(file, corpus_modif);
+        FileManager.getFileManager().writeJSONFile(file, newCorpusModif);
     }
 
     public JSONObject getCorpusModif() {
@@ -248,6 +261,22 @@ public class Corpus {
             return null;
         }
         return FileManager.getFileManager().readJSONFile(file);
+    }
+
+    public void writeCorpusState(JSONObject newState) {
+        File file = new File(FileManager.getFileManager().getFolderPath() + "/" + name + "/corpus_state.json");
+        if (!file.exists()) {
+            System.out.println("corpus state doesn't exist on your computer");
+            return;
+        }
+
+        FileManager.getFileManager().writeJSONFile(file, newState);
+    }
+
+    public int getCorpusId() {
+        JSONObject state = this.getCorpusState();
+        if (state == null) return -1;
+        return state.getInt("corpusId");
     }
 
     private void load() {
@@ -328,5 +357,193 @@ public class Corpus {
         this.corpusImages = new ArrayList<>();
         this.corpusVideos = new ArrayList<>();
         this.load();
+    }
+
+
+    public void clearAnnotationsObjects() {
+        List<Media> medias = new ArrayList<>(fieldAudios);
+        medias.addAll(corpusVideos);
+        medias.addAll(corpusImages);
+
+        for (Media m : medias) {
+            m.clearAnnotations();
+        }
+    }
+
+    public void clearMediasObjects() {
+        List<Media> medias = new ArrayList<>(fieldAudios);
+        medias.addAll(corpusVideos);
+        medias.addAll(corpusImages);
+
+        for (Media m : medias) {
+            m.clearFile();
+            m = null;
+        }
+        fieldAudios.clear();
+        corpusVideos.clear();
+        corpusImages.clear();
+    }
+    
+    public void updateNameDocCorpusModif(Media doc, String newName) {
+        String lastName = doc.getName();
+        JSONObject updated = this.corpus_modif.getJSONObject("updated");
+        JSONObject added = this.corpus_modif.getJSONObject("added");
+        JSONArray documents = updated.getJSONArray("documents");
+        boolean found = false;
+        for (int i = 0; i < documents.length(); i++) {
+            JSONObject currentDoc = documents.getJSONObject(i);
+            if(currentDoc.getString("newName").equals(lastName)) {
+                currentDoc.put("newName", newName);
+                documents.put(i, currentDoc);
+                found = true;
+                break;
+            }
+        }
+
+        JSONArray annotations = added.getJSONArray("annotations");
+        for (int i = 0; i < annotations.length(); i++) {
+            JSONObject currentAnnot = annotations.getJSONObject(i);
+            if(currentAnnot.getString("document").equals(lastName)) {
+                currentAnnot.put("document", newName);
+                annotations.put(i, currentAnnot);
+            }
+        }
+
+        if(found == false) {
+            JSONObject modif = new JSONObject();
+            modif.put("id", doc.getId());
+            modif.put("newName", newName);
+            documents.put(modif);
+        }
+
+        added.put("annotations", annotations);
+        updated.put("documents", documents);
+        this.corpus_modif.put("updated", updated);
+        this.corpus_modif.put("added", added);
+        this.writeCorpusModif();
+    }
+
+    public void updateNameAnnotationCorpusModif(Annotation annotation, String newName) {
+        JSONObject updated = this.corpus_modif.getJSONObject("updated");
+        JSONArray annotations = updated.getJSONArray("annotations");
+        JSONObject modif = new JSONObject();
+        modif.put("id", annotation.getId());
+        modif.put("newName", newName);
+        annotations.put(modif);
+        this.corpus_modif.put("updated", updated);
+        this.writeCorpusModif();
+    }
+
+    public void renameAddedDoc(Media doc, String newName) {
+        String lastName = doc.getName();
+
+        JSONObject updated_modif = this.corpus_modif.getJSONObject("updated");
+        JSONArray documents = updated_modif.getJSONArray("documents");
+        for (int i = 0; i < documents.length(); i++) {
+            JSONObject currentDoc = documents.getJSONObject(i);
+            if(currentDoc.getString("newName").equals(lastName)) {
+                currentDoc.put("newName", newName);
+                documents.put(i, currentDoc);
+                updated_modif.put("documents", documents);
+                this.corpus_modif.put("updated", updated_modif);
+                this.writeCorpusModif();
+            }
+        }
+
+        JSONObject added_modif = this.corpus_modif.getJSONObject("added");
+
+        documents = added_modif.getJSONArray("documents");
+        for (int i = 0; i < documents.length(); i++) {
+            JSONObject currentDoc = documents.getJSONObject(i);
+            if(currentDoc.getString("name").equals(lastName)) {
+                currentDoc.put("name", newName);
+                documents.put(i, currentDoc);
+                added_modif.put("documents", documents);
+                break;
+            }
+        }
+
+        JSONArray annotations = added_modif.getJSONArray("annotations");
+        for (int i = 0; i < annotations.length(); i++) {
+            JSONObject currentAnnot = annotations.getJSONObject(i);
+            if(currentAnnot.getString("document").equals(lastName)) {
+                currentAnnot.put("document", newName);
+                annotations.put(i, currentAnnot);
+            }
+        }
+        added_modif.put("annotations", annotations);
+
+        this.corpus_modif.put("added", added_modif);
+        this.writeCorpusModif();
+    }
+
+    public void renameAddedAnnotation(Annotation annotation, String newName) {
+        String lastName = annotation.getName();
+        String docName = annotation.getFieldAudioName();
+
+        JSONObject updated_modif = this.corpus_modif.getJSONObject("updated");
+        JSONArray annotations = updated_modif.getJSONArray("annotations");
+        for (int i = 0; i < annotations.length(); i++) {
+            JSONObject currentAnnot = annotations.getJSONObject(i);
+            if(currentAnnot.getString("newName").equals(lastName)) {
+                currentAnnot.put("newName", newName);
+                annotations.put(i, currentAnnot);
+                updated_modif.put("annotations", annotations);
+                this.corpus_modif.put("updated", updated_modif);
+                this.writeCorpusModif();
+                return;
+            }
+        }
+
+        JSONObject added_modif = this.corpus_modif.getJSONObject("added");
+        annotations = added_modif.getJSONArray("annotations");
+        for (int i = 0; i < annotations.length(); i++) {
+            JSONObject currentAnnot = annotations.getJSONObject(i);
+            if(currentAnnot.getString("document").equals(docName)
+                    && currentAnnot.getString("name").equals(lastName)) {
+                currentAnnot.put("name", newName);
+                annotations.put(i, currentAnnot);
+            }
+        }
+        added_modif.put("annotations", annotations);
+
+        this.corpus_modif.put("added", added_modif);
+        this.writeCorpusModif();
+    }
+
+    public void renameAnnotation(Annotation annotation, String newName) {
+        // Modification du corpus_modif.json
+        if(this.getCorpusState() != null) {
+            System.out.println(annotation.getId());
+            if(annotation.getId() == -1) {
+                renameAddedAnnotation(annotation, newName);
+            } else {
+                updateNameAnnotationCorpusModif(annotation, newName);
+            }
+
+        }
+        // Renommer le document
+        annotation.renameAnnotation(newName);
+    }
+
+    public void renameDocument(Media doc, String newName) {
+
+        // Renommer le fichier audio lié dans chaque annotation dans le JSON
+        for (Annotation annotation: doc.getAnnotations()
+        ) {
+            annotation.renameDocName(newName);
+        }
+
+        // Modification du corpus_modif.json
+        if(this.getCorpusState() != null) {
+            if(doc.getId() == -1) {
+                renameAddedDoc(doc, newName);
+            } else {
+                updateNameDocCorpusModif(doc, newName);
+            }
+        }
+
+        // Renommer le document
+        doc.renameMedia(newName, this.getName());
     }
 }

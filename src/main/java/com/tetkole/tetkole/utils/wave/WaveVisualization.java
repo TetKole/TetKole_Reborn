@@ -79,9 +79,15 @@ public class WaveVisualization extends WaveFormPane {
 		clear();
 	}
 
+	public void unZoom() {
+		this.waveService.resetWaveRange();
+		this.resetAudioRange();
+		getWaveService().startService(getWaveService().getFileAbsolutePath(), WaveFormJob.WAVEFORM);
+		clear();
+	}
+
 	public void setTotalTime(double seconds) {
 		this.initTotalTime(seconds);
-		// set up number of wave for the audio, 200 wave per seconds
 		this.waveService.setArrayWaveLength((int)this.totalTime * StaticEnvVariable.zoomRange);
 	}
 	
