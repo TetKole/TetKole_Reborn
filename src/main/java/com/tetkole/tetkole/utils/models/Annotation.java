@@ -36,6 +36,9 @@ public class Annotation {
 
     public void delete() {
         this.mediaPlayer.dispose();
+
+        System.gc();
+
         String annotationDirPath = FileManager.getFileManager().getFolderPath() + "/" + this.corpusName + "/" + Corpus.folderNameAnnotation + "/" + this.fieldAudioName + "/" + this.getName();
         FileManager.getFileManager().deleteFolder(new File(annotationDirPath));
     }
