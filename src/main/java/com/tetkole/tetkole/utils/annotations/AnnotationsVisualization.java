@@ -45,30 +45,33 @@ public class AnnotationsVisualization extends Pane {
             double annotationStart = annotation.getStart();
             double annotationEnd = annotation.getEnd();
 
-            if (!(annotationEnd < this.beginAudio || annotationStart > this.endAudio)) {
-                if (this.audioEditSceneController.getLines().size() == 0) return;
+            if (this.audioEditSceneController.getLines().size() != 0){
+                if (!(annotationEnd < this.beginAudio || annotationStart > this.endAudio)) {
 
-                Rectangle r = initRectangle(
-                        ratioAudio * (annotationStart - this.beginAudio),
-                        this.getHeight()/2,
-                        ratioAudio * (annotationEnd - this.beginAudio) - ratioAudio * (annotationStart - this.beginAudio),
-                        this.audioEditSceneController.getLines().get(i),
-                        annotation
-                );
 
-                annotationsRectangles.add(r);
-                this.getChildren().add(r);
-            }else{
+                    Rectangle r = initRectangle(
+                            ratioAudio * (annotationStart - this.beginAudio),
+                            this.getHeight()/2,
+                            ratioAudio * (annotationEnd - this.beginAudio) - ratioAudio * (annotationStart - this.beginAudio),
+                            this.audioEditSceneController.getLines().get(i),
+                            annotation
+                    );
 
-                Rectangle r = initRectangle(
-                        0,0,0,
-                        this.audioEditSceneController.getLines().get(i),
-                        annotation
-                );
+                    annotationsRectangles.add(r);
+                    this.getChildren().add(r);
+                }else{
 
-                annotationsRectangles.add(r);
-                this.getChildren().add(r);
+                    Rectangle r = initRectangle(
+                            0,0,0,
+                            this.audioEditSceneController.getLines().get(i),
+                            annotation
+                    );
+
+                    annotationsRectangles.add(r);
+                    this.getChildren().add(r);
+                }
             }
+
             i++;
         }
     }
