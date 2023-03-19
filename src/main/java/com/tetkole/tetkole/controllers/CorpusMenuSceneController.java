@@ -561,6 +561,11 @@ public class CorpusMenuSceneController implements Initializable {
         System.out.println("Pull Done");
     }
 
+    public void goToVersionning(){
+        SceneManager.getSceneManager().addArgument("corpus", this.corpus);
+        SceneManager.getSceneManager().changeScene("VersionningScene.fxml");
+    }
+
 
     /**
      * Get diffDocs from server and place them correctly in corpus file system.
