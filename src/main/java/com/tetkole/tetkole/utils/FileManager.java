@@ -247,16 +247,16 @@ public class FileManager {
 
         // Download doc file
         String pathFile = path + "/" + fileName;
-        downloadFileFromURL(HttpRequestManager.servURL + "/" + pathFile, pathFile);
+        downloadFileFromURL(HttpRequestManager.servURL + "/corpus/" + pathFile, pathFile);
 
         // Download json file
         String pathJson = path + "/" + fileName.replace(".wav", ".json");
-        downloadFileFromURL(HttpRequestManager.servURL + "/" + pathJson, pathJson);
+        downloadFileFromURL(HttpRequestManager.servURL + "/corpus/" + pathJson, pathJson);
     }
 
     public void downloadDocument(String typeDoc, String corpusName, String fileName) throws IOException {
         String path = corpusName + "/" + typeDoc + "/" + fileName;
-        downloadFileFromURL(HttpRequestManager.servURL + "/" + path, path);
+        downloadFileFromURL(HttpRequestManager.servURL + "/corpus/" + path, path);
         FileManager.getFileManager().createFolder(corpusName + "/" + Corpus.folderNameAnnotation, fileName);
     }
 
