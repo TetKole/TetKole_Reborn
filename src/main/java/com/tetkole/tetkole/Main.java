@@ -1,15 +1,11 @@
 package com.tetkole.tetkole;
 
-import com.tetkole.tetkole.utils.AuthenticationManager;
-import com.tetkole.tetkole.utils.FileManager;
-import com.tetkole.tetkole.utils.HttpRequestManager;
-import com.tetkole.tetkole.utils.SceneManager;
+import com.tetkole.tetkole.utils.*;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.io.File;
 
 public class Main extends Application {
     @Override
@@ -23,6 +19,7 @@ public class Main extends Application {
         FileManager.setFileManager();
         AuthenticationManager.setAuthenticationManager();
         HttpRequestManager.setHttpRequestManagerInstance("http://localhost:8000"); // TODO .env
+        LoadingManager.setLoadingManagerInstance();
 
         SceneManager.getSceneManager().changeScene("HomeScene.fxml", (int) (dimension.width * 0.8),  (int) (dimension.height * 0.8));
 

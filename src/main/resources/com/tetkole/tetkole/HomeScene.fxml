@@ -7,30 +7,33 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER"  spacing="100.0" styleClass="background_color" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.HomeSceneController">
+<?import javafx.scene.layout.StackPane?>
+<StackPane fx:id="rootPane" styleClass="background_color" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.HomeSceneController">
+    <VBox alignment="CENTER"  spacing="100.0" styleClass="background_color" xmlns:fx="http://javafx.com/fxml">
 
-    <Label text="TètKole" style="-fx-text-fill: white; -fx-font-size: 100px" />
+        <Label text="TètKole" style="-fx-text-fill: white; -fx-font-size: 100px" />
 
-    <HBox alignment="TOP_CENTER" spacing="100.0" >
+        <HBox alignment="TOP_CENTER" spacing="100.0" >
 
-        <VBox fx:id="vBoxButtons" alignment="TOP_CENTER" spacing="30.0">
-            <Label style="-fx-font-size: 20;" text="%CreateACorpus" textFill="WHITE" alignment="CENTER" />
-            <TextField fx:id="corpusNameInput" />
-            <Button onAction="#onCreateCorpus" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%CreateCorpus" />
-            <Button onAction="#onGoToSettings" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Settings" />
-            <Button fx:id="btnLogin" onAction="#onGoToLogin" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Login" />
-            <Button fx:id="btnRegister" onAction="#onGoToRegister" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Register" />
-            <Button fx:id="btnDisconnect" onAction="#onDisconnect" prefHeight="60" prefWidth="150" styleClass="buttons, red" text="%Disconnect" />
-            <Label fx:id="labelUserName" prefWidth="150.0" style="-fx-font-size: 20;" textFill="WHITE" alignment="CENTER" />
-        </VBox>
+            <VBox fx:id="vBoxButtons" alignment="TOP_CENTER" spacing="30.0">
+                <Label style="-fx-font-size: 20;" text="%CreateACorpus" textFill="WHITE" alignment="CENTER" />
+                <TextField fx:id="corpusNameInput" />
+                <Button onAction="#onCreateCorpus" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%CreateCorpus" />
+                <Button onAction="#onGoToSettings" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Settings" />
+                <Button fx:id="btnLogin" onAction="#onGoToLogin" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Login" />
+                <Button fx:id="btnRegister" onAction="#onGoToRegister" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Register" />
+                <Button fx:id="btnDisconnect" onAction="#onDisconnect" prefHeight="60" prefWidth="150" styleClass="buttons, red" text="%Disconnect" />
+                <Label fx:id="labelUserName" prefWidth="150.0" style="-fx-font-size: 20;" textFill="WHITE" alignment="CENTER" />
+            </VBox>
 
-        <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true" hbarPolicy="NEVER">
-            <VBox fx:id="vBoxCorpus" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="250.0" style="-fx-background-color: #495461;" spacing="20" />
-        </ScrollPane>
+            <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true" hbarPolicy="NEVER">
+                <VBox fx:id="vBoxCorpus" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="250.0" style="-fx-background-color: #495461;" spacing="20" />
+            </ScrollPane>
 
-        <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true" hbarPolicy="NEVER">
-            <VBox fx:id="vBoxCorpusServer" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="250.0" style="-fx-background-color: #495461;" spacing="20" />
-        </ScrollPane>
+            <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true" hbarPolicy="NEVER">
+                <VBox fx:id="vBoxCorpusServer" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="250.0" style="-fx-background-color: #495461;" spacing="20" />
+            </ScrollPane>
 
-    </HBox>
-</VBox>
+        </HBox>
+    </VBox>
+</StackPane>

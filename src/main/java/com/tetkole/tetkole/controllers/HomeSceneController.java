@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -44,6 +45,24 @@ public class HomeSceneController implements Initializable {
     private List<Corpus> corpusList;
 
     private ResourceBundle resources;
+
+    @FXML
+    private StackPane rootPane;
+    // how to use LoadingManager
+    /*
+    LoadingManager loading = LoadingManager.getLoadingManagerInstance();
+        loading.displayLoading(rootPane);
+        new Thread(() -> {
+        try {
+            System.out.println("start wating");
+            Thread.sleep(1000);
+            loading.hideLoading(rootPane);
+            System.out.println("end wating");
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }).start();
+    */
 
 
     @Override
