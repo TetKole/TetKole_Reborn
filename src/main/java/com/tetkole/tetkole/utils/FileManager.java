@@ -138,8 +138,12 @@ public class FileManager {
         json.put("fileName", fileName);
         map.forEach(json::put);
 
-        FileManager.getFileManager().createFile(relativeLocation, fileName.split("\\.")[0]);
-        String fileNameWithoutExt = fileName.split("\\.")[0];
+        String[] fileNamePart = fileName.split("\\.");
+        String ext = "." + fileNamePart[fileNamePart.length - 1];
+        String trueFileName = fileName.substring(0, fileName.length() - ext.length());
+
+        FileManager.getFileManager().createFile(relativeLocation, trueFileName);
+        String fileNameWithoutExt = trueFileName;
         try {
             FileWriter file = new FileWriter(getFolderPath() + relativeLocation + "/" + fileNameWithoutExt + ".json");
             file.write(json.toString());
@@ -197,9 +201,15 @@ public class FileManager {
 
         System.gc();
 
-        File fileAnnot = new File(this.folderPath + separator + corpusName + separator + typeDocument + separator + docName.split("\\.")[0] + ".json");
+        String[] fileNamePart = docName.split("\\.");
+        String ext = "." + fileNamePart[fileNamePart.length - 1];
+        String trueFileName = docName.substring(0, docName.length() - ext.length());
 
-        fileAnnot.renameTo(new File(fileAnnot.getParentFile() + separator + newName.split("\\.")[0] + ".json"));
+        String trueNewFileName = newName.substring(0, newName.length() - ext.length());
+
+        File fileAnnot = new File(this.folderPath + separator + corpusName + separator + typeDocument + separator + trueFileName + ".json");
+
+        fileAnnot.renameTo(new File(fileAnnot.getParentFile() + separator + trueNewFileName + ".json"));
     }
 
     /**

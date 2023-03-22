@@ -37,6 +37,10 @@ public abstract class Media {
         this.typeDocument = typeDocument;
     }
 
+    public TypeDocument getTypeDocument() {
+        return typeDocument;
+    }
+
     public void addAnnotation(Annotation annotation) {
         this.annotations.add(annotation);
 
