@@ -375,7 +375,7 @@ public class CorpusMenuSceneController implements Initializable {
                 this.corpus.writeCorpusState(newServerState);
 
                 // clean corpus modif
-                FileManager.getFileManager().createCorpusModifFile(this.corpus.getName());
+                this.corpus.resetCorpusModif();
 
                 System.out.println("push done");
 

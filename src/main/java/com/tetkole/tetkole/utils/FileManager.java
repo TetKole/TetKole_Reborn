@@ -1,7 +1,6 @@
 package com.tetkole.tetkole.utils;
 
 import com.tetkole.tetkole.utils.models.Corpus;
-import com.tetkole.tetkole.utils.models.Media;
 import com.tetkole.tetkole.utils.models.TypeDocument;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,7 +16,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Map;
 
@@ -260,7 +258,7 @@ public class FileManager {
         FileManager.getFileManager().createFolder(corpusName + "/" + Corpus.folderNameAnnotation, fileName);
     }
 
-    public void createCorpusModifFile(String corpusName) {
+    public JSONObject createCorpusModifFile(String corpusName) {
         File file = new File(this.folderPath + "/" + corpusName + "/corpus_modif.json");
         JSONObject corpus_modif = new JSONObject();
         corpus_modif.accumulate("added", new JSONObject());
@@ -277,7 +275,7 @@ public class FileManager {
         corpus_modif.getJSONObject("updated").put("annotations", new JSONArray());
 
         writeJSONFile(file, corpus_modif);
-        System.out.println("help");
+        return corpus_modif;
     }
 
     public void renameDirectoryDocument(String docName, String corpusName, String newName) {
