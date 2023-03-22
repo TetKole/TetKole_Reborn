@@ -245,7 +245,6 @@ public class Corpus {
     }
 
     public void writeCorpusModif(JSONObject newCorpusModif) {
-        System.out.println(newCorpusModif);
         // before calling this method, please be sure that there is a valid corpus_state (ie that the corpus exist on the server)
         File file = new File(FileManager.getFileManager().getFolderPath() + "/" + name + "/corpus_modif.json");
         FileManager.getFileManager().writeJSONFile(file, newCorpusModif);
@@ -519,7 +518,6 @@ public class Corpus {
     public void renameAnnotation(Annotation annotation, String newName) {
         // Modification du corpus_modif.json
         if(this.getCorpusState() != null) {
-            System.out.println(annotation.getId());
             if(annotation.getId() == -1) {
                 renameAddedAnnotation(annotation, newName);
             } else {

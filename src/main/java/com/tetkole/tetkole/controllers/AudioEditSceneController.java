@@ -319,6 +319,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     public void setupLine(Annotation annotation) {
         // prepare the HBox
         HBox line = new HBox();
+        line.getStyleClass().add("line");
         line.setAlignment(Pos.CENTER);
         line.setSpacing(20);
 
