@@ -153,7 +153,7 @@ public class VideoSceneController implements Initializable {
         }
         else
         {
-            this.recordManager.stopRecording(this.video);
+            this.recordManager.stopRecording(this.video, -1);
 
             btnRecord.setText(resources.getString("StartRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(

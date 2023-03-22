@@ -139,4 +139,6 @@ public class SceneManager {
     public Stage getStage() {
         return stage;
     }
+
+    public Double getStageHeight() { return stage.getHeight(); }
 }

@@ -47,6 +47,8 @@ import java.util.ResourceBundle;
 
 public class AudioEditSceneController implements PropertyChangeListener, Initializable {
     public Button btnEditDescription;
+    public Button btnChangeTire;
+    public HBox bottomHbox;
     private ResourceBundle resources;
     private FieldAudio fieldAudio;
     private Corpus corpus;
@@ -54,6 +56,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     private RecordManager recordManager;
     private int borderSize = StaticEnvVariable.borderSize;
     private List<HBox> lines = new ArrayList<>();
+    private int currentTire = 0;
 
     // Graphics
     @FXML
@@ -136,9 +139,11 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
         //We set the annotationsVisualization height to handle 30% of the screen height
         this.centerAnchorPane.heightProperty().addListener((observable, oldValue, newValue) -> {
-            AnchorPane.setBottomAnchor(this.waveVisualization, this.centerAnchorPane.getHeight() * 0.1);
-            this.annotationsVisualization.setPrefHeight(this.centerAnchorPane.getHeight() * 0.1);
+            AnchorPane.setBottomAnchor(this.waveVisualization, this.centerAnchorPane.getHeight() * 0.3);
+            this.annotationsVisualization.setPrefHeight(this.centerAnchorPane.getHeight() * 0.3);
         });
+
+        bottomHbox.setPrefHeight(SceneManager.getSceneManager().getStageHeight() * 0.03);
 
     }
 
@@ -196,7 +201,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             this.annotationsVisualization.getAnnotationsRectanglesMenu().forEach(hBox -> {
                 hBox.getChildren().get(1).setDisable(false);
             });
-            this.recordManager.stopRecording(this.fieldAudio);
+            this.recordManager.stopRecording(this.fieldAudio, this.currentTire);
             this.settingUpSidePane();
 
             btnRecord.setText(resources.getString("StartRecord"));
@@ -267,7 +272,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
                     Objects.requireNonNull(getClass().getResource("/images/reRecord.png")).toExternalForm()
             );
 
-            this.recordManager.stopRecording(this.fieldAudio);
+            this.recordManager.stopRecording(this.fieldAudio, annotation.getTire());
             this.lines.remove(line);
             this.setupLine(this.fieldAudio.getAnnotations().get(this.fieldAudio.getAnnotations().size()-1));
             this.vBoxPane.getChildren().remove(line);
@@ -440,5 +445,10 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     private void setBtnToPause() {
         this.btnPlayPause.setText(resources.getString("Pause"));
         ((ImageView) btnPlayPause.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/pause.png")).toExternalForm()));
+    }
+
+    public void onChangeTireButtonClick() {
+        currentTire = (currentTire+1) % 5;
+        btnChangeTire.setText(String.valueOf(currentTire + 1));
     }
 }

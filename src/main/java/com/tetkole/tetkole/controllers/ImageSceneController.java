@@ -80,7 +80,7 @@ public class ImageSceneController implements Initializable {
         }
         else
         {
-            this.recordManager.stopRecording(this.image);
+            this.recordManager.stopRecording(this.image, -1);
 
             btnRecord.setText(resources.getString("StartRecord"));
             ((ImageView) btnRecord.getGraphic()).setImage(

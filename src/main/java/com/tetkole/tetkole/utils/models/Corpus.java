@@ -344,9 +344,11 @@ public class Corpus {
                 double start = jsonObject.getDouble("start");
                 double end = jsonObject.getDouble("end");
 
+                int tire = jsonObject.getInt("tire");
+
                 // Create annotation
                 assert audioFile != null;
-                Objects.requireNonNull(media).addAnnotationInit(new Annotation(audioFile, start, end, folderFieldAudio.getName(), getName()));
+                Objects.requireNonNull(media).addAnnotationInit(new Annotation(audioFile, start, end, folderFieldAudio.getName(), getName(), tire));
             }
         }
     }
