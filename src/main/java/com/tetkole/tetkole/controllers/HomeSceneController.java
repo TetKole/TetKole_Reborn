@@ -1,9 +1,6 @@
 package com.tetkole.tetkole.controllers;
 
-import com.tetkole.tetkole.utils.AuthenticationManager;
-import com.tetkole.tetkole.utils.FileManager;
-import com.tetkole.tetkole.utils.HttpRequestManager;
-import com.tetkole.tetkole.utils.SceneManager;
+import com.tetkole.tetkole.utils.*;
 import com.tetkole.tetkole.utils.models.Corpus;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
