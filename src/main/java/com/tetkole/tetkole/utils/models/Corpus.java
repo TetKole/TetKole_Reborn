@@ -263,6 +263,10 @@ public class Corpus {
         return FileManager.getFileManager().readJSONFile(file);
     }
 
+    public void resetCorpusModif() {
+        this.corpus_modif = FileManager.getFileManager().createCorpusModifFile(this.name);
+    }
+
     public void writeCorpusState(JSONObject newState) {
         File file = new File(FileManager.getFileManager().getFolderPath() + "/" + name + "/corpus_state.json");
         if (!file.exists()) {
@@ -516,7 +520,6 @@ public class Corpus {
     public void renameAnnotation(Annotation annotation, String newName) {
         // Modification du corpus_modif.json
         if(this.getCorpusState() != null) {
-            System.out.println(annotation.getId());
             if(annotation.getId() == -1) {
                 renameAddedAnnotation(annotation, newName);
             } else {

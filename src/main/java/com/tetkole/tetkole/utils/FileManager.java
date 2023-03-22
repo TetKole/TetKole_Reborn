@@ -1,7 +1,6 @@
 package com.tetkole.tetkole.utils;
 
 import com.tetkole.tetkole.utils.models.Corpus;
-import com.tetkole.tetkole.utils.models.Media;
 import com.tetkole.tetkole.utils.models.TypeDocument;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,7 +16,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Map;
 
@@ -140,8 +138,12 @@ public class FileManager {
         json.put("fileName", fileName);
         map.forEach(json::put);
 
-        FileManager.getFileManager().createFile(relativeLocation, fileName.split("\\.")[0]);
-        String fileNameWithoutExt = fileName.split("\\.")[0];
+        String[] fileNamePart = fileName.split("\\.");
+        String ext = "." + fileNamePart[fileNamePart.length - 1];
+        String trueFileName = fileName.substring(0, fileName.length() - ext.length());
+
+        FileManager.getFileManager().createFile(relativeLocation, trueFileName);
+        String fileNameWithoutExt = trueFileName;
         try {
             FileWriter file = new FileWriter(getFolderPath() + relativeLocation + "/" + fileNameWithoutExt + ".json");
             file.write(json.toString());
@@ -199,9 +201,15 @@ public class FileManager {
 
         System.gc();
 
-        File fileAnnot = new File(this.folderPath + separator + corpusName + separator + typeDocument + separator + docName.split("\\.")[0] + ".json");
+        String[] fileNamePart = docName.split("\\.");
+        String ext = "." + fileNamePart[fileNamePart.length - 1];
+        String trueFileName = docName.substring(0, docName.length() - ext.length());
 
-        fileAnnot.renameTo(new File(fileAnnot.getParentFile() + separator + newName.split("\\.")[0] + ".json"));
+        String trueNewFileName = newName.substring(0, newName.length() - ext.length());
+
+        File fileAnnot = new File(this.folderPath + separator + corpusName + separator + typeDocument + separator + trueFileName + ".json");
+
+        fileAnnot.renameTo(new File(fileAnnot.getParentFile() + separator + trueNewFileName + ".json"));
     }
 
     /**
@@ -260,7 +268,7 @@ public class FileManager {
         FileManager.getFileManager().createFolder(corpusName + "/" + Corpus.folderNameAnnotation, fileName);
     }
 
-    public void createCorpusModifFile(String corpusName) {
+    public JSONObject createCorpusModifFile(String corpusName) {
         File file = new File(this.folderPath + "/" + corpusName + "/corpus_modif.json");
         JSONObject corpus_modif = new JSONObject();
         corpus_modif.accumulate("added", new JSONObject());
@@ -277,7 +285,7 @@ public class FileManager {
         corpus_modif.getJSONObject("updated").put("annotations", new JSONArray());
 
         writeJSONFile(file, corpus_modif);
-        System.out.println("help");
+        return corpus_modif;
     }
 
     public void renameDirectoryDocument(String docName, String corpusName, String newName) {

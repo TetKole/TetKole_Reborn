@@ -225,7 +225,9 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         this.mediaPlayer.stop();
         this.waveVisualization.setLeftBorderTime(begin);
         this.waveVisualization.setRightBorderTime(end);
+
         this.waveVisualization.unZoom();
+        this.waveVisualization.setRangeZoomFromAnnotation();
         this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
                 this.waveVisualization.getBeginAudio(),
                 this.waveVisualization.getEndAudio());
@@ -324,6 +326,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     public void setupLine(Annotation annotation) {
         // prepare the HBox
         HBox line = new HBox();
+        line.getStyleClass().add("line");
         line.setAlignment(Pos.CENTER);
         line.setSpacing(20);
 
@@ -361,10 +364,12 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
         btnEdit.setOnAction(event -> {
             String[] annotationName = annotation.getName().split("\\.");
-            String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", annotationName[0], resources.getString("RenameAnnotation"));
-            if(!newName.equals(annotationName[0]) && !newName.isEmpty()) {
-                corpus.renameAnnotation(annotation, newName + '.' + annotationName[1]);
-                label.setText(newName + "." + annotationName[1]);
+            String ext = "." + annotationName[annotationName.length - 1];
+            String lastName = annotation.getName().substring(0, annotation.getName().length() - ext.length());
+            String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", lastName, resources.getString("RenameAnnotation"));
+            if(!newName.equals(lastName) && !newName.isEmpty()) {
+                corpus.renameAnnotation(annotation, newName + ext);
+                label.setText(newName + ext);
             }
         });
 

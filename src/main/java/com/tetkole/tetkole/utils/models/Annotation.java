@@ -77,7 +77,11 @@ public class Annotation {
         jsonObject.put("recordName", newName);
         FileManager.getFileManager().writeJSONFile(jsonFile, jsonObject);
 
-        FileManager.getFileManager().renameFile(jsonFile, newName.split("\\.")[0] + ".json");
+        String[] fileNewNamePart = newName.split("\\.");
+        String ext = "." + fileNewNamePart[fileNewNamePart.length - 1];
+        String trueNewFileName = newName.substring(0, newName.length() - ext.length());
+
+        FileManager.getFileManager().renameFile(jsonFile, trueNewFileName + ".json");
 
         String lastName = this.file.getName();
         FileManager.getFileManager().renameFile(this.file, newName);
