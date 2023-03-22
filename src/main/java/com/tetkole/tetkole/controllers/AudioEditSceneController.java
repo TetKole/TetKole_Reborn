@@ -220,7 +220,9 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         this.mediaPlayer.stop();
         this.waveVisualization.setLeftBorderTime(begin);
         this.waveVisualization.setRightBorderTime(end);
+
         this.waveVisualization.unZoom();
+        this.waveVisualization.setRangeZoomFromAnnotation();
         this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
                 this.waveVisualization.getBeginAudio(),
                 this.waveVisualization.getEndAudio());
