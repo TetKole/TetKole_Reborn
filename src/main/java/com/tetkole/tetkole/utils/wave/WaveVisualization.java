@@ -98,7 +98,7 @@ public class WaveVisualization extends WaveFormPane {
 
 	public void setTotalTime(double seconds) {
 		this.initTotalTime(seconds);
-		this.waveService.setArrayWaveLength((int)this.totalTime * StaticEnvVariable.zoomRange);
+		this.waveService.setArrayWaveLength((int)(this.totalTime * StaticEnvVariable.zoomRange + 1));
 	}
 	
 }
