@@ -13,7 +13,10 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="container" prefHeight="400.0" prefWidth="600.0" styleClass="background_color" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.AudioEditSceneController">
+
+<?import javafx.scene.layout.StackPane?>
+<StackPane fx:id="rootPane" styleClass="background_color" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.AudioEditSceneController">
+<BorderPane fx:id="container" prefHeight="400.0" prefWidth="600.0" styleClass="background_color" xmlns="http://javafx.com/javafx">
    <top>
        <AnchorPane fx:id="topAnchorPane">
            <fx:include fx:id="header" source="components/Header.fxml" AnchorPane.rightAnchor="0.0"/>
@@ -91,3 +94,4 @@
 
 
 </BorderPane>
+</StackPane>

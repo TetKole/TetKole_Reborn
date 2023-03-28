@@ -1,16 +1,13 @@
 package com.tetkole.tetkole.controllers;
 
 import com.tetkole.tetkole.components.CustomButton;
-import com.tetkole.tetkole.utils.FileManager;
-import com.tetkole.tetkole.utils.RecordManager;
-import com.tetkole.tetkole.utils.StaticEnvVariable;
+import com.tetkole.tetkole.utils.*;
 import com.tetkole.tetkole.utils.annotations.AnnotationsVisualization;
 import com.tetkole.tetkole.utils.models.Annotation;
 import com.tetkole.tetkole.utils.models.FieldAudio;
 import com.tetkole.tetkole.utils.wave.WaveFormService;
 import com.tetkole.tetkole.utils.wave.WaveVisualization;
 import com.tetkole.tetkole.utils.models.Corpus;
-import com.tetkole.tetkole.utils.SceneManager;
 import javafx.animation.TranslateTransition;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
@@ -24,10 +21,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Screen;
@@ -79,10 +73,13 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     private BorderPane container;
     @FXML
     private VBox vBoxPane;
+    @FXML
+    private StackPane rootPane;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        this.startLoading();
         this.resources = resources;
         this.annotationsVisualization.setEditSceneController(this);
 
@@ -126,12 +123,12 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             this.settingUpSidePane();
         });
 
-        this.waveVisualization.startVisualization(audioFile.getAbsolutePath(), WaveFormService.WaveFormJob.AMPLITUDES_AND_WAVEFORM);
+        this.waveVisualization.startVisualization(audioFile.getAbsolutePath(), WaveFormService.WaveFormJob.AMPLITUDES_AND_WAVEFORM, this);
         this.waveVisualization.addPropertyChangeListener(this);
 
         //We set the annotationsVisualization width when the screen size change
         this.container.widthProperty().addListener((observable, oldValue, newValue) -> {
-            this.annotationsVisualization.setPrefWidth((double)newValue);
+            this.annotationsVisualization.setPrefWidth((double) newValue);
             this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
                     this.waveVisualization.getBeginAudio(),
                     this.waveVisualization.getEndAudio());
@@ -144,7 +141,6 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         });
 
         bottomHbox.setPrefHeight(SceneManager.getSceneManager().getStageHeight() * 0.03);
-
     }
 
     private void settingUpAnnotations() {
@@ -182,7 +178,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             });
             // get the date for the record name
             String formattedDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("(dd-MM-yyyy_HH'h'mm'm'ss's'_SSS)"));
-            formattedDateTime = formattedDateTime.substring(1, formattedDateTime.length()-1);
+            formattedDateTime = formattedDateTime.substring(1, formattedDateTime.length() - 1);
             String recordName = "annotation_" + formattedDateTime + ".wav";
 
             String corpusPath = "/" + this.corpus.getName() + "/" + Corpus.folderNameAnnotation + "/" + this.fieldAudio.getName();
@@ -192,9 +188,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             ((ImageView) btnRecord.getGraphic()).setImage(
                     new Image(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm())
             );
-        }
-        else
-        {
+        } else {
             this.lines.forEach(hBox -> {
                 hBox.getChildren().get(1).setDisable(false);
             });
@@ -255,28 +249,26 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
             this.btnRecord.setDisable(true);
             btnRecord.setImage(Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm());
-            ((CustomButton)this.annotationsVisualization.getAnnotationsRectanglesMenu().get(index).getChildren().get(1)).setImage(
+            ((CustomButton) this.annotationsVisualization.getAnnotationsRectanglesMenu().get(index).getChildren().get(1)).setImage(
                     Objects.requireNonNull(getClass().getResource("/images/stopRecord.png")).toExternalForm()
             );
             // get the date for the record name
             String formattedDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("(dd-MM-yyyy_HH'h'mm'm'ss's'_SSS)"));
-            formattedDateTime = formattedDateTime.substring(1, formattedDateTime.length()-1);
+            formattedDateTime = formattedDateTime.substring(1, formattedDateTime.length() - 1);
             String recordName = "newAnnotation_" + formattedDateTime + ".wav";
 
             String corpusPath = "/" + this.corpus.getName() + "/" + Corpus.folderNameAnnotation + "/" + this.fieldAudio.getName();
             this.recordManager.startRecording(this.fieldAudio.getName(), recordName, corpusPath, annotation.getEnd(), annotation.getStart());
-        }
-        else
-        {
+        } else {
             this.btnRecord.setDisable(false);
             btnRecord.setImage(Objects.requireNonNull(getClass().getResource("/images/reRecord.png")).toExternalForm());
-            ((CustomButton)this.annotationsVisualization.getAnnotationsRectanglesMenu().get(index).getChildren().get(0)).setImage(
+            ((CustomButton) this.annotationsVisualization.getAnnotationsRectanglesMenu().get(index).getChildren().get(0)).setImage(
                     Objects.requireNonNull(getClass().getResource("/images/reRecord.png")).toExternalForm()
             );
 
             this.recordManager.stopRecording(this.fieldAudio, annotation.getTire());
             this.lines.remove(line);
-            this.setupLine(this.fieldAudio.getAnnotations().get(this.fieldAudio.getAnnotations().size()-1));
+            this.setupLine(this.fieldAudio.getAnnotations().get(this.fieldAudio.getAnnotations().size() - 1));
             this.vBoxPane.getChildren().remove(line);
             this.fieldAudio.deleteAnnotation(annotation);
             this.fieldAudio.getAnnotations().remove(annotation);
@@ -291,7 +283,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         vBoxPane.getChildren().clear();
 
         this.lines.clear();
-        for(Annotation annotation : this.fieldAudio.getAnnotations()) {
+        for (Annotation annotation : this.fieldAudio.getAnnotations()) {
             this.setupLine(annotation);
         }
 
@@ -344,7 +336,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         CustomButton btnRecord = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/reRecord.png")).toExternalForm());
         line.getChildren().add(btnRecord);
 
-        btnRecord.setOnAction(e -> handleRecord(annotation,line));
+        btnRecord.setOnAction(e -> handleRecord(annotation, line));
 
         // add the Label
         Label label = new Label(annotation.getName());
@@ -367,7 +359,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             String ext = "." + annotationName[annotationName.length - 1];
             String lastName = annotation.getName().substring(0, annotation.getName().length() - ext.length());
             String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", lastName, resources.getString("RenameAnnotation"));
-            if(!newName.equals(lastName) && !newName.isEmpty()) {
+            if (!newName.equals(lastName) && !newName.isEmpty()) {
                 corpus.renameAnnotation(annotation, newName + ext);
                 label.setText(newName + ext);
             }
@@ -386,24 +378,24 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
                 case PLAYING -> {
                     annotation.getMediaPlayer().stop();
                     btnPlayPauseAnn.setImage(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());
-                    ((CustomButton)this.annotationsVisualization.getAnnotationsRectanglesMenu().get(index).getChildren().get(0)).setImage(
+                    ((CustomButton) this.annotationsVisualization.getAnnotationsRectanglesMenu().get(index).getChildren().get(0)).setImage(
                             Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()
                     );
                 }
                 case PAUSED, READY, STOPPED -> {
                     annotation.getMediaPlayer().play();
                     btnPlayPauseAnn.setImage(Objects.requireNonNull(getClass().getResource("/images/stop.png")).toExternalForm());
-                    ((CustomButton)this.annotationsVisualization.getAnnotationsRectanglesMenu().get(index).getChildren().get(0)).setImage(
+                    ((CustomButton) this.annotationsVisualization.getAnnotationsRectanglesMenu().get(index).getChildren().get(0)).setImage(
                             Objects.requireNonNull(getClass().getResource("/images/stop.png")).toExternalForm()
                     );
 
                     annotation.getMediaPlayer().setOnEndOfMedia(() -> {
-                            btnPlayPauseAnn.setImage(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());
-                            ((CustomButton)this.annotationsVisualization.getAnnotationsRectanglesMenu().get(index).getChildren().get(0)).setImage(
-                                    Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()
-                            );
-                            annotation.getMediaPlayer().stop();
-                        }
+                                btnPlayPauseAnn.setImage(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());
+                                ((CustomButton) this.annotationsVisualization.getAnnotationsRectanglesMenu().get(index).getChildren().get(0)).setImage(
+                                        Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()
+                                );
+                                annotation.getMediaPlayer().stop();
+                            }
                     );
                 }
             }
@@ -453,7 +445,15 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     }
 
     public void onChangeTireButtonClick() {
-        currentTire = (currentTire+1) % 5;
+        currentTire = (currentTire + 1) % 5;
         btnChangeTire.setText(String.valueOf(currentTire + 1));
+    }
+
+    public void startLoading() {
+        LoadingManager.getLoadingManagerInstance().displayLoading(rootPane);
+    }
+
+    public void stopLoading() {
+        LoadingManager.getLoadingManagerInstance().hideLoading(rootPane);
     }
 }

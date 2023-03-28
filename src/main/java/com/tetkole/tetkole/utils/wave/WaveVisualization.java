@@ -3,9 +3,9 @@
  */
 package com.tetkole.tetkole.utils.wave;
 
+import com.tetkole.tetkole.controllers.AudioEditSceneController;
 import com.tetkole.tetkole.utils.StaticEnvVariable;
 import com.tetkole.tetkole.utils.wave.WaveFormService.WaveFormJob;
-import javafx.animation.AnimationTimer;
 import javafx.scene.input.ScrollEvent;
 
 /**
@@ -17,6 +17,8 @@ public class WaveVisualization extends WaveFormPane {
 
 	/*** This Service is creating the wave data for the painter */
 	private final WaveFormService waveService;
+
+	private AudioEditSceneController audioEditSceneController;
 
 	
 	/**
@@ -50,11 +52,17 @@ public class WaveVisualization extends WaveFormPane {
 				getWaveService().startService(getWaveService().getFileAbsolutePath(), WaveFormJob.WAVEFORM);
 			clear();
 		});
-
 	}
 
-	public void startVisualization(String fileAbsolutePath, WaveFormJob waveFormJob) {
+	public void startVisualization(String fileAbsolutePath, WaveFormJob waveFormJob, AudioEditSceneController audioEditSceneController) {
 		getWaveService().startService(fileAbsolutePath, waveFormJob);
+		this.audioEditSceneController = audioEditSceneController;
+	}
+
+	public void done() {
+		if (this.audioEditSceneController != null) {
+			this.audioEditSceneController.stopLoading();
+		}
 	}
 	
 	private WaveFormService getWaveService() {
