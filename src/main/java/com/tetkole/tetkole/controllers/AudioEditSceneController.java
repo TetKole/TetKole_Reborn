@@ -218,7 +218,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
                 this.waveVisualization.getBeginAudio(),
                 this.waveVisualization.getEndAudio());
-        this.annotationsVisualization.drawAnnotations();
+        this.annotationsVisualization.refresh();
     }
 
     public void goToAnnotation(double begin, double end) {
@@ -231,7 +231,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
                 this.waveVisualization.getBeginAudio(),
                 this.waveVisualization.getEndAudio());
-        this.annotationsVisualization.drawAnnotations();
+        this.annotationsVisualization.refresh();
     }
 
     @Override
@@ -370,6 +370,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             if(!newName.equals(lastName) && !newName.isEmpty()) {
                 corpus.renameAnnotation(annotation, newName + ext);
                 label.setText(newName + ext);
+                annotationsVisualization.refresh();
             }
         });
 
