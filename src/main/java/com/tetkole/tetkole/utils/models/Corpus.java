@@ -263,6 +263,10 @@ public class Corpus {
         return FileManager.getFileManager().readJSONFile(file);
     }
 
+    public void resetCorpusModif() {
+        this.corpus_modif = FileManager.getFileManager().createCorpusModifFile(this.name);
+    }
+
     public void writeCorpusState(JSONObject newState) {
         File file = new File(FileManager.getFileManager().getFolderPath() + "/" + name + "/corpus_state.json");
         if (!file.exists()) {
@@ -344,9 +348,11 @@ public class Corpus {
                 double start = jsonObject.getDouble("start");
                 double end = jsonObject.getDouble("end");
 
+                int tire = jsonObject.getInt("tire");
+
                 // Create annotation
                 assert audioFile != null;
-                Objects.requireNonNull(media).addAnnotationInit(new Annotation(audioFile, start, end, folderFieldAudio.getName(), getName()));
+                Objects.requireNonNull(media).addAnnotationInit(new Annotation(audioFile, start, end, folderFieldAudio.getName(), getName(), tire));
             }
         }
     }
@@ -514,7 +520,6 @@ public class Corpus {
     public void renameAnnotation(Annotation annotation, String newName) {
         // Modification du corpus_modif.json
         if(this.getCorpusState() != null) {
-            System.out.println(annotation.getId());
             if(annotation.getId() == -1) {
                 renameAddedAnnotation(annotation, newName);
             } else {

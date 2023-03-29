@@ -3,7 +3,6 @@ package com.tetkole.tetkole.utils.models;
 import com.tetkole.tetkole.utils.FileManager;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.util.Duration;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -16,14 +15,16 @@ public class Annotation {
     private final double end;
     private String fieldAudioName;
     private String corpusName;
+    private int tire;
 
-    public Annotation(File file, double start, double end, String fieldAudioName, String corpusName) {
+    public Annotation(File file, double start, double end, String fieldAudioName, String corpusName, int tire) {
         this.file = file;
         this.start = start;
         this.end = end;
         this.fieldAudioName = fieldAudioName;
         this.corpusName = corpusName;
         this.mediaPlayer = new MediaPlayer(new Media(file.toURI().toString()));
+        this.tire = tire;
     }
 
     public String getName() {
@@ -36,6 +37,9 @@ public class Annotation {
 
     public void delete() {
         this.mediaPlayer.dispose();
+
+        System.gc();
+
         String annotationDirPath = FileManager.getFileManager().getFolderPath() + "/" + this.corpusName + "/" + Corpus.folderNameAnnotation + "/" + this.fieldAudioName + "/" + this.getName();
         FileManager.getFileManager().deleteFolder(new File(annotationDirPath));
     }
@@ -73,7 +77,11 @@ public class Annotation {
         jsonObject.put("recordName", newName);
         FileManager.getFileManager().writeJSONFile(jsonFile, jsonObject);
 
-        FileManager.getFileManager().renameFile(jsonFile, newName.split("\\.")[0] + ".json");
+        String[] fileNewNamePart = newName.split("\\.");
+        String ext = "." + fileNewNamePart[fileNewNamePart.length - 1];
+        String trueNewFileName = newName.substring(0, newName.length() - ext.length());
+
+        FileManager.getFileManager().renameFile(jsonFile, trueNewFileName + ".json");
 
         String lastName = this.file.getName();
         FileManager.getFileManager().renameFile(this.file, newName);
@@ -139,5 +147,13 @@ public class Annotation {
 
     public String getFieldAudioName() {
         return fieldAudioName;
+    }
+
+    public int getTire() {
+        return tire;
+    }
+
+    public void setTire(int tire) {
+        this.tire = tire;
     }
 }

@@ -13,7 +13,6 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.layout.GridPane?>
 <BorderPane fx:id="container" prefHeight="400.0" prefWidth="600.0" styleClass="background_color" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.AudioEditSceneController">
    <top>
        <AnchorPane fx:id="topAnchorPane">
@@ -50,32 +49,40 @@
 
     <bottom>
         <HBox fx:id="bottomHbox" alignment="CENTER" spacing="5">
-            <Button fx:id="btnPlayPause" contentDisplay="TOP" text="%Play" onAction="#onPlayPauseButtonClick" prefHeight="60" prefWidth="150" styleClass="buttons, blue">
+            <Button fx:id="btnPlayPause" contentDisplay="TOP" text="%Play" onAction="#onPlayPauseButtonClick" prefWidth="150" styleClass="buttons, blue">
                 <graphic>
-                    <ImageView fitHeight="82.5" fitWidth="82.5">
+                    <ImageView fitHeight="50" fitWidth="50">
                         <Image url="@../../../images/play.png" />
                     </ImageView>
                 </graphic>
             </Button>
-            <Button fx:id="btnRecord" contentDisplay="TOP" text="%StartRecord" onAction="#onRecordButtonClick" prefHeight="60" prefWidth="150" styleClass="buttons, blue">
+            <Button fx:id="btnRecord" contentDisplay="TOP" text="%StartRecord" onAction="#onRecordButtonClick" prefWidth="150" styleClass="buttons, blue">
                 <graphic>
-                    <ImageView fitHeight="82.5" fitWidth="82.5">
+                    <ImageView fitHeight="50" fitWidth="50">
                         <Image url="@../../../images/record.png" />
                     </ImageView>
                 </graphic>
             </Button>
-            <Button fx:id="btnDisplaySidePane" contentDisplay="TOP" text="%ShowRecords" prefHeight="60" prefWidth="150" styleClass="buttons, blue">
+            <Button fx:id="btnDisplaySidePane" contentDisplay="TOP" text="%ShowRecords" prefWidth="150" styleClass="buttons, blue">
                 <graphic>
-                    <ImageView fitHeight="82.5" fitWidth="82.5">
+                    <ImageView fitHeight="50" fitWidth="50">
                         <Image url="@../../../images/music.png" />
                     </ImageView>
                 </graphic>
             </Button>
 
-            <Button fx:id="btnEditDescription" contentDisplay="TOP" text="%EditDescription" onAction="#onEditDescriptionButtonClick" prefHeight="60" prefWidth="150" styleClass="buttons, blue">
+            <Button fx:id="btnEditDescription" contentDisplay="TOP" text="%EditDescription" onAction="#onEditDescriptionButtonClick" prefWidth="150" styleClass="buttons, blue">
                 <graphic>
-                    <ImageView fitHeight="82.5" fitWidth="82.5">
+                    <ImageView fitHeight="50" fitWidth="50">
                         <Image url="@../../../images/option.png" />
+                    </ImageView>
+                </graphic>
+            </Button>
+
+            <Button fx:id="btnChangeTire" contentDisplay="TOP" text="1" onAction="#onChangeTireButtonClick" prefWidth="150" styleClass="buttons, blue">
+                <graphic>
+                    <ImageView fitHeight="50" fitWidth="50">
+                        <Image url="@../../../images/barsUp.png" />
                     </ImageView>
                 </graphic>
             </Button>

@@ -110,12 +110,7 @@ public class CorpusMenuSceneController implements Initializable {
             CustomButton btnEdit = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/edit.png")).toExternalForm());
 
             btnEdit.setOnMouseClicked(event -> {
-                String[] faName = fa.getName().split("\\.");
-                String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", faName[0], resources.getString("RenameAudio"));
-                if(!newName.equals(faName[0]) && !newName.isEmpty()) {
-                    corpus.renameDocument(fa, newName + '.' + faName[1]);
-                    this.updateFieldAudioList();
-                }
+                this.renameDoc(fa, corpus);
             });
 
             line.getChildren().add(btn);
@@ -168,12 +163,7 @@ public class CorpusMenuSceneController implements Initializable {
             CustomButton btnEdit = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/edit.png")).toExternalForm());
 
             btnEdit.setOnMouseClicked(event -> {
-                String[] imageName = image.getName().split("\\.");
-                String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", imageName[0], resources.getString("RenameImage"));
-                if(!newName.equals(imageName[0]) && !newName.isEmpty()) {
-                    corpus.renameDocument(image, newName + '.' + imageName[1]);
-                    this.updateImagesList();
-                }
+                this.renameDoc(image, corpus);
             });
 
             line.getChildren().add(btn);
@@ -232,12 +222,7 @@ public class CorpusMenuSceneController implements Initializable {
             CustomButton btnEdit = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/edit.png")).toExternalForm());
 
             btnEdit.setOnMouseClicked(event -> {
-                String[] videoName = video.getName().split("\\.");
-                String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", videoName[0], resources.getString("RenameVideo"));
-                if(!newName.equals(videoName[0]) && !newName.isEmpty()) {
-                    corpus.renameDocument(video, newName + '.' + videoName[1]);
-                    this.updateVideosList();
-                }
+                this.renameDoc(video, corpus);
             });
 
             line.getChildren().add(btn);
@@ -354,13 +339,12 @@ public class CorpusMenuSceneController implements Initializable {
                     File audioFile = new File(path + annotation.getString("name"));
 
                     // get the json file from the name
-                    String[] pathSplit = annotation.getString("name").split("\\.");
-                    StringBuilder jsonFileName = new StringBuilder();
-                    for (int j=0; j<pathSplit.length - 1; j++) {
-                        jsonFileName.append(pathSplit[j]);
-                    }
-                    jsonFileName.append(".json");
-                    File jsonFile  = new File(path + jsonFileName);
+                    String annotationName = annotation.getString("name");
+                    String[] fileNamePart = annotationName.split("\\.");
+                    String ext = "." + fileNamePart[fileNamePart.length - 1];
+                    String trueFileName = annotationName.substring(0, annotationName.length() - ext.length());
+
+                    File jsonFile  = new File(path + trueFileName + ".json");
 
                     int docId = annotation.getInt("docId");
                     if (docId == -1) {
@@ -375,7 +359,7 @@ public class CorpusMenuSceneController implements Initializable {
                 this.corpus.writeCorpusState(newServerState);
 
                 // clean corpus modif
-                FileManager.getFileManager().createCorpusModifFile(this.corpus.getName());
+                this.corpus.resetCorpusModif();
 
                 System.out.println("push done");
 
@@ -559,6 +543,11 @@ public class CorpusMenuSceneController implements Initializable {
         updateFieldAudioList();
 
         System.out.println("Pull Done");
+    }
+
+    public void goToVersionning(){
+        SceneManager.getSceneManager().addArgument("corpus", this.corpus);
+        SceneManager.getSceneManager().changeScene("VersionningScene.fxml");
     }
 
 
@@ -841,5 +830,30 @@ public class CorpusMenuSceneController implements Initializable {
             }
         }
         return new JSONArray();
+    }
+
+    private void renameDoc(Media doc, Corpus corpus) {
+        String[] docNamePart = doc.getName().split("\\.");
+        String ext = "." + docNamePart[docNamePart.length - 1];
+        String lastName = doc.getName().substring(0, doc.getName().length() - ext.length());
+        String renameRessource = "";
+        if(doc.getTypeDocument() == TypeDocument.FieldAudio) {
+            renameRessource = resources.getString("RenameAudio");
+        } else if (doc.getTypeDocument() == TypeDocument.Images) {
+            renameRessource = resources.getString("RenameImage");
+        } else if (doc.getTypeDocument() == TypeDocument.Videos) {
+            renameRessource = resources.getString("RenameVideo");
+        }
+        String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", lastName, renameRessource);
+        if(!newName.equals(lastName) && !newName.isEmpty()) {
+            corpus.renameDocument(doc, newName + ext);
+            if(doc.getTypeDocument() == TypeDocument.FieldAudio) {
+                this.updateFieldAudioList();
+            } else if (doc.getTypeDocument() == TypeDocument.Images) {
+                this.updateImagesList();
+            } else if (doc.getTypeDocument() == TypeDocument.Videos) {
+                this.updateVideosList();
+            }
+        }
     }
 }

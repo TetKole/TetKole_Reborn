@@ -47,6 +47,8 @@ import java.util.ResourceBundle;
 
 public class AudioEditSceneController implements PropertyChangeListener, Initializable {
     public Button btnEditDescription;
+    public Button btnChangeTire;
+    public HBox bottomHbox;
     private ResourceBundle resources;
     private FieldAudio fieldAudio;
     private Corpus corpus;
@@ -54,6 +56,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     private RecordManager recordManager;
     private int borderSize = StaticEnvVariable.borderSize;
     private List<HBox> lines = new ArrayList<>();
+    private int currentTire = 0;
 
     // Graphics
     @FXML
@@ -117,6 +120,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             mediaPlayer.setOnEndOfMedia(() -> {
                 mediaPlayer.seek(Duration.ZERO);
                 mediaPlayer.stop();
+                this.setBtnToPlay();
             });
 
             this.settingUpSidePane();
@@ -135,9 +139,11 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
         //We set the annotationsVisualization height to handle 30% of the screen height
         this.centerAnchorPane.heightProperty().addListener((observable, oldValue, newValue) -> {
-            AnchorPane.setBottomAnchor(this.waveVisualization, this.centerAnchorPane.getHeight() * 0.1);
-            this.annotationsVisualization.setPrefHeight(this.centerAnchorPane.getHeight() * 0.1);
+            AnchorPane.setBottomAnchor(this.waveVisualization, this.centerAnchorPane.getHeight() * 0.3);
+            this.annotationsVisualization.setPrefHeight(this.centerAnchorPane.getHeight() * 0.3);
         });
+
+        bottomHbox.setPrefHeight(SceneManager.getSceneManager().getStageHeight() * 0.03);
 
     }
 
@@ -156,13 +162,11 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             case PLAYING -> {
                 mediaPlayer.setStartTime(new Duration((waveVisualization.getCurrentXPosition() / waveVisualization.getRatioAudio() + waveVisualization.getBeginAudio()) * 1000));
                 mediaPlayer.pause();
-                btnPlayPause.setText(resources.getString("Play"));
-                ((ImageView) btnPlayPause.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()));
+                this.setBtnToPlay();
             }
             case PAUSED, READY, STOPPED -> {
                 mediaPlayer.play();
-                btnPlayPause.setText(resources.getString("Pause"));
-                ((ImageView) btnPlayPause.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/pause.png")).toExternalForm()));
+                this.setBtnToPause();
             }
         }
     }
@@ -197,7 +201,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             this.annotationsVisualization.getAnnotationsRectanglesMenu().forEach(hBox -> {
                 hBox.getChildren().get(1).setDisable(false);
             });
-            this.recordManager.stopRecording(this.fieldAudio);
+            this.recordManager.stopRecording(this.fieldAudio, this.currentTire);
             this.settingUpSidePane();
 
             btnRecord.setText(resources.getString("StartRecord"));
@@ -221,7 +225,9 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         this.mediaPlayer.stop();
         this.waveVisualization.setLeftBorderTime(begin);
         this.waveVisualization.setRightBorderTime(end);
+
         this.waveVisualization.unZoom();
+        this.waveVisualization.setRangeZoomFromAnnotation();
         this.annotationsVisualization.setValueFromWave(this.waveVisualization.getRatioAudio(),
                 this.waveVisualization.getBeginAudio(),
                 this.waveVisualization.getEndAudio());
@@ -231,8 +237,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
         mediaPlayer.stop();
-        btnPlayPause.setText(resources.getString("Play"));
-        ((ImageView) btnPlayPause.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()));
+        this.setBtnToPlay();
 
         // set current X in media player aka start time
         double newStart = (double) evt.getNewValue() / waveVisualization.getRatioAudio() + waveVisualization.getBeginAudio();
@@ -269,7 +274,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
                     Objects.requireNonNull(getClass().getResource("/images/reRecord.png")).toExternalForm()
             );
 
-            this.recordManager.stopRecording(this.fieldAudio);
+            this.recordManager.stopRecording(this.fieldAudio, annotation.getTire());
             this.lines.remove(line);
             this.setupLine(this.fieldAudio.getAnnotations().get(this.fieldAudio.getAnnotations().size()-1));
             this.vBoxPane.getChildren().remove(line);
@@ -321,6 +326,7 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
     public void setupLine(Annotation annotation) {
         // prepare the HBox
         HBox line = new HBox();
+        line.getStyleClass().add("line");
         line.setAlignment(Pos.CENTER);
         line.setSpacing(20);
 
@@ -358,18 +364,20 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
 
         btnEdit.setOnAction(event -> {
             String[] annotationName = annotation.getName().split("\\.");
-            String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", annotationName[0], resources.getString("RenameAnnotation"));
-            if(!newName.equals(annotationName[0]) && !newName.isEmpty()) {
-                corpus.renameAnnotation(annotation, newName + '.' + annotationName[1]);
-                label.setText(newName + "." + annotationName[1]);
+            String ext = "." + annotationName[annotationName.length - 1];
+            String lastName = annotation.getName().substring(0, annotation.getName().length() - ext.length());
+            String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", lastName, resources.getString("RenameAnnotation"));
+            if(!newName.equals(lastName) && !newName.isEmpty()) {
+                corpus.renameAnnotation(annotation, newName + ext);
+                label.setText(newName + ext);
             }
         });
 
         // add the Play/Pause Button
-        CustomButton btnPlayPause = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());
-        line.getChildren().add(btnPlayPause);
+        CustomButton btnPlayPauseAnn = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());
+        line.getChildren().add(btnPlayPauseAnn);
 
-        btnPlayPause.setOnAction(e -> {
+        btnPlayPauseAnn.setOnAction(e -> {
             annotation.playPause();
 
             int index = this.fieldAudio.getAnnotations().indexOf(annotation);
@@ -377,20 +385,20 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             switch (annotation.getMediaPlayer().getStatus()) {
                 case PLAYING -> {
                     annotation.getMediaPlayer().stop();
-                    btnPlayPause.setImage(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());
+                    btnPlayPauseAnn.setImage(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());
                     ((CustomButton)this.annotationsVisualization.getAnnotationsRectanglesMenu().get(index).getChildren().get(0)).setImage(
                             Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()
                     );
                 }
                 case PAUSED, READY, STOPPED -> {
                     annotation.getMediaPlayer().play();
-                    btnPlayPause.setImage(Objects.requireNonNull(getClass().getResource("/images/stop.png")).toExternalForm());
+                    btnPlayPauseAnn.setImage(Objects.requireNonNull(getClass().getResource("/images/stop.png")).toExternalForm());
                     ((CustomButton)this.annotationsVisualization.getAnnotationsRectanglesMenu().get(index).getChildren().get(0)).setImage(
                             Objects.requireNonNull(getClass().getResource("/images/stop.png")).toExternalForm()
                     );
 
                     annotation.getMediaPlayer().setOnEndOfMedia(() -> {
-                            btnPlayPause.setImage(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());
+                            btnPlayPauseAnn.setImage(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm());
                             ((CustomButton)this.annotationsVisualization.getAnnotationsRectanglesMenu().get(index).getChildren().get(0)).setImage(
                                     Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()
                             );
@@ -432,5 +440,20 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
         );
 
         FileManager.getFileManager().createJSONFile(this.fieldAudio.getName(), map, String.format("/%s/FieldAudio", this.corpus.getName()));
+    }
+
+    private void setBtnToPlay() {
+        this.btnPlayPause.setText(resources.getString("Play"));
+        ((ImageView) btnPlayPause.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/play.png")).toExternalForm()));
+    }
+
+    private void setBtnToPause() {
+        this.btnPlayPause.setText(resources.getString("Pause"));
+        ((ImageView) btnPlayPause.getGraphic()).setImage(new Image(Objects.requireNonNull(getClass().getResource("/images/pause.png")).toExternalForm()));
+    }
+
+    public void onChangeTireButtonClick() {
+        currentTire = (currentTire+1) % 5;
+        btnChangeTire.setText(String.valueOf(currentTire + 1));
     }
 }

@@ -66,7 +66,7 @@ public class RecordManager {
         }
     }
 
-    public void stopRecording(Media media) {
+    public void stopRecording(Media media, int tire) {
         if (this.isRecording) {
             this.isRecording = false;
             System.out.println("Record stopped");
@@ -78,7 +78,8 @@ public class RecordManager {
                     "fileName", this.fileName,
                     "recordName", this.recordName,
                     "start", this.leftBorderValue,
-                    "end", this.rightBorderValue
+                    "end", this.rightBorderValue,
+                    "tire", tire
             );
 
             // JSON file is created here !
@@ -88,7 +89,7 @@ public class RecordManager {
                     this.corpusPath + '/' + this.recordName
             );
 
-            media.addAnnotation(new Annotation(this.file, this.leftBorderValue, this.rightBorderValue, this.fileName, this.corpusPath.split("/")[1]));
+            media.addAnnotation(new Annotation(this.file, this.leftBorderValue, this.rightBorderValue, this.fileName, this.corpusPath.split("/")[1], tire));
         }
     }
 

@@ -2,7 +2,6 @@ package com.tetkole.tetkole.utils.annotations;
 
 import com.tetkole.tetkole.components.CustomButton;
 import com.tetkole.tetkole.controllers.AudioEditSceneController;
-import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.models.Annotation;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
@@ -15,8 +14,10 @@ import java.util.Objects;
 
 public class AnnotationsVisualization extends Pane {
 
+    public static final int MAX_NUMBER_OF_TIRES = 5;
+
     // Change it to modify annotationsRectangles height
-    private static final int annotationSize = 15;
+    private static double annotationSize = 15;
     private final List<Rectangle> annotationsRectangles = new ArrayList<>();
     private final List<HBox> annotationsRectanglesMenu = new ArrayList<>();
     private HBox actualAnnotationMenu = null;
@@ -32,6 +33,13 @@ public class AnnotationsVisualization extends Pane {
             actualAnnotationMenu = null;
             this.drawAnnotations();
         });
+
+        this.heightProperty().addListener((observable , oldValue , newValue) -> {
+            this.getChildren().remove(actualAnnotationMenu);
+            actualAnnotationMenu = null;
+            this.drawAnnotations();
+            annotationSize = (newValue.doubleValue() / MAX_NUMBER_OF_TIRES) / 2;
+        });
     }
 
     public void drawAnnotations() {
@@ -45,21 +53,31 @@ public class AnnotationsVisualization extends Pane {
             double annotationStart = annotation.getStart();
             double annotationEnd = annotation.getEnd();
 
-            if (!(annotationEnd < this.beginAudio || annotationStart > this.endAudio)) {
+            if (this.audioEditSceneController.getLines().size() != 0){
+                Rectangle r;
+                if (!(annotationEnd < this.beginAudio || annotationStart > this.endAudio)) {
 
-                if (this.audioEditSceneController.getLines().size() == 0) return;
+                    r = initRectangle(
+                            ratioAudio * (annotationStart - this.beginAudio),
+                            (this.getHeight() / MAX_NUMBER_OF_TIRES) * annotation.getTire(),
+                            ratioAudio * (annotationEnd - this.beginAudio) - ratioAudio * (annotationStart - this.beginAudio),
+                            this.audioEditSceneController.getLines().get(i),
+                            annotation
+                    );
 
-                Rectangle r = initRectangle(
-                        ratioAudio * (annotationStart - this.beginAudio),
-                        this.getHeight()/2,
-                        ratioAudio * (annotationEnd - this.beginAudio) - ratioAudio * (annotationStart - this.beginAudio),
-                        this.audioEditSceneController.getLines().get(i),
-                        annotation
-                );
+                }else{
 
+                    r = initRectangle(
+                            0, 0, 0,
+                            this.audioEditSceneController.getLines().get(i),
+                            annotation
+                    );
+
+                }
                 annotationsRectangles.add(r);
                 this.getChildren().add(r);
             }
+
             i++;
         }
     }

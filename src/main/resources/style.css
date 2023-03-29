@@ -68,6 +68,11 @@
     -fx-background-radius: 16;
 }
 
+.line:hover{
+    /*-fx-background-color: derive(white, 50%);*/
+    -fx-cursor: hand;
+}
+
 /* ------------------------------------------ COLORS ------------------------------------------- */
 .color_white {
     -fx-color: #000000;

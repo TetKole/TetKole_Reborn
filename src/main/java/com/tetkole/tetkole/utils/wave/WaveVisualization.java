@@ -79,6 +79,16 @@ public class WaveVisualization extends WaveFormPane {
 		clear();
 	}
 
+	public void setRangeZoomFromAnnotation() {
+
+		// we zoom the wave when we scroll
+		this.waveService.setWaveRange(this.getLeftBorderXPosition(), this.getRightBorderXPosition(), this.width);
+		this.setAudioRange();
+
+		getWaveService().startService(getWaveService().getFileAbsolutePath(), WaveFormJob.WAVEFORM);
+		clear();
+	}
+
 	public void unZoom() {
 		this.waveService.resetWaveRange();
 		this.resetAudioRange();
@@ -88,7 +98,7 @@ public class WaveVisualization extends WaveFormPane {
 
 	public void setTotalTime(double seconds) {
 		this.initTotalTime(seconds);
-		this.waveService.setArrayWaveLength((int)this.totalTime * StaticEnvVariable.zoomRange);
+		this.waveService.setArrayWaveLength((int)(this.totalTime * StaticEnvVariable.zoomRange + 1));
 	}
 	
 }
