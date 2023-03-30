@@ -3,6 +3,7 @@ package com.tetkole.tetkole.controllers;
 import com.tetkole.tetkole.components.CustomButton;
 import com.tetkole.tetkole.utils.*;
 import com.tetkole.tetkole.utils.models.*;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -51,10 +52,6 @@ public class CorpusMenuSceneController implements Initializable {
 
     private ResourceBundle resources;
 
-    private volatile boolean pullThreadRunning;
-    private volatile boolean pushThreadRunning;
-    private volatile boolean doYouNeedPull;
-    private JSONObject tempCorpusStateForPull;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -261,10 +258,9 @@ public class CorpusMenuSceneController implements Initializable {
      * Push your change on the server if you have the same corpus_state than the server.
      */
     private void push() {
+        System.out.println("Start Push");
         LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
         this.loadingLabelPush.setVisible(true);
-        this.doYouNeedPull = false;
-        this.pushThreadRunning = true;
 
         // the push thread
         new Thread(() -> {
@@ -366,34 +362,25 @@ public class CorpusMenuSceneController implements Initializable {
                 System.out.println("push done");
 
             } else {
-                this.doYouNeedPull = true;
+                // you need to pull
+                Platform.runLater(() -> SceneManager.getSceneManager().showNewModal(
+                        "modals/AlertModalScene.fxml",
+                        this.resources.getString("NidDePoule"),
+                        this.resources.getString("NidDePoule")
+                ));
             }
-
-            this.pushThreadRunning = false;
 
             LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
             this.loadingLabelPush.setVisible(false);
+            System.out.println("Push Done");
         }).start();
-
-
-        while (this.pushThreadRunning) {
-            Thread.onSpinWait();
-        }
-
-        // you need to pull
-        if (this.doYouNeedPull) {
-            SceneManager.getSceneManager().showNewModal(
-                    "modals/AlertModalScene.fxml",
-                    this.resources.getString("NidDePoule"),
-                    this.resources.getString("NidDePoule")
-            );
-        }
     }
 
     /**
      * Push a new corpus on the server.
      */
     private void pushInit() {
+        System.out.println("Start Push Init");
         this.loadingLabelPush.setVisible(true);
         LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
 
@@ -478,7 +465,7 @@ public class CorpusMenuSceneController implements Initializable {
 
             loadingLabelPush.setVisible(false);
             LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
-
+            System.out.println("Push Init Done");
         }).start();
     }
 
@@ -488,11 +475,10 @@ public class CorpusMenuSceneController implements Initializable {
      */
     public void pullCorpus() {
         if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) return;
-        System.out.println("Start Pulling");
+
+        System.out.println("Start Pull");
         this.loadingLabelPull.setVisible(true);
         LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
-
-        pullThreadRunning = true;
 
         new Thread(() -> {
             try {
@@ -512,8 +498,6 @@ public class CorpusMenuSceneController implements Initializable {
 
                 JSONObject serverCorpusState = responseGetCorpusState.getJSONObject("body");
 
-                this.tempCorpusStateForPull = serverCorpusState;
-
                 // on compare les deux corpus state
                 JSONArray serveurDocs = serverCorpusState.getJSONArray("documents");
                 JSONArray localDocs = localCorpusState.getJSONArray("documents");
@@ -526,30 +510,30 @@ public class CorpusMenuSceneController implements Initializable {
                 JSONObject docsToDelete = existOnFirstAndNotOnSecond(localDocs, serveurDocs);
                 deleteCorpusDiff(docsToDelete);
 
-                pullThreadRunning = false;
+                //pullThreadRunning = false;
+
+                // set new corpus state
+                FileManager fileManager = FileManager.getFileManager();
+                File newCorpusState = new File(fileManager.getFolderPath() + "/" + this.corpus.getName() + "/corpus_state.json");
+                fileManager.writeJSONFile(newCorpusState, serverCorpusState);
+
+                // Reload corpus
+                this.corpus.reload();
+                Platform.runLater(() -> {
+                    updateVideosList();
+                    updateImagesList();
+                    updateFieldAudioList();
+                });
+
+
+                this.loadingLabelPull.setVisible(false);
+                LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
+                System.out.println("Pull Done");
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
         }).start();
-
-        while (pullThreadRunning) {
-            Thread.onSpinWait();
-        }
-
-        this.loadingLabelPull.setVisible(false);
-        LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
-
-        FileManager fileManager = FileManager.getFileManager();
-        File newCorpusState = new File(fileManager.getFolderPath() + "/" + this.corpus.getName() + "/corpus_state.json");
-        fileManager.writeJSONFile(newCorpusState, this.tempCorpusStateForPull);
-        this.corpus.reload();
-
-        updateVideosList();
-        updateImagesList();
-        updateFieldAudioList();
-
-        System.out.println("Pull Done");
     }
 
     public void goToVersionning(){
