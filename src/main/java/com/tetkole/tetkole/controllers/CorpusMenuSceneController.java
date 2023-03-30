@@ -1,10 +1,7 @@
 package com.tetkole.tetkole.controllers;
 
 import com.tetkole.tetkole.components.CustomButton;
-import com.tetkole.tetkole.utils.AuthenticationManager;
-import com.tetkole.tetkole.utils.FileManager;
-import com.tetkole.tetkole.utils.HttpRequestManager;
-import com.tetkole.tetkole.utils.SceneManager;
+import com.tetkole.tetkole.utils.*;
 import com.tetkole.tetkole.utils.models.*;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -47,6 +45,9 @@ public class CorpusMenuSceneController implements Initializable {
 
     @FXML
     private Label loadingLabelPull;
+
+    @FXML
+    private StackPane rootPane;
 
     private ResourceBundle resources;
 
@@ -260,6 +261,7 @@ public class CorpusMenuSceneController implements Initializable {
      * Push your change on the server if you have the same corpus_state than the server.
      */
     private void push() {
+        LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
         this.loadingLabelPush.setVisible(true);
         this.doYouNeedPull = false;
         this.pushThreadRunning = true;
@@ -368,14 +370,15 @@ public class CorpusMenuSceneController implements Initializable {
             }
 
             this.pushThreadRunning = false;
+
+            LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
+            this.loadingLabelPush.setVisible(false);
         }).start();
 
 
         while (this.pushThreadRunning) {
             Thread.onSpinWait();
         }
-
-        this.loadingLabelPush.setVisible(false);
 
         // you need to pull
         if (this.doYouNeedPull) {
@@ -392,6 +395,7 @@ public class CorpusMenuSceneController implements Initializable {
      */
     private void pushInit() {
         this.loadingLabelPush.setVisible(true);
+        LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
 
         // the push init thread
         new Thread(() -> {
@@ -473,6 +477,7 @@ public class CorpusMenuSceneController implements Initializable {
             } catch (Exception e) { throw new RuntimeException(e); }
 
             loadingLabelPush.setVisible(false);
+            LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
 
         }).start();
     }
@@ -485,6 +490,7 @@ public class CorpusMenuSceneController implements Initializable {
         if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) return;
         System.out.println("Start Pulling");
         this.loadingLabelPull.setVisible(true);
+        LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
 
         pullThreadRunning = true;
 
@@ -532,6 +538,7 @@ public class CorpusMenuSceneController implements Initializable {
         }
 
         this.loadingLabelPull.setVisible(false);
+        LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
 
         FileManager fileManager = FileManager.getFileManager();
         File newCorpusState = new File(fileManager.getFolderPath() + "/" + this.corpus.getName() + "/corpus_state.json");
