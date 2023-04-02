@@ -2,8 +2,6 @@ package com.tetkole.tetkole.utils;
 
 import org.json.JSONObject;
 
-import java.io.IOException;
-
 public class AuthenticationManager {
 
     private static AuthenticationManager authenticationManagerInstance;
@@ -26,9 +24,14 @@ public class AuthenticationManager {
     }
 
 
-    public JSONObject login(String mail, String password) throws Exception {
+    public JSONObject login(String mail, String password) {
 
-        JSONObject response = HttpRequestManager.getHttpRequestManagerInstance().sendPostLogin(mail, password);
+        JSONObject response = null;
+        try {
+            response = HttpRequestManager.getHttpRequestManagerInstance().sendPostLogin(mail, password);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         JSONObject body = response.getJSONObject("body");
 
@@ -44,8 +47,12 @@ public class AuthenticationManager {
         return response;
     }
 
-    public JSONObject register(String firstname, String lastname, String mail, String password) throws Exception {
-        return HttpRequestManager.getHttpRequestManagerInstance().sendPostRegister(firstname, lastname, password, mail);
+    public JSONObject register(String firstname, String lastname, String mail, String password) {
+        try {
+            return HttpRequestManager.getHttpRequestManagerInstance().sendPostRegister(firstname, lastname, password, mail);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean isAuthenticated() {
