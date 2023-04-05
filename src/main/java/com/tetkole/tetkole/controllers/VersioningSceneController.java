@@ -1,12 +1,8 @@
 package com.tetkole.tetkole.controllers;
 
-import com.tetkole.tetkole.components.CustomButton;
-import com.tetkole.tetkole.utils.AuthenticationManager;
-import com.tetkole.tetkole.utils.FileManager;
-import com.tetkole.tetkole.utils.HttpRequestManager;
-import com.tetkole.tetkole.utils.SceneManager;
+import com.tetkole.tetkole.utils.*;
 import com.tetkole.tetkole.utils.models.Corpus;
-import com.tetkole.tetkole.utils.models.FieldAudio;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,16 +11,15 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import java.io.File;
 import java.net.URL;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
-public class VersionningSceneController implements Initializable {
+public class VersioningSceneController implements Initializable {
     @FXML
     private HBox header;
     @FXML
@@ -34,11 +29,12 @@ public class VersionningSceneController implements Initializable {
     private Label corpusName;
     @FXML
     private Label loadingLabelCreateVersion;
+    @FXML
+    private StackPane rootPane;
     private ResourceBundle resources;
-    private volatile boolean newVersionThreadRunning;
 
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initialize(URL location, ResourceBundle resources) {
         this.resources = resources;
 
         // get the children of header component
@@ -57,8 +53,11 @@ public class VersionningSceneController implements Initializable {
         // We get the corpus then update all the displayed information
         this.corpus = (Corpus) SceneManager.getSceneManager().getArgument("corpus");
         this.corpusName.setText(this.corpus.getName());
-        // TODO remplir la liste des versions
+        this.updateVersionsCorpus();
         // TODO cacher les btns si pas authentifié
+        // Rémi: je pense qu'il vaut mieux carrément interdire l'accès a cette page si on est pas connecté
+        // i.e. enelver le bouton Versioning du CorpusMenuScene si pas connecté
+        // ou en fonction du role
     }
 
     public void onCreateNewVersion() {
@@ -66,8 +65,6 @@ public class VersionningSceneController implements Initializable {
 
         if (this.corpus.getCorpusState() != null) {
             this.createNewVersion();
-            // TODO call and write this.updateVersionsCorpus()
-            //this.updateVersionsCorpus();
         }
     }
 
@@ -79,15 +76,16 @@ public class VersionningSceneController implements Initializable {
         this.vBoxVersions.getChildren().add(labelTitle);
 
         // TODO requeter pour avoir le numéro de dernière version
+        List<String> versions = new ArrayList<>();
 
-        for(FieldAudio fa : this.corpus.getFieldAudios()) {
+        for(String v : versions) {
 
             HBox line = new HBox();
             line.setAlignment(Pos.CENTER);
             line.setSpacing(20);
 
             // add the field audio
-            Button btn = new Button(fa.getName());
+            Button btn = new Button(v);
             btn.getStyleClass().add("buttons");
             btn.getStyleClass().add("grey");
             btn.setPrefWidth(140);
@@ -106,25 +104,23 @@ public class VersionningSceneController implements Initializable {
 
     private void createNewVersion() {
         this.loadingLabelCreateVersion.setVisible(true);
-        // the push thread
-        new Thread(() -> {
+        System.out.println("Start Creating Version");
+        LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
 
+
+        new Thread(() -> {
             HttpRequestManager httpRequestManager = HttpRequestManager.getHttpRequestManagerInstance();
             String token = AuthenticationManager.getAuthenticationManager().getToken();
-
             final int corpusId = this.corpus.getCorpusId();
 
-            if(!httpRequestManager.createNewVersionCorpus(token, corpusId)){
+            if (!httpRequestManager.createNewVersionCorpus(token, corpusId)) {
                 // TODO message d'erreur
             }
 
-            this.newVersionThreadRunning = false;
+            LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
+            this.loadingLabelCreateVersion.setVisible(false);
+            System.out.println("Push Done");
+            Platform.runLater(this::updateVersionsCorpus);
         }).start();
-
-
-        while (this.newVersionThreadRunning) {
-            Thread.onSpinWait();
-        }
-        this.loadingLabelCreateVersion.setVisible(false);
     }
 }

@@ -33,7 +33,7 @@
                         <Button onAction="#pullCorpus" prefHeight="60" prefWidth="150" styleClass="buttons, blue" text="%Pull"/>
                         <Label fx:id="loadingLabelPull" style="-fx-text-fill: white; -fx-font-size: 15px;" text="%Loading" visible="false"/>
                     </VBox>
-                    <Button onAction="#goToVersionning" prefHeight="40" prefWidth="150" styleClass="buttons, blue" text="%Versionning"/>
+                    <Button onAction="#goToVersionning" prefHeight="40" prefWidth="150" styleClass="buttons, blue" text="%Versioning"/>
                 </HBox>
 
 
