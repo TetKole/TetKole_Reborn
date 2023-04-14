@@ -21,6 +21,18 @@
          <HBox alignment="CENTER">
             <TextField onAction="#OnChangeRange" fx:id="rangeInput" promptText="%RangeValue" />
          </HBox>
+
+         <HBox alignment="CENTER"  >
+            <VBox alignment="CENTER" fx:id="vBoxUpdatePassword">
+               <Label text="%currentPassword" fx:id="currentPasswordLabel" style="-fx-text-fill: white; -fx-font-size: 20px"/>
+               <PasswordField onAction="#OnChangeRange" fx:id="currentPasswordInput" />
+
+               <Label text="%newPassword" fx:id="newPasswordLabel" style="-fx-text-fill: white; -fx-font-size: 20px"/>
+               <PasswordField onAction="#OnChangeRange" fx:id="newPasswordInput" />
+
+               <Button fx:id="updatePasswordButton" onAction="#onUpdatePassword" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%updateYourPassword" />
+            </VBox>
+         </HBox>
       </VBox>
    </VBox>
 

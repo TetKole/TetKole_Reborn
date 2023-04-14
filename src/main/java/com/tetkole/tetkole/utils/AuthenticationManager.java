@@ -10,10 +10,14 @@ public class AuthenticationManager {
     private String firstname;
     private String lastname;
     private String mail;
+
+    private String role;
+
     private int userId;
     private boolean isAuthenticated = false;
 
-    private AuthenticationManager() { }
+    private AuthenticationManager() {
+    }
 
     public static AuthenticationManager getAuthenticationManager() {
         return authenticationManagerInstance;
@@ -41,6 +45,7 @@ public class AuthenticationManager {
             this.firstname = body.getString("firstname");
             this.lastname = body.getString("lastname");
             this.mail = body.getString("mail");
+            this.role = body.getString("role");
             this.isAuthenticated = true;
         }
 
@@ -80,5 +85,15 @@ public class AuthenticationManager {
         return this.JWT_TOKEN;
     }
 
-    public int getUserId() { return userId; }
+    public int getUserId() {
+        return userId;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public String getRole() {
+        return role;
+    }
 }
