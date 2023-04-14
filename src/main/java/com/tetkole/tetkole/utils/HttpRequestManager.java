@@ -431,4 +431,32 @@ public class HttpRequestManager {
         System.out.println(answer);
         return answer.getBoolean("success");
     }
+
+    public boolean forceResetPassword(String userMail, String newPassword){
+        String route = apiUrl + "/user/forceResetPassword";
+        JSONObject json = new JSONObject();
+        json.put("adminMail", AuthenticationManager.getAuthenticationManager().getMail());
+        json.put("mail", userMail);
+        json.put("newPassword", newPassword);
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + AuthenticationManager.getAuthenticationManager().getToken())
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        JSONObject answer = new JSONObject(response.body());
+
+        System.out.println(answer);
+        return answer.getBoolean("success");
+    }
 }

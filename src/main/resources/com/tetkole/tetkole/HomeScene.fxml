@@ -22,6 +22,7 @@
                 <Button onAction="#onGoToSettings" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Settings" />
                 <Button fx:id="btnLogin" onAction="#onGoToLogin" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Login" />
                 <Button fx:id="btnRegister" onAction="#onGoToRegister" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Register" />
+                <Button fx:id="btnModerator" onAction="#onGoToModerator" prefHeight="60" prefWidth="150" styleClass="buttons, orange" text="%goToModerator" />
                 <Button fx:id="btnDisconnect" onAction="#onDisconnect" prefHeight="60" prefWidth="150" styleClass="buttons, red" text="%Disconnect" />
                 <Label fx:id="labelUserName" prefWidth="150.0" style="-fx-font-size: 20;" textFill="WHITE" alignment="CENTER" />
             </VBox>
