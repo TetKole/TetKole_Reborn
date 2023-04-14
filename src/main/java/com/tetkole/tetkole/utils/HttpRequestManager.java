@@ -1,4 +1,5 @@
 package com.tetkole.tetkole.utils;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -20,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 import static java.lang.Integer.parseInt;
 
 
-public class HttpRequestManager{
+public class HttpRequestManager {
 
     private static HttpRequestManager httpRequestManagerInstance;
     private static String apiUrl;
@@ -54,7 +55,7 @@ public class HttpRequestManager{
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .uri(URI.create(routeUrl))
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -79,7 +80,7 @@ public class HttpRequestManager{
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .uri(URI.create(routeUrl))
                 .build();
 
@@ -102,7 +103,7 @@ public class HttpRequestManager{
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(body)))
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + token)
                 .uri(URI.create(route))
                 .build();
@@ -214,7 +215,7 @@ public class HttpRequestManager{
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + token)
                 .uri(URI.create(route))
                 .build();
@@ -235,7 +236,7 @@ public class HttpRequestManager{
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + token)
                 .uri(URI.create(route))
                 .build();
@@ -261,7 +262,7 @@ public class HttpRequestManager{
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .DELETE()
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + token)
                 .uri(URI.create(route))
                 .build();
@@ -269,7 +270,9 @@ public class HttpRequestManager{
         HttpResponse<String> response;
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception e) { throw new RuntimeException(e); }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         JSONObject answer = new JSONObject(response.body());
 
@@ -285,7 +288,7 @@ public class HttpRequestManager{
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .PUT(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + token)
                 .uri(URI.create(route))
                 .build();
@@ -293,7 +296,9 @@ public class HttpRequestManager{
         HttpResponse<String> response;
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception e) { throw new RuntimeException(e); }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         JSONObject answer = new JSONObject(response.body());
 
@@ -308,7 +313,7 @@ public class HttpRequestManager{
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .DELETE()
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + token)
                 .uri(URI.create(route))
                 .build();
@@ -316,7 +321,9 @@ public class HttpRequestManager{
         HttpResponse<String> response;
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception e) { throw new RuntimeException(e); }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         JSONObject answer = new JSONObject(response.body());
 
@@ -332,7 +339,7 @@ public class HttpRequestManager{
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .PUT(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + token)
                 .uri(URI.create(route))
                 .build();
@@ -340,7 +347,9 @@ public class HttpRequestManager{
         HttpResponse<String> response;
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception e) { throw new RuntimeException(e); }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         JSONObject answer = new JSONObject(response.body());
 
@@ -354,7 +363,7 @@ public class HttpRequestManager{
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .GET()
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + token)
                 .uri(URI.create(route))
                 .build();
@@ -362,7 +371,9 @@ public class HttpRequestManager{
         HttpResponse<String> response;
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception e) { throw new RuntimeException(e); }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         //System.out.println(response.body());
 
@@ -375,7 +386,7 @@ public class HttpRequestManager{
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.noBody())
-                .header("Content-Type","application/json")
+                .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + token)
                 .uri(URI.create(route))
                 .build();
@@ -383,11 +394,69 @@ public class HttpRequestManager{
         HttpResponse<String> response;
         try {
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception e) { throw new RuntimeException(e); }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
 
-        if(response.statusCode() == 200) return true;
+        if (response.statusCode() == 200) return true;
 
         return false;
+    }
+
+    public boolean updatePassword(String currentPassword, String newPassword) {
+        String route = apiUrl + "/user/changePassword";
+        JSONObject json = new JSONObject();
+        json.put("mail", AuthenticationManager.getAuthenticationManager().getMail());
+        json.put("password", currentPassword);
+        json.put("newPassword", newPassword);
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + AuthenticationManager.getAuthenticationManager().getToken())
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        JSONObject answer = new JSONObject(response.body());
+
+        System.out.println(answer);
+        return answer.getBoolean("success");
+    }
+
+    public boolean forceResetPassword(String userMail, String newPassword){
+        String route = apiUrl + "/user/forceResetPassword";
+        JSONObject json = new JSONObject();
+        json.put("adminMail", AuthenticationManager.getAuthenticationManager().getMail());
+        json.put("mail", userMail);
+        json.put("newPassword", newPassword);
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + AuthenticationManager.getAuthenticationManager().getToken())
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        JSONObject answer = new JSONObject(response.body());
+
+        System.out.println(answer);
+        return answer.getBoolean("success");
     }
 }

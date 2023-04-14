@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import com.sun.javafx.scene.control.InputField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Label?>
+<VBox alignment="TOP_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="400.0" prefWidth="600.0" styleClass="background_color" stylesheets="@../../../style.css"
+      xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.tetkole.tetkole.controllers.ModeratorSceneController">
+
+    <fx:include fx:id="header" source="components/Header.fxml"/>
+
+    <VBox spacing="100" alignment="BOTTOM_CENTER" prefHeight="100.0" prefWidth="200.0">
+        <HBox alignment="CENTER">
+            <VBox alignment="CENTER">
+                <Label text="%userMail" style="-fx-text-fill: white; -fx-font-size: 20px"/>
+                <TextField fx:id="userMailInput" />
+                <Button fx:id="changePasswordButton" onAction="#onChangePassword" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%updateYourPassword" />
+            </VBox>
+        </HBox>
+
+
+    </VBox>
+
+</VBox>
