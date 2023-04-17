@@ -1,10 +1,14 @@
 package com.tetkole.tetkole.controllers;
 
 import com.tetkole.tetkole.utils.HttpRequestManager;
+import com.tetkole.tetkole.utils.SceneManager;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
+import javafx.scene.Node;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -19,6 +23,11 @@ public class ModeratorSceneController implements PropertyChangeListener, Initial
 
     @FXML
     private TextField userMailInput;
+    @FXML
+    private TextField newPassword;
+    @FXML
+    private HBox header;
+    private ResourceBundle resources;
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
@@ -27,7 +36,16 @@ public class ModeratorSceneController implements PropertyChangeListener, Initial
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        this.resources = resources;
 
+        // get the children of header component
+        ObservableList<Node> childrenOfHeader = this.header.getChildren();
+        // search for the btnHome and add a new onMouseClickListener
+        for (var child : childrenOfHeader) {
+            if (child.getId() != null && child.getId().equals("btnHome")) {
+                child.setOnMouseClicked(event -> SceneManager.getSceneManager().changeScene("HomeScene.fxml"));
+            }
+        }
     }
 
     @FXML
@@ -36,6 +54,8 @@ public class ModeratorSceneController implements PropertyChangeListener, Initial
             try {
                 String password = generatePassword(20);
                 copyToClipboard(password);
+                this.newPassword.setText(password);
+                this.newPassword.setVisible(true);
                 HttpRequestManager.getHttpRequestManagerInstance().forceResetPassword(userMailInput.getText(), password);
             }
             catch (Exception e) {

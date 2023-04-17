@@ -71,6 +71,7 @@ public class AuthenticationManager {
         this.firstname = null;
         this.lastname = null;
         this.isAuthenticated = false;
+        this.role = null;
     }
 
     public String getFirstname() {

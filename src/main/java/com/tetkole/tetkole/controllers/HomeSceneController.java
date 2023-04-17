@@ -91,6 +91,7 @@ public class HomeSceneController implements Initializable {
         vBoxButtons.getChildren().remove(labelUserName);
         vBoxButtons.getChildren().add(btnLogin);
         vBoxButtons.getChildren().add(btnRegister);
+        vBoxButtons.getChildren().remove(btnModerator);
         updateCorpusListServer();
     }
 
@@ -174,8 +175,9 @@ public class HomeSceneController implements Initializable {
                     AuthenticationManager.getAuthenticationManager().getFirstname() + " " +
                             AuthenticationManager.getAuthenticationManager().getLastname()
             );
-            System.out.println(AuthenticationManager.getAuthenticationManager().getRole());
-            if (!AuthenticationManager.getAuthenticationManager().getRole().equals("MODERATOR")) {
+            String role = AuthenticationManager.getAuthenticationManager().getRole();
+            System.out.println(role);
+            if (!role.equals("MODERATOR") && !role.equals("ADMIN")) {
                 vBoxButtons.getChildren().remove(btnModerator);
             }
 
