@@ -3,6 +3,7 @@ package com.tetkole.tetkole.controllers;
 import com.tetkole.tetkole.utils.AuthenticationManager;
 import com.tetkole.tetkole.utils.LoadingManager;
 import com.tetkole.tetkole.utils.SceneManager;
+import com.tetkole.tetkole.utils.enums.ToastTypes;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -34,18 +35,28 @@ public class LoginSceneController implements Initializable {
             LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
 
             new Thread(() -> {
-                JSONObject response = AuthenticationManager.getAuthenticationManager().login(mailInput.getText(), passwordInput.getText());
-                if (response.getBoolean("success")) {
-                    Platform.runLater(() ->
-                            SceneManager.getSceneManager().changeScene("HomeScene.fxml")
+                JSONObject response = new JSONObject();
+                try {
+                    response = AuthenticationManager.getAuthenticationManager().login(mailInput.getText(), passwordInput.getText());
+                } catch (RuntimeException e) {
+                    LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
+                }
+
+                if (!response.isEmpty() && response.getBoolean("success")) {
+                    Platform.runLater(() -> {
+                                SceneManager.getSceneManager().changeScene("HomeScene.fxml");
+                                SceneManager.getSceneManager().sendToast("Login Successful", ToastTypes.SUCCESS);
+                            }
                     );
                 } else {
                     System.out.println("Login Failed");
-                    System.out.println(response.get("body"));
+                    String wrongCredentialsText = SceneManager.getSceneManager().getResourceString("ToastWrongUserCredentials");
+                    SceneManager.getSceneManager().sendToast(wrongCredentialsText, ToastTypes.ERROR);
                 }
 
                 LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
                 System.out.println("Login Done");
+
             }).start();
         }
     }

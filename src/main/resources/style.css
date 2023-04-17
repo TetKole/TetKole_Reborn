@@ -73,6 +73,17 @@
     -fx-cursor: hand;
 }
 
+.toast {
+    -fx-max-width: 500;
+    -fx-border-radius: 8;
+    -fx-background-radius: 9;
+    -fx-border-color: white;
+    -fx-border-width: 1;
+    -fx-padding: 5px;
+    -fx-border-insets: 5px;
+    -fx-background-insets: 5px;
+}
+
 /* ------------------------------------------ COLORS ------------------------------------------- */
 .color_white {
     -fx-color: #000000;
