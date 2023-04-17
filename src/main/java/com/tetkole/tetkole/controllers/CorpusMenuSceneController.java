@@ -167,7 +167,7 @@ public class CorpusMenuSceneController implements Initializable {
             line.getChildren().add(btn);
             line.getChildren().add(btnEdit);
 
-            this.vBoxFieldAudios.getChildren().add(line);
+            this.vBoxImages.getChildren().add(line);
         }
 
         Button btn = new Button(resources.getString("AddImage"));
@@ -226,7 +226,7 @@ public class CorpusMenuSceneController implements Initializable {
             line.getChildren().add(btn);
             line.getChildren().add(btnEdit);
 
-            this.vBoxFieldAudios.getChildren().add(line);
+            this.vBoxVideos.getChildren().add(line);
         }
 
         Button btn = new Button(resources.getString("AddVideo"));
