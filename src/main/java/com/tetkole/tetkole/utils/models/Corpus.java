@@ -1,8 +1,8 @@
 package com.tetkole.tetkole.utils.models;
 
 import com.tetkole.tetkole.utils.FileManager;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
+import com.tetkole.tetkole.utils.SceneManager;
+import com.tetkole.tetkole.utils.enums.ToastTypes;
 import javafx.stage.FileChooser;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -116,10 +116,11 @@ public class Corpus {
                 this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
                 this.writeCorpusModif();
             }
+            String message = SceneManager.getSceneManager().getResourceString("FileSuccessfullyAdded");
+            SceneManager.getSceneManager().sendToast(message, ToastTypes.SUCCESS);
         } else {
-            Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
-            Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
-            alert.showAndWait();
+            String message = SceneManager.getSceneManager().getResourceString("FileCouldNotBeLoaded");
+            SceneManager.getSceneManager().sendToast(message, ToastTypes.ERROR);
         }
     }
 
@@ -155,10 +156,11 @@ public class Corpus {
                 this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
                 this.writeCorpusModif();
             }
+            String message = SceneManager.getSceneManager().getResourceString("FileSuccessfullyAdded");
+            SceneManager.getSceneManager().sendToast(message, ToastTypes.SUCCESS);
         } else {
-            Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
-            Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
-            alert.showAndWait();
+            String message = SceneManager.getSceneManager().getResourceString("FileCouldNotBeLoaded");
+            SceneManager.getSceneManager().sendToast(message, ToastTypes.ERROR);
         }
     }
 
@@ -195,10 +197,11 @@ public class Corpus {
                 this.corpus_modif.getJSONObject("added").getJSONArray("documents").put(modif);
                 this.writeCorpusModif();
             }
+            String message = SceneManager.getSceneManager().getResourceString("FileSuccessfullyAdded");
+            SceneManager.getSceneManager().sendToast(message, ToastTypes.SUCCESS);
         } else {
-            Label audioErrorLabel = new Label("Ce fichier ne peut pas être chargé");
-            Alert alert = new Alert(Alert.AlertType.ERROR, audioErrorLabel.getText());
-            alert.showAndWait();
+            String message = SceneManager.getSceneManager().getResourceString("FileCouldNotBeLoaded");
+            SceneManager.getSceneManager().sendToast(message, ToastTypes.ERROR);
         }
     }
 

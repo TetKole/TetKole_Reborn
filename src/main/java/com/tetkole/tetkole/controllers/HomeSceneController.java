@@ -2,6 +2,7 @@ package com.tetkole.tetkole.controllers;
 
 import com.tetkole.tetkole.utils.*;
 import com.tetkole.tetkole.utils.models.Corpus;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -37,6 +38,9 @@ public class HomeSceneController implements Initializable {
     private Button btnRegister;
 
     @FXML
+    private Button btnModerator;
+
+    @FXML
     private Button btnDisconnect;
 
     private List<Corpus> corpusList;
@@ -45,22 +49,6 @@ public class HomeSceneController implements Initializable {
 
     @FXML
     private StackPane rootPane;
-    // how to use LoadingManager
-    /*
-    LoadingManager loading = LoadingManager.getLoadingManagerInstance();
-        loading.displayLoading(rootPane);
-        new Thread(() -> {
-        try {
-            System.out.println("start wating");
-            Thread.sleep(1000);
-            loading.hideLoading(rootPane);
-            System.out.println("end wating");
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }).start();
-    */
-
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -94,12 +82,16 @@ public class HomeSceneController implements Initializable {
     }
 
     @FXML
+    public void onGoToModerator() {SceneManager.getSceneManager().changeScene("ModeratorScene.fxml");}
+
+    @FXML
     public void onDisconnect() {
         AuthenticationManager.getAuthenticationManager().disconnect();
         vBoxButtons.getChildren().remove(btnDisconnect);
         vBoxButtons.getChildren().remove(labelUserName);
         vBoxButtons.getChildren().add(btnLogin);
         vBoxButtons.getChildren().add(btnRegister);
+        vBoxButtons.getChildren().remove(btnModerator);
         updateCorpusListServer();
     }
 
@@ -183,62 +175,80 @@ public class HomeSceneController implements Initializable {
                     AuthenticationManager.getAuthenticationManager().getFirstname() + " " +
                             AuthenticationManager.getAuthenticationManager().getLastname()
             );
+            String role = AuthenticationManager.getAuthenticationManager().getRole();
+            System.out.println(role);
+            if (!role.equals("MODERATOR") && !role.equals("ADMIN")) {
+                vBoxButtons.getChildren().remove(btnModerator);
+            }
+
         } else {
             vBoxButtons.getChildren().remove(btnDisconnect);
             vBoxButtons.getChildren().remove(labelUserName);
             vBoxCorpusServer.getChildren().clear();
+            vBoxButtons.getChildren().remove(btnModerator);
         }
     }
 
     private void clone(String token, JSONObject corpusJSON) {
-        try {
-            // Get corpus_state.json from server
-            JSONObject responseClone = HttpRequestManager.getHttpRequestManagerInstance().getCorpusState(token, corpusJSON.getInt("corpusId"));
-            String corpusName = corpusJSON.getString("name");
+        // TODO: il faudrais vérifier que le corpus n'est pas déjà en local
 
-            // TODO faire en sorte si les fichiers ne se télécharge pas en entier quand la co crash
-            JSONObject corpus_content = responseClone.getJSONObject("body");
-            // Create folders for new corpus
-            Corpus.createCorpus(corpusName);
+        System.out.println("Start Clone");
+        LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
 
-            // Create corpus_state.json
-            File corpus_state = FileManager.getFileManager().createFile(corpusName, "corpus_state.json");
-            FileManager.getFileManager().writeJSONFile(corpus_state, corpus_content);
+        new Thread(() -> {
+            try {
+                // Get corpus_state.json from server
+                JSONObject responseClone = HttpRequestManager.getHttpRequestManagerInstance().getCorpusState(token, corpusJSON.getInt("corpusId"));
+                String corpusName = corpusJSON.getString("name");
 
-            // Pour chaque document, télécharger le doc et le move dans le dossier de son type et créer un dossier dans Annotation
-            JSONArray documents = corpus_content.getJSONArray("documents");
+                // TODO faire en sorte si les fichiers ne se télécharge pas en entier quand la co crash
+                JSONObject corpus_content = responseClone.getJSONObject("body");
+                // Create folders for new corpus
+                Corpus.createCorpus(corpusName);
 
-            for (int i = 0; i < documents.length(); i++) {
-                JSONObject document_json = documents.getJSONObject(i);
-                FileManager.getFileManager().downloadDocument(
-                        document_json.getString("type"),
-                        corpusName,
-                        document_json.getString("name")
-                );
-                JSONArray annotations = document_json.getJSONArray("annotations");
-                for (int j = 0; j < annotations.length(); j++) {
-                    JSONObject annotation_json = annotations.getJSONObject(j);
-                    FileManager.getFileManager().downloadAnnotation(
+                // Create corpus_state.json
+                File corpus_state = FileManager.getFileManager().createFile(corpusName, "corpus_state.json");
+                FileManager.getFileManager().writeJSONFile(corpus_state, corpus_content);
+
+                // Pour chaque document, télécharger le doc et le move dans le dossier de son type et créer un dossier dans Annotation
+                JSONArray documents = corpus_content.getJSONArray("documents");
+
+                for (int i = 0; i < documents.length(); i++) {
+                    JSONObject document_json = documents.getJSONObject(i);
+                    FileManager.getFileManager().downloadDocument(
+                            document_json.getString("type"),
                             corpusName,
-                            document_json.getString("name"),
-                            annotation_json.getString("name")
+                            document_json.getString("name")
                     );
+                    JSONArray annotations = document_json.getJSONArray("annotations");
+                    for (int j = 0; j < annotations.length(); j++) {
+                        JSONObject annotation_json = annotations.getJSONObject(j);
+                        FileManager.getFileManager().downloadAnnotation(
+                                corpusName,
+                                document_json.getString("name"),
+                                annotation_json.getString("name")
+                        );
+                    }
+                    // TODO revoir le système des annotation écrites
+                    if(document_json.getString("type").equals(Corpus.folderNameFieldAudio)) {
+                        String fieldAudioJsonName = document_json.getString("name").split("\\.")[0] + ".json";
+                        File fieldAudioJson = FileManager.getFileManager().createFile(corpusName + "/" + Corpus.folderNameFieldAudio, fieldAudioJsonName);
+                        JSONObject fieldAudioJsonContent = new JSONObject();
+                        fieldAudioJsonContent.put("fileName", document_json.getString("name"));
+                        fieldAudioJsonContent.put("description", "");
+                        FileManager.getFileManager().writeJSONFile(fieldAudioJson, fieldAudioJsonContent);
+                    }
                 }
-                // TODO revoir le système des annotation écrites
-                if(document_json.getString("type").equals(Corpus.folderNameFieldAudio)) {
-                    String fieldAudioJsonName = document_json.getString("name").split("\\.")[0] + ".json";
-                    File fieldAudioJson = FileManager.getFileManager().createFile(corpusName + "/" + Corpus.folderNameFieldAudio, fieldAudioJsonName);
-                    JSONObject fieldAudioJsonContent = new JSONObject();
-                    fieldAudioJsonContent.put("fileName", document_json.getString("name"));
-                    fieldAudioJsonContent.put("description", "");
-                    FileManager.getFileManager().writeJSONFile(fieldAudioJson, fieldAudioJsonContent);
-                }
+
+                // Update corpus list
+                Platform.runLater(this::updateCorpusList);
+
+                LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
 
-            // Update corpus list
-            updateCorpusList();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+            System.out.println("Clone Done");
+        }).start();
     }
 }

@@ -13,81 +13,85 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="container" prefHeight="400.0" prefWidth="600.0" styleClass="background_color" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.AudioEditSceneController">
-   <top>
-       <AnchorPane fx:id="topAnchorPane">
-           <fx:include fx:id="header" source="components/Header.fxml" AnchorPane.rightAnchor="0.0"/>
-       </AnchorPane>
-   </top>
 
-    <center>
+<?import javafx.scene.layout.StackPane?>
+<StackPane fx:id="rootPane" styleClass="background_color" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.AudioEditSceneController">
+    <BorderPane fx:id="container" prefHeight="400.0" prefWidth="600.0" styleClass="background_color" xmlns="http://javafx.com/javafx">
+       <top>
+           <AnchorPane fx:id="topAnchorPane">
+               <fx:include fx:id="header" source="components/Header.fxml" AnchorPane.rightAnchor="0.0"/>
+           </AnchorPane>
+       </top>
+
+        <center>
 
 
 
-        <AnchorPane fx:id="centerAnchorPane" VBox.vgrow="ALWAYS">
-            <!-- placer ici tous les élements de la fenetre -->
-            <WaveVisualization fx:id="waveVisualization" onScroll="#onScroll"
-                               AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0"/>
-            <AnnotationsVisualization fx:id="annotationsVisualization"
-                                      AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"/>
+            <AnchorPane fx:id="centerAnchorPane" VBox.vgrow="ALWAYS">
+                <!-- placer ici tous les élements de la fenetre -->
+                <WaveVisualization fx:id="waveVisualization" onScroll="#onScroll"
+                                   AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0"/>
+                <AnnotationsVisualization fx:id="annotationsVisualization"
+                                          AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"/>
 
-            <!-- side panel -->
-            <AnchorPane fx:id="recordAnchorPane" prefHeight="460.0" prefWidth="239.0" style="-fx-background-color: #495461;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <!-- side panel -->
+                <AnchorPane fx:id="recordAnchorPane" prefHeight="460.0" prefWidth="239.0" style="-fx-background-color: #495461;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
 
-                <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #495461;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <VBox fx:id="vBoxPane" alignment="TOP_CENTER" prefHeight="361.0" prefWidth="166.0" style="-fx-background-color: #495461; -fx-padding: 30 0 50 0;">
-                        <Label text="%Records" textFill="WHITE" style="-fx-font-size: 16;"/>
-                    </VBox>
-                </ScrollPane>
+                    <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #495461;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <VBox fx:id="vBoxPane" alignment="TOP_CENTER" prefHeight="361.0" prefWidth="166.0" style="-fx-background-color: #495461; -fx-padding: 30 0 50 0;">
+                            <Label text="%Records" textFill="WHITE" style="-fx-font-size: 16;"/>
+                        </VBox>
+                    </ScrollPane>
+
+                </AnchorPane>
+                <!-- end of side panel -->
 
             </AnchorPane>
-            <!-- end of side panel -->
 
-        </AnchorPane>
+        </center>
 
-    </center>
+        <bottom>
+            <HBox fx:id="bottomHbox" alignment="CENTER" spacing="5">
+                <Button fx:id="btnPlayPause" contentDisplay="TOP" text="%Play" onAction="#onPlayPauseButtonClick" prefWidth="150" styleClass="buttons, blue">
+                    <graphic>
+                        <ImageView fitHeight="50" fitWidth="50">
+                            <Image url="@../../../images/play.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Button fx:id="btnRecord" contentDisplay="TOP" text="%StartRecord" onAction="#onRecordButtonClick" prefWidth="150" styleClass="buttons, blue">
+                    <graphic>
+                        <ImageView fitHeight="50" fitWidth="50">
+                            <Image url="@../../../images/record.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+                <Button fx:id="btnDisplaySidePane" contentDisplay="TOP" text="%ShowRecords" prefWidth="150" styleClass="buttons, blue">
+                    <graphic>
+                        <ImageView fitHeight="50" fitWidth="50">
+                            <Image url="@../../../images/music.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
 
-    <bottom>
-        <HBox fx:id="bottomHbox" alignment="CENTER" spacing="5">
-            <Button fx:id="btnPlayPause" contentDisplay="TOP" text="%Play" onAction="#onPlayPauseButtonClick" prefWidth="150" styleClass="buttons, blue">
-                <graphic>
-                    <ImageView fitHeight="50" fitWidth="50">
-                        <Image url="@../../../images/play.png" />
-                    </ImageView>
-                </graphic>
-            </Button>
-            <Button fx:id="btnRecord" contentDisplay="TOP" text="%StartRecord" onAction="#onRecordButtonClick" prefWidth="150" styleClass="buttons, blue">
-                <graphic>
-                    <ImageView fitHeight="50" fitWidth="50">
-                        <Image url="@../../../images/record.png" />
-                    </ImageView>
-                </graphic>
-            </Button>
-            <Button fx:id="btnDisplaySidePane" contentDisplay="TOP" text="%ShowRecords" prefWidth="150" styleClass="buttons, blue">
-                <graphic>
-                    <ImageView fitHeight="50" fitWidth="50">
-                        <Image url="@../../../images/music.png" />
-                    </ImageView>
-                </graphic>
-            </Button>
+                <Button fx:id="btnEditDescription" contentDisplay="TOP" text="%EditDescription" onAction="#onEditDescriptionButtonClick" prefWidth="150" styleClass="buttons, blue">
+                    <graphic>
+                        <ImageView fitHeight="50" fitWidth="50">
+                            <Image url="@../../../images/option.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
 
-            <Button fx:id="btnEditDescription" contentDisplay="TOP" text="%EditDescription" onAction="#onEditDescriptionButtonClick" prefWidth="150" styleClass="buttons, blue">
-                <graphic>
-                    <ImageView fitHeight="50" fitWidth="50">
-                        <Image url="@../../../images/option.png" />
-                    </ImageView>
-                </graphic>
-            </Button>
-
-            <Button fx:id="btnChangeTire" contentDisplay="TOP" text="1" onAction="#onChangeTireButtonClick" prefWidth="150" styleClass="buttons, blue">
-                <graphic>
-                    <ImageView fitHeight="50" fitWidth="50">
-                        <Image url="@../../../images/barsUp.png" />
-                    </ImageView>
-                </graphic>
-            </Button>
-        </HBox>
-    </bottom>
+                <Button fx:id="btnChangeTire" contentDisplay="TOP" text="1" onAction="#onChangeTireButtonClick" prefWidth="150" styleClass="buttons, blue">
+                    <graphic>
+                        <ImageView fitHeight="50" fitWidth="50">
+                            <Image url="@../../../images/barsUp.png" />
+                        </ImageView>
+                    </graphic>
+                </Button>
+            </HBox>
+        </bottom>
 
 
-</BorderPane>
+    </BorderPane>
+</StackPane>

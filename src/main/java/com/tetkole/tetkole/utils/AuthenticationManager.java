@@ -2,8 +2,6 @@ package com.tetkole.tetkole.utils;
 
 import org.json.JSONObject;
 
-import java.io.IOException;
-
 public class AuthenticationManager {
 
     private static AuthenticationManager authenticationManagerInstance;
@@ -12,10 +10,14 @@ public class AuthenticationManager {
     private String firstname;
     private String lastname;
     private String mail;
+
+    private String role;
+
     private int userId;
     private boolean isAuthenticated = false;
 
-    private AuthenticationManager() { }
+    private AuthenticationManager() {
+    }
 
     public static AuthenticationManager getAuthenticationManager() {
         return authenticationManagerInstance;
@@ -26,9 +28,14 @@ public class AuthenticationManager {
     }
 
 
-    public JSONObject login(String mail, String password) throws Exception {
+    public JSONObject login(String mail, String password) {
 
-        JSONObject response = HttpRequestManager.getHttpRequestManagerInstance().sendPostLogin(mail, password);
+        JSONObject response = null;
+        try {
+            response = HttpRequestManager.getHttpRequestManagerInstance().sendPostLogin(mail, password);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         JSONObject body = response.getJSONObject("body");
 
@@ -38,14 +45,19 @@ public class AuthenticationManager {
             this.firstname = body.getString("firstname");
             this.lastname = body.getString("lastname");
             this.mail = body.getString("mail");
+            this.role = body.getString("role");
             this.isAuthenticated = true;
         }
 
         return response;
     }
 
-    public JSONObject register(String firstname, String lastname, String mail, String password) throws Exception {
-        return HttpRequestManager.getHttpRequestManagerInstance().sendPostRegister(firstname, lastname, password, mail);
+    public JSONObject register(String firstname, String lastname, String mail, String password) {
+        try {
+            return HttpRequestManager.getHttpRequestManagerInstance().sendPostRegister(firstname, lastname, password, mail);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean isAuthenticated() {
@@ -59,6 +71,7 @@ public class AuthenticationManager {
         this.firstname = null;
         this.lastname = null;
         this.isAuthenticated = false;
+        this.role = null;
     }
 
     public String getFirstname() {
@@ -73,5 +86,15 @@ public class AuthenticationManager {
         return this.JWT_TOKEN;
     }
 
-    public int getUserId() { return userId; }
+    public int getUserId() {
+        return userId;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public String getRole() {
+        return role;
+    }
 }

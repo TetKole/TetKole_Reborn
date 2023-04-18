@@ -3,8 +3,11 @@ package com.tetkole.tetkole.utils.annotations;
 import com.tetkole.tetkole.components.CustomButton;
 import com.tetkole.tetkole.controllers.AudioEditSceneController;
 import com.tetkole.tetkole.utils.models.Annotation;
+import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -20,7 +23,7 @@ public class AnnotationsVisualization extends Pane {
     private static double annotationSize = 15;
     private final List<Rectangle> annotationsRectangles = new ArrayList<>();
     private final List<HBox> annotationsRectanglesMenu = new ArrayList<>();
-    private HBox actualAnnotationMenu = null;
+    private VBox actualAnnotationMenu = null;
     private double ratioAudio;
     private double beginAudio = 0;
     private double endAudio = 0;
@@ -122,34 +125,63 @@ public class AnnotationsVisualization extends Pane {
         HBox hbox = new HBox(btnPlayPause, btnRecord, btnDelete, btnEdit, btnClose);
         hbox.setSpacing(3);
         hbox.setPadding(new Insets(3));
-        hbox.setStyle(
+        hbox.setAlignment(Pos.CENTER);
+
+        Label annotationLabelName = new Label(annotation.getName());
+        annotationLabelName.setMaxWidth(this.getWidth());
+        annotationLabelName.setAlignment(Pos.CENTER);
+
+        VBox vbox = new VBox(hbox, annotationLabelName);
+        vbox.setPadding(new Insets(3));
+        vbox.setStyle(
                 "-fx-background-color: #FFFFFF;"
                         +"-fx-border-style: solid inside;"
                         +"-fx-border-width: 2;"
-                        +"-fx-border-color: black;"
+                        +"-fx-border-color: #5fb8ff;"
+                        +"-fx-border-radius: 10;"
+                        +"-fx-background-radius: 10;"
         );
 
+        ChangeListener listenerWidth = (observable, oldValue, newValue) -> {
+            this.getChildren().remove(vbox);
+            double x_value = r.getX();
+            vbox.setTranslateX(x_value + (double)newValue >= this.getWidth() ? this.getWidth() - (double)newValue : x_value );
+            this.getChildren().add(vbox);
+        };
+
+        ChangeListener listenerHeight = (observable, oldValue, newValue) -> {
+            this.getChildren().remove(vbox);
+            double y_value = r.getY() - vbox.getHeight();
+            vbox.setTranslateY(y_value > r.getHeight() ? y_value : annotationSize);
+            this.getChildren().add(vbox);
+        };
+
+        vbox.widthProperty().addListener(listenerWidth);
+        vbox.heightProperty().addListener(listenerHeight);
+
         r.setOnMousePressed(event -> {
-            //Go to annotation
+            /*Go to annotation
             if(event.getClickCount() == 2){
                 audioEditSceneController.goToAnnotation(annotation.getStart(), annotation.getEnd());
-            }
-            if(this.getChildren().contains(hbox)){
-                this.getChildren().remove(hbox);
+            }*/
+            if(this.getChildren().contains(vbox)){
+                this.getChildren().remove(vbox);
                 actualAnnotationMenu = null;
             }else{
                 if(actualAnnotationMenu != null){
                     this.getChildren().remove(actualAnnotationMenu);
                 }
-                this.getChildren().add(hbox);
-                actualAnnotationMenu = hbox;
-                hbox.setTranslateX(r.getX());
-                hbox.setTranslateY(0.0);
+                this.getChildren().add(vbox);
+                actualAnnotationMenu = vbox;
+                double x_value = r.getX();
+                double right_x_value = vbox.getWidth() == 0 ? 206.0 : vbox.getWidth();
+                vbox.setTranslateX(x_value + right_x_value >= this.getWidth() ? this.getWidth() - right_x_value : x_value );
+                double y_value = r.getY() - vbox.getHeight();
+                vbox.setTranslateY(y_value >= r.getHeight() ? y_value : annotationSize);
             }
         });
 
         annotationsRectanglesMenu.add(hbox);
-
         return r;
     }
 

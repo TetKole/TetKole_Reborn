@@ -1,5 +1,7 @@
 package com.tetkole.tetkole.controllers;
 
+import com.tetkole.tetkole.utils.AuthenticationManager;
+import com.tetkole.tetkole.utils.HttpRequestManager;
 import com.tetkole.tetkole.utils.SceneManager;
 
 import com.tetkole.tetkole.utils.StaticEnvVariable;
@@ -8,8 +10,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.*;
@@ -27,10 +31,20 @@ public class SettingsSceneController implements Initializable {
     @FXML
     private HBox header;
 
+    @FXML
+    private VBox vBoxUpdatePassword;
+
+    @FXML
+    private PasswordField currentPasswordInput;
+
+    @FXML
+    private PasswordField newPasswordInput;
+
     private int lastMax;
 
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
+        isConnected();
         lastMax = StaticEnvVariable.zoomRange;
         rangeInput.setText(String.valueOf(StaticEnvVariable.zoomRange));
 
@@ -72,6 +86,26 @@ public class SettingsSceneController implements Initializable {
             lastMax = StaticEnvVariable.zoomRange;
         } else {
             rangeInput.setText(String.valueOf(lastMax));
+        }
+    }
+
+    @FXML
+    public void onUpdatePassword() {
+        if (currentPasswordInput.getText()!="" && newPasswordInput.getText()!="") {
+            try {
+                HttpRequestManager.getHttpRequestManagerInstance().updatePassword(currentPasswordInput.getText(), newPasswordInput.getText());
+                currentPasswordInput.setText("");
+                newPasswordInput.setText("");
+            }
+            catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    }
+
+    public void isConnected() {
+        if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) {
+            vBoxUpdatePassword.setVisible(false);
         }
     }
 }

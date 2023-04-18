@@ -7,28 +7,31 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.control.PasswordField?>
-<VBox alignment="TOP_RIGHT" styleClass="background_color" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.LoginSceneController">
+<?import javafx.scene.layout.StackPane?>
+<StackPane fx:id="rootPane" styleClass="background_color" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.LoginSceneController">
+    <VBox alignment="TOP_RIGHT" styleClass="background_color" xmlns:fx="http://javafx.com/fxml">
 
-    <fx:include fx:id="header" source="components/Header.fxml"/>
+        <fx:include fx:id="header" source="components/Header.fxml"/>
 
-    <HBox alignment="TOP_CENTER" spacing="100.0" >
+        <HBox alignment="TOP_CENTER" spacing="100.0" >
 
-        <VBox alignment="TOP_CENTER" spacing="30.0">
+            <VBox alignment="TOP_CENTER" spacing="30.0">
 
-            <Label text="%Login" style="-fx-text-fill: white; -fx-font-size: 50px" />
+                <Label text="%Login" style="-fx-text-fill: white; -fx-font-size: 50px" />
 
-            <VBox>
-                <Label text="%Mail" style="-fx-text-fill: white; -fx-font-size: 20px"/>
-                <TextField fx:id="mailInput" promptText="%Mail"/>
+                <VBox>
+                    <Label text="%Mail" style="-fx-text-fill: white; -fx-font-size: 20px"/>
+                    <TextField fx:id="mailInput" promptText="%Mail"/>
+                </VBox>
+                <VBox>
+                    <Label text="%Password" style="-fx-text-fill: white; -fx-font-size: 20px"/>
+                    <PasswordField fx:id="passwordInput" promptText="%Password" />
+                </VBox>
+
+                <Button onAction="#onLogin" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Login" />
+                <Button onAction="#onGoToRegister" style="-fx-text-fill: white;" prefHeight="60" prefWidth="150" styleClass="textButtons, noColor" text="%Register" />
             </VBox>
-            <VBox>
-                <Label text="%Password" style="-fx-text-fill: white; -fx-font-size: 20px"/>
-                <PasswordField fx:id="passwordInput" promptText="%Password" />
-            </VBox>
 
-            <Button onAction="#onLogin" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Login" />
-            <Button onAction="#onGoToRegister" style="-fx-text-fill: white;" prefHeight="60" prefWidth="150" styleClass="textButtons, noColor" text="%Register" />
-        </VBox>
-
-    </HBox>
-</VBox>
+        </HBox>
+    </VBox>
+</StackPane>

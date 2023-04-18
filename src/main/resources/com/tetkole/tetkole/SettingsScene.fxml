@@ -4,24 +4,43 @@
 <?import javafx.scene.layout.*?>
 
 <?import com.sun.javafx.scene.control.InputField?>
-<VBox alignment="TOP_RIGHT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="400.0" prefWidth="600.0" styleClass="background_color" stylesheets="@../../../style.css"
-      xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.tetkole.tetkole.controllers.SettingsSceneController">
+<StackPane styleClass="background_color"
+           xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.tetkole.tetkole.controllers.SettingsSceneController">
+   <BorderPane>
 
-   <fx:include fx:id="header" source="components/Header.fxml"/>
+      <top>
+         <AnchorPane>
+            <fx:include fx:id="header" source="components/Header.fxml" AnchorPane.rightAnchor="0.0"/>
+         </AnchorPane>
+      </top>
 
-   <VBox spacing="100" alignment="BOTTOM_CENTER" prefHeight="100.0" prefWidth="200.0">
-      <ComboBox fx:id="languagesComboBox" onAction="#onNewLanguageSelected" prefWidth="150.0"/>
-      <VBox alignment="CENTER" spacing="50">
-         <VBox alignment="CENTER">
-            <Label text="%RangeValue" style="-fx-text-fill: white; -fx-font-size: 20px"/>
-            <Label text="%LimitRange" style="-fx-text-fill: white; -fx-font-size: 15px"/>
+      <center>
+         <VBox spacing="100" alignment="BOTTOM_CENTER" prefHeight="100.0" prefWidth="200.0">
+            <ComboBox fx:id="languagesComboBox" onAction="#onNewLanguageSelected" prefWidth="150.0"/>
+            <VBox alignment="CENTER" spacing="50">
+               <VBox alignment="CENTER">
+                  <Label text="%RangeValue" style="-fx-text-fill: white; -fx-font-size: 20px"/>
+                  <Label text="%LimitRange" style="-fx-text-fill: white; -fx-font-size: 15px"/>
+               </VBox>
+               <HBox alignment="CENTER">
+                  <TextField onAction="#OnChangeRange" fx:id="rangeInput" promptText="%RangeValue" />
+               </HBox>
+
+               <HBox alignment="CENTER"  >
+                  <VBox alignment="CENTER" fx:id="vBoxUpdatePassword">
+                     <Label text="%currentPassword" fx:id="currentPasswordLabel" style="-fx-text-fill: white; -fx-font-size: 20px"/>
+                     <PasswordField onAction="#OnChangeRange" fx:id="currentPasswordInput" />
+
+                     <Label text="%newPassword" fx:id="newPasswordLabel" style="-fx-text-fill: white; -fx-font-size: 20px"/>
+                     <PasswordField onAction="#OnChangeRange" fx:id="newPasswordInput" />
+
+                     <Button fx:id="updatePasswordButton" onAction="#onUpdatePassword" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%updateYourPassword" />
+                  </VBox>
+               </HBox>
+            </VBox>
          </VBox>
-         <HBox alignment="CENTER">
-            <TextField onAction="#OnChangeRange" fx:id="rangeInput" promptText="%RangeValue" />
-         </HBox>
-      </VBox>
-   </VBox>
+      </center>
 
-</VBox>
+   </BorderPane>
+</StackPane>
