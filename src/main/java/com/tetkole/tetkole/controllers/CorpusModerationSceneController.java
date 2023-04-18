@@ -75,6 +75,7 @@ public class CorpusModerationSceneController implements Initializable {
         col1.setPercentWidth(25);
         for (int i = 0; i < 4; i++) {
             usersList.getColumnConstraints().add(col1);
+            labels.getColumnConstraints().add(col1);
         }
         usersList.setVgap(10);
 
@@ -100,21 +101,29 @@ public class CorpusModerationSceneController implements Initializable {
     }
 
     private void addUserLine(User user) {
+
         Label userName = new Label(user.getName());
         userName.setStyle("-fx-text-fill: white;");
-        userName.setTextAlignment(TextAlignment.RIGHT);
+        VBox userNameVbox = new VBox(userName);
+        userNameVbox.setAlignment(Pos.CENTER);
+
         Label email = new Label(user.getEmail());
         email.setStyle("-fx-text-fill: white;");
+        VBox emailVbox = new VBox(email);
+        emailVbox.setAlignment(Pos.CENTER);
+
         Label role = new Label(user.getRole());
         role.setStyle("-fx-text-fill: white;");
+        VBox roleVbox = new VBox(role);
+        roleVbox.setAlignment(Pos.CENTER);
 
         CustomButton btnDelete = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/error.png")).toExternalForm());
         VBox actions = new VBox(btnDelete);
         actions.setAlignment(Pos.CENTER);
 
-        usersList.addColumn(0, userName);
-        usersList.addColumn(1, email);
-        usersList.addColumn(2, role);
+        usersList.addColumn(0, userNameVbox);
+        usersList.addColumn(1, emailVbox);
+        usersList.addColumn(2, roleVbox);
         usersList.addColumn(3, actions);
     }
 }

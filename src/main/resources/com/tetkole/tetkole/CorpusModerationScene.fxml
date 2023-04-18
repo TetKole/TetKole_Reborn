@@ -22,10 +22,10 @@
                     <Label fx:id="corpusTitle" textFill="WHITE" style="-fx-font-size: 100px; -fx-text-fill: white;"/>
 
                     <GridPane fx:id="labels" alignment="CENTER" prefWidth="800.0">
-                        <Label text="%Name" style="-fx-text-fill: white;" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-                        <Label text="%Mail" style="-fx-text-fill: white;" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                        <Label text="%Role" style="-fx-text-fill: white;" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
-                        <Label text="%Actions" style="-fx-text-fill: white;" GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+                        <VBox alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0"><Label text="%Name" style="-fx-text-fill: white;" /></VBox>
+                        <VBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="0"><Label text="%Mail" style="-fx-text-fill: white;" /></VBox>
+                        <VBox alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="0"><Label text="%Role" style="-fx-text-fill: white;" /></VBox>
+                        <VBox alignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="0"><Label text="%Actions" style="-fx-text-fill: white;" /></VBox>
                     </GridPane>
 
                     <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: #495461;">
