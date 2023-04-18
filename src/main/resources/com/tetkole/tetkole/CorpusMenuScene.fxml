@@ -20,11 +20,11 @@
         </top>
 
         <center>
-            <VBox alignment="TOP_CENTER" spacing="100.0" >
+            <VBox fx:id="vBoxTopButtonsContainer" alignment="TOP_CENTER" spacing="100.0" >
 
                 <Label fx:id="corpusName" style="-fx-text-fill: white; -fx-font-size: 50px"/>
 
-                <HBox alignment="TOP_CENTER" spacing="10.0" >
+                <HBox fx:id="hboxTopButtons" alignment="TOP_CENTER" spacing="10.0" >
                     <VBox alignment="TOP_CENTER" spacing="5" >
                         <Button onAction="#onClickPush" prefHeight="60" prefWidth="150" styleClass="buttons, blue" text="%Push"/>
                         <Label fx:id="loadingLabelPush" style="-fx-text-fill: white; -fx-font-size: 15px;" text="%Loading" visible="false"/>
@@ -33,7 +33,8 @@
                         <Button onAction="#pullCorpus" prefHeight="60" prefWidth="150" styleClass="buttons, blue" text="%Pull"/>
                         <Label fx:id="loadingLabelPull" style="-fx-text-fill: white; -fx-font-size: 15px;" text="%Loading" visible="false"/>
                     </VBox>
-                    <Button onAction="#goToVersionning" prefHeight="40" prefWidth="150" styleClass="buttons, blue" text="%Versioning"/>
+                    <Button onAction="#goToVersionning" prefHeight="60" prefWidth="150" styleClass="buttons, blue" text="%Versioning"/>
+                    <Button fx:id="goToModerationBtn" onAction="#goToModeration" prefHeight="60" prefWidth="150" styleClass="buttons, orange" text="%goToModerator"/>
                 </HBox>
 
 

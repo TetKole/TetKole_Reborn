@@ -13,7 +13,7 @@
 
         <Label text="TètKole" style="-fx-text-fill: white; -fx-font-size: 100px" />
 
-        <HBox alignment="TOP_CENTER" spacing="100.0" >
+        <HBox fx:id="mainContainer" alignment="TOP_CENTER" spacing="100.0" >
 
             <VBox fx:id="vBoxButtons" alignment="TOP_CENTER" spacing="30.0">
                 <Label style="-fx-font-size: 20;" text="%CreateACorpus" textFill="WHITE" alignment="CENTER" />
@@ -31,7 +31,7 @@
                 <VBox fx:id="vBoxCorpus" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="250.0" style="-fx-background-color: #495461;" spacing="20" />
             </ScrollPane>
 
-            <ScrollPane style="-fx-background-color: #495461;" fitToHeight="true" hbarPolicy="NEVER">
+            <ScrollPane fx:id="vBoxCorpusServerContainer" style="-fx-background-color: #495461;" fitToHeight="true" hbarPolicy="NEVER">
                 <VBox fx:id="vBoxCorpusServer" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="250.0" style="-fx-background-color: #495461;" spacing="20" />
             </ScrollPane>
 

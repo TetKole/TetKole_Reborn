@@ -49,6 +49,12 @@ public class CorpusMenuSceneController implements Initializable {
 
     @FXML
     private StackPane rootPane;
+    @FXML
+    private HBox hboxTopButtons;
+    @FXML
+    private Button goToModerationBtn;
+    @FXML
+    private VBox vBoxTopButtonsContainer;
 
     private ResourceBundle resources;
 
@@ -73,8 +79,21 @@ public class CorpusMenuSceneController implements Initializable {
         updateFieldAudioList();
         updateImagesList();
         updateVideosList();
+
+        isConnected();
     }
 
+
+    private void isConnected() {
+        if (AuthenticationManager.getAuthenticationManager().isAuthenticated()) {
+            String role = AuthenticationManager.getAuthenticationManager().getRole(corpus.getCorpusId());
+            if (!role.equals("ADMIN") && !role.equals("MODERATOR")) {
+                hboxTopButtons.getChildren().remove(goToModerationBtn);
+            }
+        } else {
+            vBoxTopButtonsContainer.getChildren().remove(hboxTopButtons);
+        }
+    }
 
     /**
      * Create FieldAudio List
@@ -539,6 +558,11 @@ public class CorpusMenuSceneController implements Initializable {
     public void goToVersionning(){
         SceneManager.getSceneManager().addArgument("corpus", this.corpus);
         SceneManager.getSceneManager().changeScene("VersionningScene.fxml");
+    }
+
+    public void goToModeration(){
+        SceneManager.getSceneManager().addArgument("corpus", this.corpus);
+        SceneManager.getSceneManager().changeScene("CorpusModerationScene.fxml");
     }
 
 

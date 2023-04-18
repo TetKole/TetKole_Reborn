@@ -9,6 +9,7 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -375,8 +376,6 @@ public class HttpRequestManager {
             throw new RuntimeException(e);
         }
 
-        //System.out.println(response.body());
-
         return parseInt(response.body());
     }
 
@@ -458,5 +457,29 @@ public class HttpRequestManager {
 
         System.out.println(answer);
         return answer.getBoolean("success");
+    }
+
+    public JSONObject getAllUsersFromCorpus(Integer corpusId, String token) {
+        String route = apiUrl + "/corpus/" + corpusId + "/users";
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        JSONObject answer = new JSONObject();
+        answer.put("success", response.statusCode() == STATUS_OK);
+        answer.put("body", response.body());
+        return answer;
     }
 }

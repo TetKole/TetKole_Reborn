@@ -1,6 +1,11 @@
 package com.tetkole.tetkole.utils;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class AuthenticationManager {
 
@@ -15,6 +20,7 @@ public class AuthenticationManager {
 
     private int userId;
     private boolean isAuthenticated = false;
+    private Map<Integer, String> roles;
 
     private AuthenticationManager() {
     }
@@ -40,6 +46,7 @@ public class AuthenticationManager {
         JSONObject body = response.getJSONObject("body");
 
         if (response.getBoolean("success")) {
+            this.roles = toMap(body.getJSONObject("roles"));
             this.JWT_TOKEN = body.getString("token");
             this.userId = body.getInt("userId");
             this.firstname = body.getString("firstname");
@@ -58,6 +65,16 @@ public class AuthenticationManager {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static Map<Integer, String> toMap(JSONObject jsonobj)  throws JSONException {
+        Map<Integer, String> map = new HashMap<>();
+        Iterator<String> keys = jsonobj.keys();
+        while(keys.hasNext()) {
+            String key = keys.next();
+            String value = (String) jsonobj.get(key);
+            map.put(Integer.valueOf(key), value);
+        }   return map;
     }
 
     public boolean isAuthenticated() {
@@ -96,5 +113,11 @@ public class AuthenticationManager {
 
     public String getRole() {
         return role;
+    }
+    public String getRole(Integer corpusId) {
+        if (this.role.equals("ADMIN")){
+            return "ADMIN";
+        }
+        return roles.getOrDefault(corpusId, "");
     }
 }

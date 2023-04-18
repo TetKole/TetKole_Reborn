@@ -7,7 +7,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
@@ -42,6 +44,10 @@ public class HomeSceneController implements Initializable {
 
     @FXML
     private Button btnDisconnect;
+    @FXML
+    private ScrollPane vBoxCorpusServerContainer;
+    @FXML
+    private HBox mainContainer;
 
     private List<Corpus> corpusList;
 
@@ -92,6 +98,7 @@ public class HomeSceneController implements Initializable {
         vBoxButtons.getChildren().add(btnLogin);
         vBoxButtons.getChildren().add(btnRegister);
         vBoxButtons.getChildren().remove(btnModerator);
+        mainContainer.getChildren().remove(vBoxCorpusServerContainer);
         updateCorpusListServer();
     }
 
@@ -176,8 +183,7 @@ public class HomeSceneController implements Initializable {
                             AuthenticationManager.getAuthenticationManager().getLastname()
             );
             String role = AuthenticationManager.getAuthenticationManager().getRole();
-            System.out.println(role);
-            if (!role.equals("MODERATOR") && !role.equals("ADMIN")) {
+            if (!role.equals("ADMIN")) {
                 vBoxButtons.getChildren().remove(btnModerator);
             }
 
@@ -186,6 +192,7 @@ public class HomeSceneController implements Initializable {
             vBoxButtons.getChildren().remove(labelUserName);
             vBoxCorpusServer.getChildren().clear();
             vBoxButtons.getChildren().remove(btnModerator);
+            mainContainer.getChildren().remove(vBoxCorpusServerContainer);
         }
     }
 
