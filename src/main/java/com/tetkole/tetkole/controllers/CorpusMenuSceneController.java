@@ -650,41 +650,6 @@ public class CorpusMenuSceneController implements Initializable {
                 }
             }
 
-
-            // TODO il faut faire plus de test sur cette fonction y'a des comportements bizarre
-            /*
-
-            des fois ça marche, des fois non
-            je parle de l'ensemble de la fonction deleteCorpusDiff()
-            des fois j'ai
-            Cannot delete directory annotation_10-03-2023_16h41m59s_328.wav
-            et ça marche quand même, des fois non
-
-            pour tester :
-            créer un corpus avec 2 docs et une annotations par docs, push ça sur le serveur
-            sur le serveur, delete le premier doc et delete l'annotation du deuxième doc (pensez a tous delete correctement dans le file système)
-            puis refaire un pull depuis le front
-
-            */
-
-
-
-            // -> delete updated document
-            // TODO ANTOINE pour le rename
-            /*
-            JSONObject updated = corpusModif.getJSONObject("updated");
-            JSONArray updatedDocuments = updated.getJSONArray("documents");
-            for (int j=0; j<updatedDocuments.length(); j++) {
-                JSONObject document = updatedDocuments.getJSONObject(j);
-                if (document.getString("document").equals(name)) {
-                    updatedDocuments.remove(j);
-                    updated.put("documents", updatedDocuments);
-                    corpusModif.put("updated", updated);
-                }
-            }
-            */
-
-
             System.out.println(corpusModif);
             this.corpus.writeCorpusModif(corpusModif);
         }

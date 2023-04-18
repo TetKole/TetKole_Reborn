@@ -380,12 +380,33 @@ public class HttpRequestManager {
         return parseInt(response.body());
     }
 
-    public boolean createNewVersionCorpus(String token, Integer corpusId) {
+    public JSONObject createNewVersionCorpus(String token, Integer corpusId) throws Exception {
         String route = apiUrl + "/corpus/" + corpusId + "/createVersion";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.noBody())
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        JSONObject answer = new JSONObject();
+        answer.put("success", response.statusCode() == STATUS_OK);
+
+        System.out.println(answer);
+
+        return answer;
+    }
+
+    public int getCurrentVersionCorpus(String token, Integer corpusId) {
+        String route = apiUrl + "/corpus/" + corpusId + "/currentVersion";
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
                 .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + token)
                 .uri(URI.create(route))
@@ -398,10 +419,11 @@ public class HttpRequestManager {
             throw new RuntimeException(e);
         }
 
+        if(response.statusCode() == STATUS_OK) {
+            return Integer.parseInt(response.body());
+        }
 
-        if (response.statusCode() == 200) return true;
-
-        return false;
+        return 0;
     }
 
     public boolean updatePassword(String currentPassword, String newPassword) {
