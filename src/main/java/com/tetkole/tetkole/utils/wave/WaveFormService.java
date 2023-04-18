@@ -238,7 +238,7 @@ public class WaveFormService extends Service<Boolean> {
 									currentCellValue += Math.abs(arrayCellValue);
 								} else {
 									//Avoid ArrayIndexOutOfBoundsException
-									if (arrayCellPosition != arrayWaveLength)
+									if (arrayCellPosition != arrayWaveLength && arrayCellPosition + 1 < finalAmplitudes.length)
 										finalAmplitudes[arrayCellPosition] = finalAmplitudes[arrayCellPosition + 1] = (int) currentCellValue / samplesPerPixel;
 									
 									//Fix the variables
