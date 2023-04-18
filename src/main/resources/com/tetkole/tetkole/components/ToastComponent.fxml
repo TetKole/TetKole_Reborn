@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.Label?>
+<fx:root xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"
+         type="AnchorPane">
+    <HBox fx:id="toastBox" styleClass="toast" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="30">
+
+        <Label fx:id="toastLabel" text="Placeholder text" style="-fx-text-fill: white; -fx-font-size: 30; -fx-wrap-text: true"/>
+    </HBox>
+
+</fx:root>

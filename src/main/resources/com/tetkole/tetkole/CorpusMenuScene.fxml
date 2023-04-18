@@ -56,17 +56,5 @@
             </VBox>
         </center>
 
-
-        <!--
-        <Label text="TètKole" style="-fx-text-fill: white; -fx-font-size: 100px"/>
-        <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-        </padding>
-
-        <Button text="%Audio" onAction="#onAudioButtonClick" styleClass="buttons, grey" prefHeight="60" prefWidth="150" />
-        <Button text="%Image" onAction="#onImageButtonClick" styleClass="buttons, grey" prefHeight="60" prefWidth="150" />
-        <Button text="%Video" onAction="#onVideoButtonClick" styleClass="buttons, grey" prefHeight="60" prefWidth="150" />
-        <Button text="%Settings" onAction="#onSettingsButtonClick" styleClass="buttons, grey" prefHeight="60" prefWidth="150" />
-        -->
     </BorderPane>
 </StackPane>

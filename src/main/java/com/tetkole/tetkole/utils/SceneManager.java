@@ -1,9 +1,13 @@
 package com.tetkole.tetkole.utils;
 
 import com.tetkole.tetkole.Main;
+import com.tetkole.tetkole.components.ToastComponent;
+import com.tetkole.tetkole.utils.enums.ToastTypes;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -15,6 +19,8 @@ public class SceneManager {
     private static SceneManager sceneManagerInstance;
 
     private final Stage stage;
+    private final StackPane root;
+    private final Scene mainScene;
     private Locale currentLocale;
     private String currentResourceName;
     private Map<String, Object> sceneArguments;
@@ -23,12 +29,20 @@ public class SceneManager {
     private String modalParameterValue;
     private String modalDescriptionValue;
 
+    private final ToastComponent toastComponent;
+
 
     private SceneManager(Stage stage) {
         this.stage = stage;
+        this.root = new StackPane();
+        mainScene = new Scene(root, 1000, 1000);
+        stage.setScene(mainScene);
+        String css = Objects.requireNonNull(getClass().getResource("/style.css")).toExternalForm();
+        mainScene.getStylesheets().setAll(css);
         this.sceneArguments = new HashMap<>();
         this.wantedArguments = new HashMap<>();
         currentLocale = new Locale("fr", "FR");
+        toastComponent = new ToastComponent();
     }
 
     /**
@@ -41,12 +55,19 @@ public class SceneManager {
     private void loadScene(String resourceName, double width, double height) {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource(resourceName));
         fxmlLoader.setResources(ResourceBundle.getBundle("languages", currentLocale));
-        stage.setScene(null);
+        root.getChildren().clear();
         try {
-            Scene scene = new Scene(fxmlLoader.load(Objects.requireNonNull(Main.class.getResource(resourceName)).openStream()), width, height);
-            String css = Objects.requireNonNull(getClass().getResource("/style.css")).toExternalForm();
-            scene.getStylesheets().setAll(css);
-            stage.setScene(scene);
+            stage.setHeight(height);
+            stage.setWidth(width);
+
+            Node resourceRoot = fxmlLoader.load();
+
+            root.getChildren().add(resourceRoot);
+            root.getChildren().add(toastComponent);
+
+            toastComponent.setFocusTraversable(false);
+            toastComponent.setPickOnBounds(false);
+
             currentResourceName = resourceName;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -78,12 +99,12 @@ public class SceneManager {
     }
 
     public void changeScene(String resourceName) {
-        changeScene(resourceName, stage.getScene().getWidth(), stage.getScene().getHeight());
+        changeScene(resourceName, stage.getWidth(), stage.getHeight());
     }
 
     public void changeLocale(Locale locale) {
         currentLocale = locale;
-        loadScene(currentResourceName, stage.getScene().getWidth(), stage.getScene().getHeight());
+        loadScene(currentResourceName, stage.getWidth(), stage.getHeight());
     }
 
     public String showNewModal(String resourceName, String modalParameter, String modalDescription) {
@@ -136,9 +157,17 @@ public class SceneManager {
         return this.currentLocale;
     }
 
+    public String getResourceString(String key) {
+        return ResourceBundle.getBundle("languages", currentLocale).getString(key);
+    }
+
     public Stage getStage() {
         return stage;
     }
 
     public Double getStageHeight() { return stage.getHeight(); }
+
+    public void sendToast(String toastText, ToastTypes type) {
+        this.toastComponent.setToast(toastText, type);
+    }
 }

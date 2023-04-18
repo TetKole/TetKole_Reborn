@@ -38,6 +38,9 @@ public class HomeSceneController implements Initializable {
     private Button btnRegister;
 
     @FXML
+    private Button btnModerator;
+
+    @FXML
     private Button btnDisconnect;
 
     private List<Corpus> corpusList;
@@ -79,12 +82,16 @@ public class HomeSceneController implements Initializable {
     }
 
     @FXML
+    public void onGoToModerator() {SceneManager.getSceneManager().changeScene("ModeratorScene.fxml");}
+
+    @FXML
     public void onDisconnect() {
         AuthenticationManager.getAuthenticationManager().disconnect();
         vBoxButtons.getChildren().remove(btnDisconnect);
         vBoxButtons.getChildren().remove(labelUserName);
         vBoxButtons.getChildren().add(btnLogin);
         vBoxButtons.getChildren().add(btnRegister);
+        vBoxButtons.getChildren().remove(btnModerator);
         updateCorpusListServer();
     }
 
@@ -168,10 +175,17 @@ public class HomeSceneController implements Initializable {
                     AuthenticationManager.getAuthenticationManager().getFirstname() + " " +
                             AuthenticationManager.getAuthenticationManager().getLastname()
             );
+            String role = AuthenticationManager.getAuthenticationManager().getRole();
+            System.out.println(role);
+            if (!role.equals("MODERATOR") && !role.equals("ADMIN")) {
+                vBoxButtons.getChildren().remove(btnModerator);
+            }
+
         } else {
             vBoxButtons.getChildren().remove(btnDisconnect);
             vBoxButtons.getChildren().remove(labelUserName);
             vBoxCorpusServer.getChildren().clear();
+            vBoxButtons.getChildren().remove(btnModerator);
         }
     }
 
