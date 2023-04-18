@@ -268,6 +268,18 @@ public class FileManager {
         FileManager.getFileManager().createFolder(corpusName + "/" + Corpus.folderNameAnnotation, fileName);
     }
 
+    public boolean downloadVersion(String corpusName, Integer version){
+        String pathServer = corpusName + "/" + corpusName + "-" + version + ".zip";
+        String pathLocal = corpusName + "/Versions/" + corpusName + "-" + version + ".zip";
+        try {
+            downloadFileFromURL(HttpRequestManager.servURL + "/versions/" + pathServer, pathLocal);
+            JSONObject response = null;
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
+
     public JSONObject createCorpusModifFile(String corpusName) {
         File file = new File(this.folderPath + "/" + corpusName + "/corpus_modif.json");
         JSONObject corpus_modif = new JSONObject();

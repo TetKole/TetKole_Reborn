@@ -22,6 +22,7 @@ public class Corpus {
     public static final String folderNameCorpusImage = "Images";
     public static final String folderNameCorpusVideo = "Videos";
     public static final String folderNameAnnotation = "Annotations";
+    public static final String folderNameVersion = "Versions";
 
     /**
      * ONLY USE this method to create a new corpus
@@ -33,6 +34,7 @@ public class Corpus {
         fileManager.createFolder(name, folderNameCorpusImage);
         fileManager.createFolder(name, folderNameCorpusVideo);
         fileManager.createFolder(name, folderNameAnnotation);
+        fileManager.createFolder(name, folderNameVersion);
         fileManager.createCorpusModifFile(name);
     }
 
