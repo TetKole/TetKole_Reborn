@@ -12,17 +12,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
-import javafx.scene.text.TextAlignment;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONPointer;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 

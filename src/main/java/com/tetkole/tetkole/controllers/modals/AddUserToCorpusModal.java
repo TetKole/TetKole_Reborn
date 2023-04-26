@@ -25,7 +25,7 @@ public class AddUserToCorpusModal implements Initializable {
         );
     }
 
-    public void OnAddUserButtonClick(ActionEvent actionEvent) {
+    public void OnAddUserButtonClick() {
         String mail = userMail.getText();
         String roleValue = roleChoice.getValue().value();
 
