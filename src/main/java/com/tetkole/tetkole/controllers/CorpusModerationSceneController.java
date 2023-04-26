@@ -7,6 +7,7 @@ import com.tetkole.tetkole.utils.SceneManager;
 import com.tetkole.tetkole.utils.models.Corpus;
 import com.tetkole.tetkole.utils.models.User;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -17,6 +18,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.TextAlignment;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONPointer;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -56,20 +58,9 @@ public class CorpusModerationSceneController implements Initializable {
             }
         }
 
-        String token = AuthenticationManager.getAuthenticationManager().getToken();
-        JSONObject response = HttpRequestManager.getHttpRequestManagerInstance().getAllUsersFromCorpus(corpus.getCorpusId(), token);
-        JSONArray usersJSONArray = new JSONArray(response.getString("body"));
-        for (int i = 0; i < usersJSONArray.length(); i++) {
-            JSONObject userObject = usersJSONArray.getJSONObject(i);
-            User user = new User(
-                    userObject.getInt("userId"),
-                    userObject.getString("name"),
-                    userObject.getString("email"),
-                    userObject.getString("role")
-            );
-            users.add(user);
-            addUserLine(user);
-        }
+        requestUserList();
+
+        refreshList();
 
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(25);
@@ -91,6 +82,25 @@ public class CorpusModerationSceneController implements Initializable {
             usersList.setPrefHeight((double)newValue * 0.6);
             refreshList();
         });
+    }
+
+    private void requestUserList() {
+        users.clear();
+
+        String token = AuthenticationManager.getAuthenticationManager().getToken();
+        JSONObject response = HttpRequestManager.getHttpRequestManagerInstance().getAllUsersFromCorpus(corpus.getCorpusId(), token);
+        JSONArray usersJSONArray = new JSONArray(response.getString("body"));
+        for (int i = 0; i < usersJSONArray.length(); i++) {
+            JSONObject userObject = usersJSONArray.getJSONObject(i);
+            System.out.println(userObject.toString());
+            User user = new User(
+                    userObject.getInt("userId"),
+                    userObject.getString("name"),
+                    userObject.getString("email"),
+                    userObject.getString("role")
+            );
+            users.add(user);
+        }
     }
 
     private void refreshList() {
@@ -131,5 +141,24 @@ public class CorpusModerationSceneController implements Initializable {
             usersList.addColumn(2, roleVbox);
             usersList.addColumn(3, actions);
         }
+    }
+
+    public void addNewUser(ActionEvent actionEvent) {
+        String returnParameter = SceneManager.getSceneManager().showNewModal("modals/AddUserToCorpusModal.fxml", "userNotAdded", "test");
+
+        if(returnParameter.equals("userNotAdded")) {
+            return;
+        }
+
+        JSONObject json = new JSONObject(returnParameter);
+
+        json = HttpRequestManager.getHttpRequestManagerInstance()
+                .addUserToCorpus(corpus.getCorpusId(), json.getString("userEmail"), json.getString("userRole"));
+
+        System.out.println(json);
+
+        requestUserList();
+
+        refreshList();
     }
 }

@@ -499,6 +499,36 @@ public class HttpRequestManager {
             throw new RuntimeException(e);
         }
 
+        System.out.println(response.body());
+
+        JSONObject answer = new JSONObject();
+        answer.put("success", response.statusCode() == STATUS_OK);
+        answer.put("body", response.body());
+        return answer;
+    }
+
+    public JSONObject addUserToCorpus(Integer corpusId, String userEmail, String userRole) {
+        String route = apiUrl + "/corpus/" + corpusId + "/users";
+
+        JSONObject json = new JSONObject();
+        json.put("userEmail", userEmail)
+                .put("userRole", userRole);
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(json.toString()))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + AuthenticationManager.getAuthenticationManager().getToken())
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         JSONObject answer = new JSONObject();
         answer.put("success", response.statusCode() == STATUS_OK);
         answer.put("body", response.body());

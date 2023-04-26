@@ -20,6 +20,7 @@
                 <VBox alignment="TOP_CENTER" spacing="10.0" >
 
                     <Label fx:id="corpusTitle" textFill="WHITE" style="-fx-font-size: 100px; -fx-text-fill: white;"/>
+                    <Button onAction="#addNewUser" text="%AddNewUser"/>
 
                     <GridPane fx:id="labels" alignment="CENTER" prefWidth="800.0">
                         <VBox alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0"><Label text="%Name" style="-fx-text-fill: white;" /></VBox>
