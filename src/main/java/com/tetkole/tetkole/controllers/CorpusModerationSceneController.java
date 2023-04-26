@@ -136,7 +136,13 @@ public class CorpusModerationSceneController implements Initializable {
 
             CustomButton btnDelete = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/error.png")).toExternalForm());
             btnDelete.setOnAction(e -> {
-                // TODO requete supprimer avec user.getUserId()
+                HttpRequestManager.getHttpRequestManagerInstance().deleteUserFromCorpus(
+                        this.corpus.getCorpusId(),
+                        user.getUserId(),
+                        AuthenticationManager.getAuthenticationManager().getToken()
+                );
+                this.requestUserList();
+                this.refreshList();
             });
 
             VBox actions = new VBox(btnDelete);

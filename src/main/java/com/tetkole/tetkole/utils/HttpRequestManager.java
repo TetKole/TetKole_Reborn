@@ -531,4 +531,28 @@ public class HttpRequestManager {
         answer.put("body", response.body());
         return answer;
     }
+
+    public boolean deleteUserFromCorpus(int corpusId, int userId, String token) {
+        String route = apiUrl + "/corpus/" + corpusId + "/" + userId;
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .DELETE()
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        JSONObject answer = new JSONObject(response.body());
+
+        return answer.getBoolean("success");
+    }
+
 }
