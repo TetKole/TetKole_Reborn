@@ -427,7 +427,6 @@ public class HttpRequestManager {
     public boolean updatePassword(String currentPassword, String newPassword) {
         String route = apiUrl + "/user/changePassword";
         JSONObject json = new JSONObject();
-        json.put("mail", AuthenticationManager.getAuthenticationManager().getMail());
         json.put("password", currentPassword);
         json.put("newPassword", newPassword);
 
@@ -455,7 +454,6 @@ public class HttpRequestManager {
     public boolean forceResetPassword(String userMail, String newPassword){
         String route = apiUrl + "/user/forceResetPassword";
         JSONObject json = new JSONObject();
-        json.put("adminMail", AuthenticationManager.getAuthenticationManager().getMail());
         json.put("mail", userMail);
         json.put("newPassword", newPassword);
 
