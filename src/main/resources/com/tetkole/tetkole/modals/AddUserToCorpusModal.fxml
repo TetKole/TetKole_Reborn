@@ -15,5 +15,5 @@
         </ComboBox>
     </HBox>
 
-    <Button onAction="#OnAddUserButtonClick" mnemonicParsing="false" styleClass="buttons, blue" text="%Confirm"/>
+    <Button onAction="#OnAddUserButtonClick" mnemonicParsing="false" styleClass="buttons, blue" text="%Add"/>
 </VBox>

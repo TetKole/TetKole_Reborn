@@ -19,6 +19,7 @@ import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
@@ -89,11 +90,20 @@ public class CorpusModerationSceneController implements Initializable {
         for (int i = 0; i < usersJSONArray.length(); i++) {
             JSONObject userObject = usersJSONArray.getJSONObject(i);
             System.out.println(userObject.toString());
+
+            JSONObject corpusRoles = userObject.getJSONObject("corpusRoles");
+
+            HashMap<String, String> mapCorpusRoles = new HashMap<>();
+            for(String key: corpusRoles.keySet()) {
+                mapCorpusRoles.put(key, corpusRoles.getString(key));
+            }
+
             User user = new User(
                     userObject.getInt("userId"),
                     userObject.getString("name"),
                     userObject.getString("email"),
-                    userObject.getString("role")
+                    userObject.getString("role"),
+                    mapCorpusRoles
             );
             users.add(user);
         }
@@ -119,7 +129,7 @@ public class CorpusModerationSceneController implements Initializable {
             VBox emailVbox = new VBox(email);
             emailVbox.setAlignment(Pos.CENTER);
 
-            Label role = new Label(user.getRole());
+            Label role = new Label(user.getCorpusRoles().get(corpus.getName()));
             role.setStyle("-fx-text-fill: white;");
             VBox roleVbox = new VBox(role);
             roleVbox.setAlignment(Pos.CENTER);
