@@ -61,8 +61,8 @@ public class HttpRequestManager {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         JSONObject answer = new JSONObject();
-        answer.accumulate("body", response.body());
-        answer.put("success", response.statusCode() == STATUS_OK);
+        JSONObject bodyJSON = new JSONObject(response.body());
+        answer.put("success", response.statusCode() == STATUS_OK && bodyJSON.getBoolean("success"));
 
         return answer;
     }
@@ -475,6 +475,31 @@ public class HttpRequestManager {
         JSONObject answer = new JSONObject(response.body());
 
         System.out.println(answer);
+        return answer.getBoolean("success");
+    }
+
+    public boolean addMailInscription(String userMail){
+        String route = apiUrl + "/user/addMailInscription";
+        JSONObject json = new JSONObject();
+        json.put("mail", userMail);
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + AuthenticationManager.getAuthenticationManager().getToken())
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        JSONObject answer = new JSONObject(response.body());
+
         return answer.getBoolean("success");
     }
 

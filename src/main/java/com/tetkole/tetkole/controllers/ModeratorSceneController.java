@@ -2,6 +2,7 @@ package com.tetkole.tetkole.controllers;
 
 import com.tetkole.tetkole.utils.HttpRequestManager;
 import com.tetkole.tetkole.utils.SceneManager;
+import com.tetkole.tetkole.utils.enums.ToastTypes;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -25,6 +26,8 @@ public class ModeratorSceneController implements PropertyChangeListener, Initial
     private TextField userMailInput;
     @FXML
     private TextField newPassword;
+    @FXML
+    private TextField newUserMailInput;
     @FXML
     private HBox header;
     private ResourceBundle resources;
@@ -57,6 +60,23 @@ public class ModeratorSceneController implements PropertyChangeListener, Initial
                 this.newPassword.setText(password);
                 this.newPassword.setVisible(true);
                 HttpRequestManager.getHttpRequestManagerInstance().forceResetPassword(userMailInput.getText(), password);
+            }
+            catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    }
+
+    @FXML
+    public void onAddMailInscription(){
+        if (newUserMailInput.getText()!="") {
+            try {
+                if(HttpRequestManager.getHttpRequestManagerInstance().addMailInscription(newUserMailInput.getText())) {
+                    SceneManager.getSceneManager().sendToast(resources.getString("MailAdded"), ToastTypes.SUCCESS);
+                } else {
+                    System.out.println("Impossible to add mail");
+                    SceneManager.getSceneManager().sendToast(resources.getString("MailNotAdded"), ToastTypes.ERROR);
+                }
             }
             catch (Exception e) {
                 System.out.println(e);

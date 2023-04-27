@@ -35,7 +35,7 @@
                      <Label text="%newPassword" fx:id="newPasswordLabel" style="-fx-text-fill: white; -fx-font-size: 20px"/>
                      <PasswordField onAction="#OnChangeRange" fx:id="newPasswordInput" />
 
-                     <Button fx:id="updatePasswordButton" onAction="#onUpdatePassword" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%updateYourPassword" />
+                     <Button fx:id="updatePasswordButton" onAction="#onUpdatePassword" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Modify" />
                   </VBox>
                </HBox>
             </VBox>
