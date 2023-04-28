@@ -478,6 +478,33 @@ public class HttpRequestManager {
         return answer.getBoolean("success");
     }
 
+    public boolean addAdmin(String userMail){
+        String route = apiUrl + "/user/addAdmin";
+        JSONObject json = new JSONObject();
+        json.put("mail", userMail);
+
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + AuthenticationManager.getAuthenticationManager().getToken())
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response;
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        JSONObject answer = new JSONObject(response.body());
+
+        System.out.println(answer);
+        return answer.getBoolean("success");
+    }
+
     public boolean addMailInscription(String userMail){
         String route = apiUrl + "/user/addMailInscription";
         JSONObject json = new JSONObject();

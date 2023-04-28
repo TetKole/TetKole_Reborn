@@ -32,6 +32,12 @@
                         <Button onAction="#onChangePassword" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Confirm" />
                         <TextField fx:id="newPassword" style="-fx-font-size: 15px; -fx-padding-top: 15px" visible="false" editable="false"/>
                     </VBox>
+                    <VBox alignment="CENTER" spacing="40">
+                        <Label style="-fx-font-size: 35;" text="%AddAdmin" textFill="WHITE" alignment="CENTER" />
+                        <Label text="%userMail" style="-fx-text-fill: white; -fx-font-size: 20px"/>
+                        <TextField fx:id="userMailForAdminInput" />
+                        <Button onAction="#onAddAdmin" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Confirm" />
+                    </VBox>
                 </HBox>
 
 
