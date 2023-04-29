@@ -24,11 +24,8 @@ public class ModeratorSceneController implements PropertyChangeListener, Initial
 
     @FXML
     private TextField userMailInput;
-    @FXML TextField userMailForAdminInput;
     @FXML
     private TextField newPassword;
-    @FXML
-    private TextField newUserMailInput;
     @FXML
     private HBox header;
     private ResourceBundle resources;
@@ -70,9 +67,9 @@ public class ModeratorSceneController implements PropertyChangeListener, Initial
 
     @FXML
     public void onAddMailInscription(){
-        if (newUserMailInput.getText()!="") {
+        if (userMailInput.getText()!="") {
             try {
-                if(HttpRequestManager.getHttpRequestManagerInstance().addMailInscription(newUserMailInput.getText())) {
+                if(HttpRequestManager.getHttpRequestManagerInstance().addMailInscription(userMailInput.getText())) {
                     SceneManager.getSceneManager().sendToast(resources.getString("MailAdded"), ToastTypes.SUCCESS);
                 } else {
                     System.out.println("Impossible to add mail");
@@ -87,9 +84,8 @@ public class ModeratorSceneController implements PropertyChangeListener, Initial
 
     @FXML
     public void onAddAdmin(){
-        if (userMailForAdminInput.getText()!="") {
+        if (userMailInput.getText()!="") {
             try {
-               System.out.println(userMailForAdminInput.getText());
                 HttpRequestManager.getHttpRequestManagerInstance().addAdmin(userMailInput.getText());
             }
             catch (Exception e) {

@@ -20,23 +20,14 @@
             <VBox spacing="100" alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                 <HBox alignment="CENTER" spacing="50">
                     <VBox alignment="CENTER" spacing="40">
-                        <Label style="-fx-font-size: 35;" text="%AddAccount" textFill="WHITE" alignment="CENTER" />
-                        <Label text="%userMail" style="-fx-text-fill: white; -fx-font-size: 20px"/>
-                        <TextField fx:id="newUserMailInput" />
-                        <Button onAction="#onAddMailInscription" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Confirm" />
-                    </VBox>
-                    <VBox alignment="CENTER" spacing="40">
-                        <Label style="-fx-font-size: 35;" text="%UpdatePassword" textFill="WHITE" alignment="CENTER" />
-                        <Label text="%userMail" style="-fx-text-fill: white; -fx-font-size: 20px"/>
+                        <Label text="%userMail" style="-fx-text-fill: white; -fx-font-size: 30px"/>
                         <TextField fx:id="userMailInput" />
-                        <Button onAction="#onChangePassword" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Confirm" />
+                        <HBox spacing="10">
+                            <Button onAction="#onAddMailInscription" prefHeight="60" styleClass="buttons, grey" text="%AddAccount" prefWidth="200" wrapText="true"/>
+                            <Button onAction="#onChangePassword" prefHeight="60" styleClass="buttons, grey" text="%UpdatePassword" prefWidth="200" wrapText="true"/>
+                            <Button onAction="#onAddAdmin" prefHeight="60" styleClass="buttons, grey" text="%AddAdmin" prefWidth="200" wrapText="true"/>
+                        </HBox>
                         <TextField fx:id="newPassword" style="-fx-font-size: 15px; -fx-padding-top: 15px" visible="false" editable="false"/>
-                    </VBox>
-                    <VBox alignment="CENTER" spacing="40">
-                        <Label style="-fx-font-size: 35;" text="%AddAdmin" textFill="WHITE" alignment="CENTER" />
-                        <Label text="%userMail" style="-fx-text-fill: white; -fx-font-size: 20px"/>
-                        <TextField fx:id="userMailForAdminInput" />
-                        <Button onAction="#onAddAdmin" prefHeight="60" prefWidth="150" styleClass="buttons, grey" text="%Confirm" />
                     </VBox>
                 </HBox>
 
