@@ -86,6 +86,7 @@ public class CorpusModerationSceneController implements Initializable {
 
         String token = AuthenticationManager.getAuthenticationManager().getToken();
         JSONObject response = HttpRequestManager.getHttpRequestManagerInstance().getAllUsersFromCorpus(corpus.getCorpusId(), token);
+        System.out.println(response.getString("body"));
         JSONArray usersJSONArray = new JSONArray(response.getString("body"));
         for (int i = 0; i < usersJSONArray.length(); i++) {
             JSONObject userObject = usersJSONArray.getJSONObject(i);

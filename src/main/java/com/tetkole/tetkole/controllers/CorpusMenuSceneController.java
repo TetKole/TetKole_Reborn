@@ -87,7 +87,9 @@ public class CorpusMenuSceneController implements Initializable {
     private void isConnected() {
         if (AuthenticationManager.getAuthenticationManager().isAuthenticated()) {
             String role = AuthenticationManager.getAuthenticationManager().getRole(corpus.getCorpusId());
-            if (!role.equals("ADMIN") && !role.equals("MODERATOR")) {
+            System.out.println(role);
+            System.out.println(this.corpus.getCorpusState());
+            if ((!role.equals("ADMIN") && !role.equals("MODERATOR")) || (this.corpus.getCorpusState() == null)) {
                 hboxTopButtons.getChildren().remove(goToModerationBtn);
             }
         } else {
