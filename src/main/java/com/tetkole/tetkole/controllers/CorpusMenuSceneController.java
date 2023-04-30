@@ -2,6 +2,7 @@ package com.tetkole.tetkole.controllers;
 
 import com.tetkole.tetkole.components.CustomButton;
 import com.tetkole.tetkole.utils.*;
+import com.tetkole.tetkole.utils.enums.ToastTypes;
 import com.tetkole.tetkole.utils.models.*;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -28,25 +29,19 @@ public class CorpusMenuSceneController implements Initializable {
 
     @FXML
     private HBox header;
-
     @FXML
     private VBox vBoxFieldAudios;
     @FXML
     private VBox vBoxImages;
     @FXML
     private VBox vBoxVideos;
-
     private Corpus corpus;
-
     @FXML
     private Label corpusName;
-
     @FXML
     private Label loadingLabelPush;
-
     @FXML
     private Label loadingLabelPull;
-
     @FXML
     private StackPane rootPane;
     @FXML
@@ -55,7 +50,6 @@ public class CorpusMenuSceneController implements Initializable {
     private Button goToModerationBtn;
     @FXML
     private VBox vBoxTopButtonsContainer;
-
     private ResourceBundle resources;
 
 
@@ -828,14 +822,20 @@ public class CorpusMenuSceneController implements Initializable {
         }
         String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", lastName, renameRessource);
         if(!newName.equals(lastName) && !newName.isEmpty()) {
-            corpus.renameDocument(doc, newName + ext);
-            if(doc.getTypeDocument() == TypeDocument.FieldAudio) {
-                this.updateFieldAudioList();
-            } else if (doc.getTypeDocument() == TypeDocument.Images) {
-                this.updateImagesList();
-            } else if (doc.getTypeDocument() == TypeDocument.Videos) {
-                this.updateVideosList();
+            if(!newName.contains(" ")) {
+                corpus.renameDocument(doc, newName + ext);
+                if(doc.getTypeDocument() == TypeDocument.FieldAudio) {
+                    this.updateFieldAudioList();
+                } else if (doc.getTypeDocument() == TypeDocument.Images) {
+                    this.updateImagesList();
+                } else if (doc.getTypeDocument() == TypeDocument.Videos) {
+                    this.updateVideosList();
+                }
+            } else {
+                SceneManager.getSceneManager().sendToast(resources.getString("NameNotContainsSpaces"), ToastTypes.ERROR);
             }
+        } else {
+            SceneManager.getSceneManager().sendToast(resources.getString("NewNameDifferent"), ToastTypes.ERROR);
         }
     }
 }

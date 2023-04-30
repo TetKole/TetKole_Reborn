@@ -47,10 +47,11 @@ public class Corpus {
 
         // Loop on every file in Tetkole Fodler, which means on every Corpus
         for (File corpusFolder : Objects.requireNonNull(new File(FileManager.getFileManager().getFolderPath()).listFiles())) {
-
-            Corpus corpus = new Corpus(corpusFolder.getName());
-            corpus.load();
-            corpusList.add(corpus);
+            if(corpusFolder.isDirectory()) {
+                Corpus corpus = new Corpus(corpusFolder.getName());
+                corpus.load();
+                corpusList.add(corpus);
+            }
         }
 
 
@@ -91,6 +92,12 @@ public class Corpus {
         File fileAudio = fileChooser.showOpenDialog(null);
 
         if (fileAudio != null) {
+            if(fileAudio.getName().contains(" ")) {
+                String message = SceneManager.getSceneManager().getResourceString("FileCouldNotContaineSpaces");
+                SceneManager.getSceneManager().sendToast(message, ToastTypes.ERROR);
+                return;
+            }
+
             // copy of the file in corpus folder
             File file = FileManager.getFileManager().copyFile(fileAudio, this.name + "/" + folderNameFieldAudio);
 
@@ -134,6 +141,11 @@ public class Corpus {
 
         File fileVideo = fileChooserVideo.showOpenDialog(null);
         if (fileVideo != null) {
+            if(fileVideo.getName().contains(" ")) {
+                String message = SceneManager.getSceneManager().getResourceString("FileCouldNotContaineSpaces");
+                SceneManager.getSceneManager().sendToast(message, ToastTypes.ERROR);
+                return;
+            }
             // copy of the file in corpus folder
             File file = FileManager.getFileManager().copyFile(fileVideo, this.name + "/" + folderNameCorpusVideo);
 
@@ -175,6 +187,11 @@ public class Corpus {
         File fileImage = fileChooserImage.showOpenDialog(null);
 
         if (fileImage != null){
+            if(fileImage.getName().contains(" ")) {
+                String message = SceneManager.getSceneManager().getResourceString("FileCouldNotContaineSpaces");
+                SceneManager.getSceneManager().sendToast(message, ToastTypes.ERROR);
+                return;
+            }
             // copy of the file in corpus folder
             File file = FileManager.getFileManager().copyFile(fileImage, this.name + "/" + folderNameCorpusImage);
 

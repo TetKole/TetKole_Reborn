@@ -3,6 +3,7 @@ package com.tetkole.tetkole.controllers;
 import com.tetkole.tetkole.components.CustomButton;
 import com.tetkole.tetkole.utils.*;
 import com.tetkole.tetkole.utils.annotations.AnnotationsVisualization;
+import com.tetkole.tetkole.utils.enums.ToastTypes;
 import com.tetkole.tetkole.utils.models.Annotation;
 import com.tetkole.tetkole.utils.models.FieldAudio;
 import com.tetkole.tetkole.utils.wave.WaveFormService;
@@ -360,9 +361,15 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             String lastName = annotation.getName().substring(0, annotation.getName().length() - ext.length());
             String newName = SceneManager.getSceneManager().showNewModal("modals/AudioDescriptionEditScene.fxml", lastName, resources.getString("RenameAnnotation"));
             if (!newName.equals(lastName) && !newName.isEmpty()) {
-                corpus.renameAnnotation(annotation, newName + ext);
-                label.setText(newName + ext);
-                annotationsVisualization.refresh();
+                if(!newName.contains(" ")) {
+                    corpus.renameAnnotation(annotation, newName + ext);
+                    label.setText(newName + ext);
+                    annotationsVisualization.refresh();
+                } else {
+                    SceneManager.getSceneManager().sendToast(resources.getString("NameNotContainsSpaces"), ToastTypes.ERROR);
+                }
+            } else {
+                SceneManager.getSceneManager().sendToast(resources.getString("NewNameDifferent"), ToastTypes.ERROR);
             }
         });
 

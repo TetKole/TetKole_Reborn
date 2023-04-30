@@ -1,10 +1,7 @@
 package com.tetkole.tetkole.controllers;
 
-import com.tetkole.tetkole.utils.AuthenticationManager;
-import com.tetkole.tetkole.utils.HttpRequestManager;
-import com.tetkole.tetkole.utils.SceneManager;
+import com.tetkole.tetkole.utils.*;
 
-import com.tetkole.tetkole.utils.StaticEnvVariable;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -82,7 +79,7 @@ public class SettingsSceneController implements Initializable {
     @FXML
     public void OnChangeRange() {
         if(rangeInput.getText().matches("(^(1500|1[0-4][0-9][0-9]|[1-9][0-9][0-9]|[5-9][0-9])$)")) {
-            StaticEnvVariable.zoomRange = Integer.parseInt(rangeInput.getText());
+            FileManager.getFileManager().setAudioZoomRange(Integer.parseInt(rangeInput.getText()));
             lastMax = StaticEnvVariable.zoomRange;
         } else {
             rangeInput.setText(String.valueOf(lastMax));
