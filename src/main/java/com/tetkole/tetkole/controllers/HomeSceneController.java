@@ -27,32 +27,24 @@ public class HomeSceneController implements Initializable {
     private Label labelUserName;
     @FXML
     private VBox vBoxCorpus;
-
     @FXML
     private VBox vBoxCorpusServer;
     @FXML
     private VBox vBoxButtons;
-
     @FXML
     private Button btnLogin;
-
     @FXML
     private Button btnRegister;
-
     @FXML
     private Button btnModerator;
-
     @FXML
     private Button btnDisconnect;
     @FXML
     private ScrollPane vBoxCorpusServerContainer;
     @FXML
     private HBox mainContainer;
-
     private List<Corpus> corpusList;
-
     private ResourceBundle resources;
-
     @FXML
     private StackPane rootPane;
 
@@ -182,6 +174,7 @@ public class HomeSceneController implements Initializable {
                     AuthenticationManager.getAuthenticationManager().getFirstname() + " " +
                             AuthenticationManager.getAuthenticationManager().getLastname()
             );
+            labelUserName.setWrapText(true);
             String role = AuthenticationManager.getAuthenticationManager().getRole();
             if (!role.equals("ADMIN")) {
                 vBoxButtons.getChildren().remove(btnModerator);
