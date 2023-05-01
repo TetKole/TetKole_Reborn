@@ -28,6 +28,8 @@ import java.util.ResourceBundle;
 public class CorpusMenuSceneController implements Initializable {
 
     @FXML
+    public VBox vBoxPushBtn;
+    @FXML
     private HBox header;
     @FXML
     private VBox vBoxFieldAudios;
@@ -83,6 +85,9 @@ public class CorpusMenuSceneController implements Initializable {
             String role = AuthenticationManager.getAuthenticationManager().getRole(corpus.getCorpusId());
             if ( role.equals("READER") || role.equals("CONTRIBUTOR") || (this.corpus.getCorpusState() == null)) {
                 hboxTopButtons.getChildren().remove(vBoxModerationBtn);
+            }
+            if(role.equals("READER")) {
+                hboxTopButtons.getChildren().remove(vBoxPushBtn);
             }
         } else {
             vBoxTopButtonsContainer.getChildren().remove(hboxTopButtons);

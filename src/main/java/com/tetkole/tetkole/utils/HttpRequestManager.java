@@ -51,7 +51,7 @@ public class HttpRequestManager {
         json.put("mail", mail);
         json.put("role", "default");
 
-        String routeUrl = apiUrl + "/user";
+        String routeUrl = apiUrl + "/auth";
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
@@ -76,7 +76,7 @@ public class HttpRequestManager {
         json.put("password", password);
 
         // Setting header and the Request Method
-        String routeUrl = apiUrl + "/user/login";
+        String routeUrl = apiUrl + "/auth/login";
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(String.valueOf(json)))
@@ -146,7 +146,6 @@ public class HttpRequestManager {
 
                 // close the request
                 EntityUtils.consume(response.getEntity());
-
                 // construct return value
                 answer.put("success", responseCode == STATUS_OK);
                 answer.accumulate("body", new JSONObject(responseBody));
@@ -248,6 +247,32 @@ public class HttpRequestManager {
         JSONObject answer = new JSONObject();
         answer.put("success", response.statusCode() == STATUS_OK);
         answer.accumulate("body", new JSONObject(response.body()));
+
+        return answer;
+    }
+
+    public JSONObject getCorpusOfUser(String token, int userId) {
+        String route = apiUrl + "/user/" + userId + "/corpus";
+
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + token)
+                .uri(URI.create(route))
+                .build();
+
+        HttpResponse<String> response = null;
+
+        try {
+            response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        JSONObject answer = new JSONObject();
+        answer.put("success", response.statusCode() == STATUS_OK);
+        answer.accumulate("body", response.body());
 
         return answer;
     }
@@ -415,7 +440,7 @@ public class HttpRequestManager {
     }
 
     public boolean updatePassword(String currentPassword, String newPassword) {
-        String route = apiUrl + "/user/changePassword";
+        String route = apiUrl + "/auth/changePassword";
         JSONObject json = new JSONObject();
         json.put("password", currentPassword);
         json.put("newPassword", newPassword);
@@ -441,7 +466,7 @@ public class HttpRequestManager {
     }
 
     public boolean forceResetPassword(String userMail, String newPassword){
-        String route = apiUrl + "/user/forceResetPassword";
+        String route = apiUrl + "/auth/forceResetPassword";
         JSONObject json = new JSONObject();
         json.put("mail", userMail);
         json.put("newPassword", newPassword);
@@ -467,7 +492,7 @@ public class HttpRequestManager {
     }
 
     public boolean addAdmin(String userMail){
-        String route = apiUrl + "/user/addAdmin";
+        String route = apiUrl + "/auth/addAdmin";
         JSONObject json = new JSONObject();
         json.put("mail", userMail);
 
@@ -493,7 +518,7 @@ public class HttpRequestManager {
     }
 
     public boolean addMailInscription(String userMail){
-        String route = apiUrl + "/user/addMailInscription";
+        String route = apiUrl + "/auth/addMailInscription";
         JSONObject json = new JSONObject();
         json.put("mail", userMail);
 

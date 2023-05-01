@@ -135,10 +135,11 @@ public class HomeSceneController implements Initializable {
             this.vBoxCorpusServer.getChildren().add(labelNeedAuth);
         } else {
             String token = AuthenticationManager.getAuthenticationManager().getToken();
+            int userId = AuthenticationManager.getAuthenticationManager().getUserId();
 
             JSONObject jsonCorpus;
             try {
-                jsonCorpus = HttpRequestManager.getHttpRequestManagerInstance().getCorpusList(token);
+                jsonCorpus = HttpRequestManager.getHttpRequestManagerInstance().getCorpusOfUser(token, userId);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

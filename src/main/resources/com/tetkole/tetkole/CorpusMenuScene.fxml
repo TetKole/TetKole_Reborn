@@ -25,7 +25,7 @@
                 <Label fx:id="corpusName" style="-fx-text-fill: white; -fx-font-size: 50px"/>
 
                 <HBox fx:id="hboxTopButtons" alignment="TOP_CENTER" spacing="10.0" >
-                    <VBox alignment="TOP_CENTER" spacing="5" >
+                    <VBox fx:id="vBoxPushBtn" alignment="TOP_CENTER" spacing="5" >
                         <Button onAction="#onClickPush" prefHeight="60" prefWidth="150" styleClass="buttons, blue" text="%Push"/>
                         <Label fx:id="loadingLabelPush" style="-fx-text-fill: white; -fx-font-size: 15px;" text="%Loading" visible="false"/>
                     </VBox>
