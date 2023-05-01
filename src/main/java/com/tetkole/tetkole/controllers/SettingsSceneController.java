@@ -26,7 +26,7 @@ public class SettingsSceneController implements Initializable {
     @FXML
     private HBox header;
     @FXML
-    private VBox vBoxUpdatePassword;
+    private HBox hBoxUpdatePassword;
     @FXML
     private PasswordField currentPasswordInput;
     @FXML
@@ -98,7 +98,7 @@ public class SettingsSceneController implements Initializable {
 
     public void isConnected() {
         if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) {
-            mainContainer.getChildren().remove(vBoxUpdatePassword);
+            mainContainer.getChildren().remove(hBoxUpdatePassword);
         }
     }
 }
