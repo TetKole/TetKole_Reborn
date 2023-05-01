@@ -37,8 +37,8 @@
                         <Button onAction="#goToVersionning" prefHeight="60" prefWidth="150" styleClass="buttons, blue" text="%Versioning"/>
                         <Label style="-fx-text-fill: white; -fx-font-size: 15px;" text="%Loading" visible="false"/>
                     </VBox>
-                    <VBox alignment="TOP_CENTER" spacing="5" >
-                        <Button fx:id="goToModerationBtn" onAction="#goToModeration" prefHeight="60" prefWidth="150" styleClass="buttons, orange" text="%goToModerator"/>
+                    <VBox fx:id="vBoxModerationBtn" alignment="TOP_CENTER" spacing="5" >
+                        <Button onAction="#goToModeration" prefHeight="60" prefWidth="150" styleClass="buttons, orange" text="%goToModerator"/>
                         <Label style="-fx-text-fill: white; -fx-font-size: 15px;" text="%Loading" visible="false"/>
                     </VBox>
                 </HBox>

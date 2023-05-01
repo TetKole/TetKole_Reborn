@@ -47,7 +47,7 @@ public class CorpusMenuSceneController implements Initializable {
     @FXML
     private HBox hboxTopButtons;
     @FXML
-    private Button goToModerationBtn;
+    private VBox vBoxModerationBtn;
     @FXML
     private VBox vBoxTopButtonsContainer;
     private ResourceBundle resources;
@@ -81,10 +81,8 @@ public class CorpusMenuSceneController implements Initializable {
     private void isConnected() {
         if (AuthenticationManager.getAuthenticationManager().isAuthenticated()) {
             String role = AuthenticationManager.getAuthenticationManager().getRole(corpus.getCorpusId());
-            System.out.println(role);
-            System.out.println(this.corpus.getCorpusState());
-            if ((!role.equals("ADMIN") && !role.equals("MODERATOR")) || (this.corpus.getCorpusState() == null)) {
-                hboxTopButtons.getChildren().remove(goToModerationBtn);
+            if ( role.equals("READER") || role.equals("CONTRIBUTOR") || (this.corpus.getCorpusState() == null)) {
+                hboxTopButtons.getChildren().remove(vBoxModerationBtn);
             }
         } else {
             vBoxTopButtonsContainer.getChildren().remove(hboxTopButtons);
