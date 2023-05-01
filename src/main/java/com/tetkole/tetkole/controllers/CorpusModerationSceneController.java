@@ -120,6 +120,7 @@ public class CorpusModerationSceneController implements Initializable {
     private void addUserLine(User user) {
 
         if(!user.getUserId().equals(AuthenticationManager.getAuthenticationManager().getUserId())){
+            String role = user.getCorpusRoles().get(corpus.getName());
             Label userName = new Label(user.getName());
             userName.setStyle("-fx-text-fill: white;");
             VBox userNameVbox = new VBox(userName);
@@ -130,20 +131,23 @@ public class CorpusModerationSceneController implements Initializable {
             VBox emailVbox = new VBox(email);
             emailVbox.setAlignment(Pos.CENTER);
 
-            Label role = new Label(user.getCorpusRoles().get(corpus.getName()));
-            role.setStyle("-fx-text-fill: white;");
-            VBox roleVbox = new VBox(role);
+            Label roleLabel = new Label(role);
+            roleLabel.setStyle("-fx-text-fill: white;");
+            VBox roleVbox = new VBox(roleLabel);
             roleVbox.setAlignment(Pos.CENTER);
 
             CustomButton btnDelete = new CustomButton(Objects.requireNonNull(getClass().getResource("/images/error.png")).toExternalForm());
             btnDelete.setOnAction(e -> {
-                HttpRequestManager.getHttpRequestManagerInstance().deleteUserFromCorpus(
-                        this.corpus.getCorpusId(),
-                        user.getUserId(),
-                        AuthenticationManager.getAuthenticationManager().getToken()
-                );
-                this.requestUserList();
-                this.refreshList();
+                String userConnectedRole = AuthenticationManager.getAuthenticationManager().getRole(corpus.getCorpusId());
+                if(userConnectedRole.equals("ADMIN")) {
+                    if(!role.equals("ADMIN")) {
+                        deleteUser(user);
+                    }
+                } else if (userConnectedRole.equals("MODERATOR")){
+                    if(!role.equals("MODERATOR") && !role.equals("ADMIN")) {
+                        deleteUser(user);
+                    }
+                }
             });
 
             VBox actions = new VBox(btnDelete);
@@ -173,5 +177,15 @@ public class CorpusModerationSceneController implements Initializable {
         requestUserList();
 
         refreshList();
+    }
+
+    public void deleteUser(User user) {
+        HttpRequestManager.getHttpRequestManagerInstance().deleteUserFromCorpus(
+                this.corpus.getCorpusId(),
+                user.getUserId(),
+                AuthenticationManager.getAuthenticationManager().getToken()
+        );
+        this.requestUserList();
+        this.refreshList();
     }
 }
