@@ -114,7 +114,6 @@ public class HttpRequestManager {
         answer.put("success", response.statusCode() == STATUS_OK);
         answer.accumulate("body", new JSONObject(response.body()));
 
-        //System.out.println(answer);
         return answer;
     }
 
@@ -158,7 +157,6 @@ public class HttpRequestManager {
             throw new RuntimeException(e);
         }
 
-        //System.out.println(answer);
         return answer;
     }
 
@@ -204,7 +202,6 @@ public class HttpRequestManager {
             throw new RuntimeException(e);
         }
 
-        //System.out.println(answer);
         return answer;
     }
 
@@ -276,7 +273,6 @@ public class HttpRequestManager {
 
         JSONObject answer = new JSONObject(response.body());
 
-        //System.out.println(answer);
         return answer.getBoolean("success");
     }
 
@@ -302,8 +298,6 @@ public class HttpRequestManager {
 
         JSONObject answer = new JSONObject(response.body());
 
-        //System.out.println(answer);
-        System.out.println(answer);
         return answer.getBoolean("success");
     }
 
@@ -327,7 +321,6 @@ public class HttpRequestManager {
 
         JSONObject answer = new JSONObject(response.body());
 
-        //System.out.println(answer);
         return answer.getBoolean("success");
     }
 
@@ -353,7 +346,6 @@ public class HttpRequestManager {
 
         JSONObject answer = new JSONObject(response.body());
 
-        //System.out.println(answer);
         return answer.getBoolean("success");
     }
 
@@ -393,8 +385,6 @@ public class HttpRequestManager {
 
         JSONObject answer = new JSONObject();
         answer.put("success", response.statusCode() == STATUS_OK);
-
-        System.out.println(answer);
 
         return answer;
     }
@@ -447,7 +437,6 @@ public class HttpRequestManager {
 
         JSONObject answer = new JSONObject(response.body());
 
-        System.out.println(answer);
         return answer.getBoolean("success");
     }
 
@@ -474,7 +463,6 @@ public class HttpRequestManager {
 
         JSONObject answer = new JSONObject(response.body());
 
-        System.out.println(answer);
         return answer.getBoolean("success");
     }
 
@@ -501,7 +489,6 @@ public class HttpRequestManager {
 
         JSONObject answer = new JSONObject(response.body());
 
-        System.out.println(answer);
         return answer.getBoolean("success");
     }
 
@@ -547,8 +534,6 @@ public class HttpRequestManager {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        System.out.println(response.body());
 
         JSONObject answer = new JSONObject();
         answer.put("success", response.statusCode() == STATUS_OK);

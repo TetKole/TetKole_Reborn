@@ -381,7 +381,6 @@ public class AudioEditSceneController implements PropertyChangeListener, Initial
             annotation.playPause();
 
             int index = this.fieldAudio.getAnnotations().indexOf(annotation);
-            System.out.println(annotation.getMediaPlayer().getStatus());
             switch (annotation.getMediaPlayer().getStatus()) {
                 case PLAYING -> {
                     annotation.getMediaPlayer().stop();

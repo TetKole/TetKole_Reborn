@@ -192,7 +192,6 @@ public class HomeSceneController implements Initializable {
     private void clone(String token, JSONObject corpusJSON) {
         // TODO: il faudrais vérifier que le corpus n'est pas déjà en local
 
-        System.out.println("Start Clone");
         LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
 
         new Thread(() -> {
@@ -247,8 +246,6 @@ public class HomeSceneController implements Initializable {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-
-            System.out.println("Clone Done");
         }).start();
     }
 }

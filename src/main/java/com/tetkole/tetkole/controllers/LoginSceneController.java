@@ -47,7 +47,6 @@ public class LoginSceneController implements Initializable {
     @FXML
     public void onLogin() {
         if (!mailInput.getText().isEmpty() && !passwordInput.getText().isEmpty())  {
-            System.out.println("Start Login");
             LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
 
             new Thread(() -> {
@@ -65,13 +64,11 @@ public class LoginSceneController implements Initializable {
                             }
                     );
                 } else {
-                    System.out.println("Login Failed");
                     String wrongCredentialsText = SceneManager.getSceneManager().getResourceString("ToastWrongUserCredentials");
                     SceneManager.getSceneManager().sendToast(wrongCredentialsText, ToastTypes.ERROR);
                 }
 
                 LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
-                System.out.println("Login Done");
 
             }).start();
         }

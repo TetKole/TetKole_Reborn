@@ -32,7 +32,6 @@ public class HeaderController implements Initializable {
     @FXML
     public void onOpenFolderClick() throws IOException {
         String os = System.getProperty("os.name").toLowerCase();
-        System.out.println(os);
         if (os.contains("windows")) {
             Desktop.getDesktop().open(new File(FileSystemView.getFileSystemView().getDefaultDirectory().getPath() + "\\TetKole"));
         } else if(os.contains("linux")) {
