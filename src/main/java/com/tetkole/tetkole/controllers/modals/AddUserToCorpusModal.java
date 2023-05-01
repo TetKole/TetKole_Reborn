@@ -1,7 +1,6 @@
 package com.tetkole.tetkole.controllers.modals;
 
 import com.tetkole.tetkole.utils.SceneManager;
-import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
@@ -27,15 +26,15 @@ public class AddUserToCorpusModal implements Initializable {
 
     public void OnAddUserButtonClick() {
         String mail = userMail.getText();
-        String roleValue = roleChoice.getValue().value();
+        ModerationType moderationType = roleChoice.getValue();
 
-        if(mail.isEmpty() || roleValue.isEmpty()) {
+        if(mail.isEmpty() || moderationType == null) {
             return;
         }
 
         JSONObject json = new JSONObject();
         json.put("userEmail", mail);
-        json.put("userRole", roleValue);
+        json.put("userRole", moderationType.value());
 
         SceneManager.getSceneManager().closeModal(json.toString());
     }
