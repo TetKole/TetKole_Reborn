@@ -17,27 +17,23 @@ import java.util.*;
 
 public class SettingsSceneController implements Initializable {
 
-    @FXML private ComboBox<String> languagesComboBox;
-
+    @FXML
+    private ComboBox<String> languagesComboBox;
     @FXML
     private TextField rangeInput;
-
     private final Locale frLocal = new Locale("fr", "FR");
     private final Locale enLocal = new Locale("en", "EN");
-
     @FXML
     private HBox header;
-
     @FXML
     private VBox vBoxUpdatePassword;
-
     @FXML
     private PasswordField currentPasswordInput;
-
     @FXML
     private PasswordField newPasswordInput;
-
     private int lastMax;
+    @FXML
+    private VBox mainContainer;
 
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
@@ -102,7 +98,7 @@ public class SettingsSceneController implements Initializable {
 
     public void isConnected() {
         if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) {
-            vBoxUpdatePassword.setVisible(false);
+            mainContainer.getChildren().remove(vBoxUpdatePassword);
         }
     }
 }
