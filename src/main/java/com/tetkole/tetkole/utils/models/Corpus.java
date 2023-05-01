@@ -279,7 +279,6 @@ public class Corpus {
     public JSONObject getCorpusState() {
         File file = new File(FileManager.getFileManager().getFolderPath() + "/" + name + "/corpus_state.json");
         if (!file.exists()) {
-            System.out.println("corpus state doesn't exist on your computer");
             return null;
         }
         return FileManager.getFileManager().readJSONFile(file);
@@ -292,7 +291,6 @@ public class Corpus {
     public void writeCorpusState(JSONObject newState) {
         File file = new File(FileManager.getFileManager().getFolderPath() + "/" + name + "/corpus_state.json");
         if (!file.exists()) {
-            System.out.println("corpus state doesn't exist on your computer");
             return;
         }
 

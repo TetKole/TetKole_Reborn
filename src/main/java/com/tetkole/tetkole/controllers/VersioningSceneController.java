@@ -117,7 +117,6 @@ public class VersioningSceneController implements Initializable {
 
     private void createNewVersion() {
         this.loadingLabelCreateVersion.setVisible(true);
-        System.out.println("Start Creating Version");
         LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
 
 

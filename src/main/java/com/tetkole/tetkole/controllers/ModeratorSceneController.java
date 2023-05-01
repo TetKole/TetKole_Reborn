@@ -72,7 +72,6 @@ public class ModeratorSceneController implements PropertyChangeListener, Initial
                 if(HttpRequestManager.getHttpRequestManagerInstance().addMailInscription(userMailInput.getText())) {
                     SceneManager.getSceneManager().sendToast(resources.getString("MailAdded"), ToastTypes.SUCCESS);
                 } else {
-                    System.out.println("Impossible to add mail");
                     SceneManager.getSceneManager().sendToast(resources.getString("MailNotAdded"), ToastTypes.ERROR);
                 }
             }

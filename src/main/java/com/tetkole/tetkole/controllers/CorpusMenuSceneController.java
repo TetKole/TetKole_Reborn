@@ -271,7 +271,6 @@ public class CorpusMenuSceneController implements Initializable {
      * Push your change on the server if you have the same corpus_state than the server.
      */
     private void push() {
-        System.out.println("Start Push");
         LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
         this.loadingLabelPush.setVisible(true);
 
@@ -371,9 +370,6 @@ public class CorpusMenuSceneController implements Initializable {
 
                 // clean corpus modif
                 this.corpus.resetCorpusModif();
-
-                System.out.println("push done");
-
             } else {
                 // you need to pull
                 Platform.runLater(() -> SceneManager.getSceneManager().showNewModal(
@@ -385,7 +381,6 @@ public class CorpusMenuSceneController implements Initializable {
 
             LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
             this.loadingLabelPush.setVisible(false);
-            System.out.println("Push Done");
         }).start();
     }
 
@@ -393,7 +388,6 @@ public class CorpusMenuSceneController implements Initializable {
      * Push a new corpus on the server.
      */
     private void pushInit() {
-        System.out.println("Start Push Init");
         this.loadingLabelPush.setVisible(true);
         LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
 
@@ -414,12 +408,10 @@ public class CorpusMenuSceneController implements Initializable {
 
             // si success est false --> on va pas plus loin
             if (!responseAddCorpus.getBoolean("success")) {
-                System.out.println("post add corpus failed, this corpus probably already exist on server");
                 return;
             }
 
             final int corpusId = responseAddCorpus.getJSONObject("body").getInt("corpusId");
-            System.out.println("POST addCorpus successfull. Corpus: " + this.corpus.getName() + " | Id: " + corpusId);
 
 
 
@@ -441,11 +433,9 @@ public class CorpusMenuSceneController implements Initializable {
                 } catch (Exception e) { throw new RuntimeException(e); }
 
                 if (!responseAddDocument.getBoolean("success")) {
-                    System.out.println("post add document failed");
                     return;
                 }
                 int docId = responseAddDocument.getJSONObject("body").getInt("docId");
-                System.out.println("POST addDocument successfull. Document: " + m.getName() + " | Id: " + docId);
 
                 // Add Annotations
                 for (Annotation annotation : m.getAnnotations()) {
@@ -458,10 +448,8 @@ public class CorpusMenuSceneController implements Initializable {
                     } catch (Exception e) { throw new RuntimeException(e); }
 
                     if (!responseAddAnnotation.getBoolean("success")) {
-                        System.out.println("post add document failed");
                         return;
                     }
-                    System.out.println("POST addAnnotation successfull. Annotation: " + annotation.getFile().getName());
                 }
             }
 
@@ -478,7 +466,6 @@ public class CorpusMenuSceneController implements Initializable {
 
             loadingLabelPush.setVisible(false);
             LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
-            System.out.println("Push Init Done");
         }).start();
     }
 
@@ -489,7 +476,6 @@ public class CorpusMenuSceneController implements Initializable {
     public void pullCorpus() {
         if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) return;
 
-        System.out.println("Start Pull");
         this.loadingLabelPull.setVisible(true);
         LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
 
@@ -505,7 +491,6 @@ public class CorpusMenuSceneController implements Initializable {
                 // Get corpus_state.json from server
                 JSONObject responseGetCorpusState = httpRequestManager.getCorpusState(token, corpusId);
                 if (!responseGetCorpusState.getBoolean("success")) {
-                    System.out.println("error when fetching Corpus State from server");
                     return;
                 }
 
@@ -541,7 +526,6 @@ public class CorpusMenuSceneController implements Initializable {
 
                 this.loadingLabelPull.setVisible(false);
                 LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
-                System.out.println("Pull Done");
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -652,7 +636,6 @@ public class CorpusMenuSceneController implements Initializable {
                     addedAnnotations.remove(j);
                     added.put("annotations", addedAnnotations);
                     corpusModif.put("added", added);
-                    System.out.println("delete " + name + " annotation from corpus modif");
                 }
             }
 
@@ -667,8 +650,6 @@ public class CorpusMenuSceneController implements Initializable {
                     corpusModif.put("deleted", deleted);
                 }
             }
-
-            System.out.println(corpusModif);
             this.corpus.writeCorpusModif(corpusModif);
         }
     }

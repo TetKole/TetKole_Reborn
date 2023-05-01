@@ -10,20 +10,16 @@ import java.util.Map;
 public class AuthenticationManager {
 
     private static AuthenticationManager authenticationManagerInstance;
-
     private String JWT_TOKEN;
     private String firstname;
     private String lastname;
     private String mail;
-
     private String role;
-
     private int userId;
     private boolean isAuthenticated = false;
     private Map<Integer, String> roles;
 
-    private AuthenticationManager() {
-    }
+    private AuthenticationManager() { }
 
     public static AuthenticationManager getAuthenticationManager() {
         return authenticationManagerInstance;

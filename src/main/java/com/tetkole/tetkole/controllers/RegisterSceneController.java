@@ -42,7 +42,6 @@ public class RegisterSceneController implements Initializable {
                 !passwordInput.getText().isEmpty()
         )  {
 
-            System.out.println("Start Register");
             LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
 
             new Thread(() -> {
@@ -53,8 +52,6 @@ public class RegisterSceneController implements Initializable {
                         passwordInput.getText()
                 );
 
-                System.out.println(response);
-
                 if (response.getBoolean("success")) {
                     Platform.runLater(() -> {
                                 SceneManager.getSceneManager().changeScene("LoginScene.fxml");
@@ -62,13 +59,11 @@ public class RegisterSceneController implements Initializable {
                             }
                     );
                 } else {
-                    System.out.println("Register Failed");
                     String wrongCredentialsText = SceneManager.getSceneManager().getResourceString("RegisterNotSuccessful");
                     SceneManager.getSceneManager().sendToast(wrongCredentialsText, ToastTypes.ERROR);
                 }
 
                 LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
-                System.out.println("Register Done");
             }).start();
         }
     }

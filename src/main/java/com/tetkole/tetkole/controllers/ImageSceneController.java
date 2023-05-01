@@ -26,7 +26,6 @@ public class ImageSceneController implements Initializable {
     private CorpusImage image;
     private RecordManager recordManager;
     private ResourceBundle resources;
-
     // Graphics
     @FXML
     private Button btnRecord;
