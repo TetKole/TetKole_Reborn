@@ -229,7 +229,6 @@ public class HomeSceneController implements Initializable {
                                 annotation_json.getString("name")
                         );
                     }
-                    // TODO revoir le système des annotation écrites
                     if(document_json.getString("type").equals(Corpus.folderNameFieldAudio)) {
                         String fieldAudioJsonName = document_json.getString("name").split("\\.")[0] + ".json";
                         File fieldAudioJson = FileManager.getFileManager().createFile(corpusName + "/" + Corpus.folderNameFieldAudio, fieldAudioJsonName);

@@ -313,7 +313,6 @@ public class Corpus {
         File fieldAudiosFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + getName() + "/" + folderNameFieldAudio);
         for (File audioFile : Objects.requireNonNull(fieldAudiosFolder.listFiles(file -> !file.getName().endsWith("json")))) {
 
-            //TODO annotation ecrite
             File[] jsonFiles = fieldAudiosFolder.listFiles(file ->
                     file.getName().endsWith("json")
             );
