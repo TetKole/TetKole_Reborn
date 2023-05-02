@@ -6,10 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.swing.filechooser.FileSystemView;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -148,7 +145,7 @@ public class FileManager {
         FileManager.getFileManager().createFile(relativeLocation, trueFileName);
         String fileNameWithoutExt = trueFileName;
         try {
-            FileWriter file = new FileWriter(getFolderPath() + relativeLocation + "/" + fileNameWithoutExt + ".json");
+            Writer file = new OutputStreamWriter(new FileOutputStream(getFolderPath() + relativeLocation + "/" + fileNameWithoutExt + ".json"), StandardCharsets.UTF_8);
             file.write(json.toString());
             file.close();
         } catch (IOException e) {
