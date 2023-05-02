@@ -1,10 +1,7 @@
 package com.tetkole.tetkole.controllers;
 
-import com.tetkole.tetkole.utils.AuthenticationManager;
-import com.tetkole.tetkole.utils.HttpRequestManager;
-import com.tetkole.tetkole.utils.SceneManager;
+import com.tetkole.tetkole.utils.*;
 
-import com.tetkole.tetkole.utils.StaticEnvVariable;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,27 +17,23 @@ import java.util.*;
 
 public class SettingsSceneController implements Initializable {
 
-    @FXML private ComboBox<String> languagesComboBox;
-
+    @FXML
+    private ComboBox<String> languagesComboBox;
     @FXML
     private TextField rangeInput;
-
     private final Locale frLocal = new Locale("fr", "FR");
     private final Locale enLocal = new Locale("en", "EN");
-
     @FXML
     private HBox header;
-
     @FXML
-    private VBox vBoxUpdatePassword;
-
+    private HBox hBoxUpdatePassword;
     @FXML
     private PasswordField currentPasswordInput;
-
     @FXML
     private PasswordField newPasswordInput;
-
     private int lastMax;
+    @FXML
+    private VBox mainContainer;
 
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
@@ -82,7 +75,7 @@ public class SettingsSceneController implements Initializable {
     @FXML
     public void OnChangeRange() {
         if(rangeInput.getText().matches("(^(1500|1[0-4][0-9][0-9]|[1-9][0-9][0-9]|[5-9][0-9])$)")) {
-            StaticEnvVariable.zoomRange = Integer.parseInt(rangeInput.getText());
+            FileManager.getFileManager().setAudioZoomRange(Integer.parseInt(rangeInput.getText()));
             lastMax = StaticEnvVariable.zoomRange;
         } else {
             rangeInput.setText(String.valueOf(lastMax));
@@ -105,7 +98,7 @@ public class SettingsSceneController implements Initializable {
 
     public void isConnected() {
         if (!AuthenticationManager.getAuthenticationManager().isAuthenticated()) {
-            vBoxUpdatePassword.setVisible(false);
+            mainContainer.getChildren().remove(hBoxUpdatePassword);
         }
     }
 }

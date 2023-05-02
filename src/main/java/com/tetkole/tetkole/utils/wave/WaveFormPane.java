@@ -132,7 +132,6 @@ public class WaveFormPane extends ResizableCanvas {
 
 		setOnKeyReleased(event -> {
 			if (event.getCode() == KeyCode.CONTROL && controlDragged) {
-				System.out.println("Control released");
 				controlDragged = false;
 				rightBorderXPosition = Math.min(Math.max(getMouseXPosition(), leftBorderXPosition + borderSize), getWidth() - borderSize);
 				this.setRightBorderTime((rightBorderXPosition + borderSize) / this.getRatioAudio() + this.beginAudio);

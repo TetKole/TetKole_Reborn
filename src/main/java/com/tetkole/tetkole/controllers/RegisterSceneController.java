@@ -3,6 +3,7 @@ package com.tetkole.tetkole.controllers;
 import com.tetkole.tetkole.utils.AuthenticationManager;
 import com.tetkole.tetkole.utils.LoadingManager;
 import com.tetkole.tetkole.utils.SceneManager;
+import com.tetkole.tetkole.utils.enums.ToastTypes;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -30,6 +31,7 @@ public class RegisterSceneController implements Initializable {
     private HBox header;
     @FXML
     private StackPane rootPane;
+    private ResourceBundle resources;
 
     @FXML
     public void onRegister() {
@@ -40,7 +42,6 @@ public class RegisterSceneController implements Initializable {
                 !passwordInput.getText().isEmpty()
         )  {
 
-            System.out.println("Start Register");
             LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
 
             new Thread(() -> {
@@ -52,14 +53,17 @@ public class RegisterSceneController implements Initializable {
                 );
 
                 if (response.getBoolean("success")) {
-                    Platform.runLater(this::onGoToLogin);
+                    Platform.runLater(() -> {
+                                SceneManager.getSceneManager().changeScene("LoginScene.fxml");
+                                SceneManager.getSceneManager().sendToast(resources.getString("RegisterSuccessful"), ToastTypes.SUCCESS);
+                            }
+                    );
                 } else {
-                    System.out.println("Register Failed");
-                    System.out.println(response.get("body"));
+                    String wrongCredentialsText = SceneManager.getSceneManager().getResourceString("RegisterNotSuccessful");
+                    SceneManager.getSceneManager().sendToast(wrongCredentialsText, ToastTypes.ERROR);
                 }
 
                 LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
-                System.out.println("Register Done");
             }).start();
         }
     }
@@ -71,6 +75,7 @@ public class RegisterSceneController implements Initializable {
 
     @FXML
     public void initialize(URL location, ResourceBundle resources) {
+        this.resources = resources;
         // get the children of header component
         ObservableList<Node> childrenOfHeader = this.header.getChildren();
         // search for the btnHome and add a new onMouseClickListener

@@ -52,39 +52,39 @@
 
         <bottom>
             <HBox fx:id="bottomHbox" alignment="CENTER" spacing="5">
-                <Button fx:id="btnPlayPause" contentDisplay="TOP" text="%Play" onAction="#onPlayPauseButtonClick" prefWidth="150" styleClass="buttons, blue">
+                <Button fx:id="btnPlayPause" contentDisplay="TOP" text="%Play" onAction="#onPlayPauseButtonClick" prefWidth="175" styleClass="buttons, blue">
                     <graphic>
-                        <ImageView fitHeight="50" fitWidth="50">
+                        <ImageView fitHeight="40" fitWidth="40">
                             <Image url="@../../../images/play.png" />
                         </ImageView>
                     </graphic>
                 </Button>
-                <Button fx:id="btnRecord" contentDisplay="TOP" text="%StartRecord" onAction="#onRecordButtonClick" prefWidth="150" styleClass="buttons, blue">
+                <Button fx:id="btnRecord" contentDisplay="TOP" text="%StartRecord" onAction="#onRecordButtonClick" prefWidth="175" styleClass="buttons, blue">
                     <graphic>
-                        <ImageView fitHeight="50" fitWidth="50">
+                        <ImageView fitHeight="40" fitWidth="40">
                             <Image url="@../../../images/record.png" />
                         </ImageView>
                     </graphic>
                 </Button>
-                <Button fx:id="btnDisplaySidePane" contentDisplay="TOP" text="%ShowRecords" prefWidth="150" styleClass="buttons, blue">
+                <Button fx:id="btnDisplaySidePane" contentDisplay="TOP" text="%ShowRecords" prefWidth="175" styleClass="buttons, blue">
                     <graphic>
-                        <ImageView fitHeight="50" fitWidth="50">
+                        <ImageView fitHeight="40" fitWidth="40">
                             <Image url="@../../../images/music.png" />
                         </ImageView>
                     </graphic>
                 </Button>
 
-                <Button fx:id="btnEditDescription" contentDisplay="TOP" text="%EditDescription" onAction="#onEditDescriptionButtonClick" prefWidth="150" styleClass="buttons, blue">
+                <Button fx:id="btnEditDescription" contentDisplay="TOP" text="%EditDescription" onAction="#onEditDescriptionButtonClick" prefWidth="175" styleClass="buttons, blue">
                     <graphic>
-                        <ImageView fitHeight="50" fitWidth="50">
+                        <ImageView fitHeight="40" fitWidth="40">
                             <Image url="@../../../images/option.png" />
                         </ImageView>
                     </graphic>
                 </Button>
 
-                <Button fx:id="btnChangeTire" contentDisplay="TOP" text="1" onAction="#onChangeTireButtonClick" prefWidth="150" styleClass="buttons, blue">
+                <Button fx:id="btnChangeTire" contentDisplay="TOP" text="1" onAction="#onChangeTireButtonClick" prefWidth="175" styleClass="buttons, blue">
                     <graphic>
-                        <ImageView fitHeight="50" fitWidth="50">
+                        <ImageView fitHeight="40" fitWidth="40">
                             <Image url="@../../../images/barsUp.png" />
                         </ImageView>
                     </graphic>

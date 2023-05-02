@@ -52,3 +52,7 @@ Lancez l'installateur, et à la fin de l'installation, lancez l'application.
 
 Récupérez l'archive et récupérez son contenu.
 Il vous suffit d'éxécuter le fichier `Tetkole` contenu dans **bin**
+
+## Serveur
+
+Pour configurer l'url du serveur, vous devez modifier la variable "servURL" contenu dans src/main/java/com.tetkole.tetkole.Main.java

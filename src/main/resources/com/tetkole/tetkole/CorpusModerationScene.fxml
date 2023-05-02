@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane fx:id="rootPane" styleClass="background_color" xmlns:fx="http://javafx.com/fxml" fx:controller="com.tetkole.tetkole.controllers.CorpusModerationSceneController">
+    <BorderPane xmlns:fx="http://javafx.com/fxml">
+
+        <top>
+            <AnchorPane>
+                <fx:include fx:id="header" source="components/Header.fxml" AnchorPane.rightAnchor="0.0"/>
+            </AnchorPane>
+        </top>
+
+        <center>
+            <HBox alignment="TOP_CENTER">
+                <VBox alignment="TOP_CENTER" spacing="10.0" >
+
+                    <Label fx:id="corpusTitle" textFill="WHITE" style="-fx-font-size: 100px; -fx-text-fill: white;"/>
+                    <Button onAction="#addNewUser" text="%AddNewUser" styleClass="buttons, grey"/>
+
+                    <GridPane fx:id="labels" alignment="CENTER" prefWidth="800.0">
+                        <VBox alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0"><Label text="%Name" style="-fx-text-fill: white;" /></VBox>
+                        <VBox alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="0"><Label text="%Mail" style="-fx-text-fill: white;" /></VBox>
+                        <VBox alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="0"><Label text="%Role" style="-fx-text-fill: white;" /></VBox>
+                        <VBox alignment="CENTER" GridPane.columnIndex="3" GridPane.rowIndex="0"><Label text="%Actions" style="-fx-text-fill: white;" /></VBox>
+                    </GridPane>
+
+                    <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: #495461;">
+                        <GridPane fx:id="usersList" alignment="TOP_CENTER" prefWidth="800.0" prefHeight="500.0" style="-fx-background-color: #495461; -fx-padding: 30 0 50 0;">
+                        </GridPane>
+
+                    </ScrollPane>
+                </VBox>
+            </HBox>
+        </center>
+
+    </BorderPane>
+</StackPane>

@@ -22,6 +22,7 @@ public class Corpus {
     public static final String folderNameCorpusImage = "Images";
     public static final String folderNameCorpusVideo = "Videos";
     public static final String folderNameAnnotation = "Annotations";
+    public static final String folderNameVersion = "Versions";
 
     /**
      * ONLY USE this method to create a new corpus
@@ -33,6 +34,7 @@ public class Corpus {
         fileManager.createFolder(name, folderNameCorpusImage);
         fileManager.createFolder(name, folderNameCorpusVideo);
         fileManager.createFolder(name, folderNameAnnotation);
+        fileManager.createFolder(name, folderNameVersion);
         fileManager.createCorpusModifFile(name);
     }
 
@@ -45,10 +47,11 @@ public class Corpus {
 
         // Loop on every file in Tetkole Fodler, which means on every Corpus
         for (File corpusFolder : Objects.requireNonNull(new File(FileManager.getFileManager().getFolderPath()).listFiles())) {
-
-            Corpus corpus = new Corpus(corpusFolder.getName());
-            corpus.load();
-            corpusList.add(corpus);
+            if(corpusFolder.isDirectory()) {
+                Corpus corpus = new Corpus(corpusFolder.getName());
+                corpus.load();
+                corpusList.add(corpus);
+            }
         }
 
 
@@ -89,6 +92,12 @@ public class Corpus {
         File fileAudio = fileChooser.showOpenDialog(null);
 
         if (fileAudio != null) {
+            if(fileAudio.getName().contains(" ")) {
+                String message = SceneManager.getSceneManager().getResourceString("FileCouldNotContaineSpaces");
+                SceneManager.getSceneManager().sendToast(message, ToastTypes.ERROR);
+                return;
+            }
+
             // copy of the file in corpus folder
             File file = FileManager.getFileManager().copyFile(fileAudio, this.name + "/" + folderNameFieldAudio);
 
@@ -132,6 +141,11 @@ public class Corpus {
 
         File fileVideo = fileChooserVideo.showOpenDialog(null);
         if (fileVideo != null) {
+            if(fileVideo.getName().contains(" ")) {
+                String message = SceneManager.getSceneManager().getResourceString("FileCouldNotContaineSpaces");
+                SceneManager.getSceneManager().sendToast(message, ToastTypes.ERROR);
+                return;
+            }
             // copy of the file in corpus folder
             File file = FileManager.getFileManager().copyFile(fileVideo, this.name + "/" + folderNameCorpusVideo);
 
@@ -173,6 +187,11 @@ public class Corpus {
         File fileImage = fileChooserImage.showOpenDialog(null);
 
         if (fileImage != null){
+            if(fileImage.getName().contains(" ")) {
+                String message = SceneManager.getSceneManager().getResourceString("FileCouldNotContaineSpaces");
+                SceneManager.getSceneManager().sendToast(message, ToastTypes.ERROR);
+                return;
+            }
             // copy of the file in corpus folder
             File file = FileManager.getFileManager().copyFile(fileImage, this.name + "/" + folderNameCorpusImage);
 
@@ -260,7 +279,6 @@ public class Corpus {
     public JSONObject getCorpusState() {
         File file = new File(FileManager.getFileManager().getFolderPath() + "/" + name + "/corpus_state.json");
         if (!file.exists()) {
-            System.out.println("corpus state doesn't exist on your computer");
             return null;
         }
         return FileManager.getFileManager().readJSONFile(file);
@@ -273,7 +291,6 @@ public class Corpus {
     public void writeCorpusState(JSONObject newState) {
         File file = new File(FileManager.getFileManager().getFolderPath() + "/" + name + "/corpus_state.json");
         if (!file.exists()) {
-            System.out.println("corpus state doesn't exist on your computer");
             return;
         }
 
@@ -296,7 +313,6 @@ public class Corpus {
         File fieldAudiosFolder = new File(FileManager.getFileManager().getFolderPath() + "/" + getName() + "/" + folderNameFieldAudio);
         for (File audioFile : Objects.requireNonNull(fieldAudiosFolder.listFiles(file -> !file.getName().endsWith("json")))) {
 
-            //TODO annotation ecrite
             File[] jsonFiles = fieldAudiosFolder.listFiles(file ->
                     file.getName().endsWith("json")
             );

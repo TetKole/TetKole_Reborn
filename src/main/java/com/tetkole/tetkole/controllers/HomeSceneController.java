@@ -7,7 +7,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.json.JSONArray;
@@ -25,28 +27,24 @@ public class HomeSceneController implements Initializable {
     private Label labelUserName;
     @FXML
     private VBox vBoxCorpus;
-
     @FXML
     private VBox vBoxCorpusServer;
     @FXML
     private VBox vBoxButtons;
-
     @FXML
     private Button btnLogin;
-
     @FXML
     private Button btnRegister;
-
     @FXML
     private Button btnModerator;
-
     @FXML
     private Button btnDisconnect;
-
+    @FXML
+    private ScrollPane vBoxCorpusServerContainer;
+    @FXML
+    private HBox mainContainer;
     private List<Corpus> corpusList;
-
     private ResourceBundle resources;
-
     @FXML
     private StackPane rootPane;
 
@@ -92,6 +90,7 @@ public class HomeSceneController implements Initializable {
         vBoxButtons.getChildren().add(btnLogin);
         vBoxButtons.getChildren().add(btnRegister);
         vBoxButtons.getChildren().remove(btnModerator);
+        mainContainer.getChildren().remove(vBoxCorpusServerContainer);
         updateCorpusListServer();
     }
 
@@ -136,10 +135,11 @@ public class HomeSceneController implements Initializable {
             this.vBoxCorpusServer.getChildren().add(labelNeedAuth);
         } else {
             String token = AuthenticationManager.getAuthenticationManager().getToken();
+            int userId = AuthenticationManager.getAuthenticationManager().getUserId();
 
             JSONObject jsonCorpus;
             try {
-                jsonCorpus = HttpRequestManager.getHttpRequestManagerInstance().getCorpusList(token);
+                jsonCorpus = HttpRequestManager.getHttpRequestManagerInstance().getCorpusOfUser(token, userId);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -175,9 +175,9 @@ public class HomeSceneController implements Initializable {
                     AuthenticationManager.getAuthenticationManager().getFirstname() + " " +
                             AuthenticationManager.getAuthenticationManager().getLastname()
             );
+            labelUserName.setWrapText(true);
             String role = AuthenticationManager.getAuthenticationManager().getRole();
-            System.out.println(role);
-            if (!role.equals("MODERATOR") && !role.equals("ADMIN")) {
+            if (!role.equals("ADMIN")) {
                 vBoxButtons.getChildren().remove(btnModerator);
             }
 
@@ -186,13 +186,13 @@ public class HomeSceneController implements Initializable {
             vBoxButtons.getChildren().remove(labelUserName);
             vBoxCorpusServer.getChildren().clear();
             vBoxButtons.getChildren().remove(btnModerator);
+            mainContainer.getChildren().remove(vBoxCorpusServerContainer);
         }
     }
 
     private void clone(String token, JSONObject corpusJSON) {
         // TODO: il faudrais vérifier que le corpus n'est pas déjà en local
 
-        System.out.println("Start Clone");
         LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
 
         new Thread(() -> {
@@ -229,7 +229,6 @@ public class HomeSceneController implements Initializable {
                                 annotation_json.getString("name")
                         );
                     }
-                    // TODO revoir le système des annotation écrites
                     if(document_json.getString("type").equals(Corpus.folderNameFieldAudio)) {
                         String fieldAudioJsonName = document_json.getString("name").split("\\.")[0] + ".json";
                         File fieldAudioJson = FileManager.getFileManager().createFile(corpusName + "/" + Corpus.folderNameFieldAudio, fieldAudioJsonName);
@@ -247,8 +246,6 @@ public class HomeSceneController implements Initializable {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-
-            System.out.println("Clone Done");
         }).start();
     }
 }

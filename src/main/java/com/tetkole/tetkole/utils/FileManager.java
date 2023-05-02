@@ -6,10 +6,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.swing.filechooser.FileSystemView;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -41,6 +40,7 @@ public class FileManager {
             this.isWindows = true;
         }
         new File(this.folderPath).mkdir();
+        initConfigJSON();
     }
 
     /**
@@ -145,12 +145,45 @@ public class FileManager {
         FileManager.getFileManager().createFile(relativeLocation, trueFileName);
         String fileNameWithoutExt = trueFileName;
         try {
-            FileWriter file = new FileWriter(getFolderPath() + relativeLocation + "/" + fileNameWithoutExt + ".json");
+            Writer file = new OutputStreamWriter(new FileOutputStream(getFolderPath() + relativeLocation + "/" + fileNameWithoutExt + ".json"), StandardCharsets.UTF_8);
             file.write(json.toString());
             file.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void initConfigJSON() {
+        File configJSON = new File(this.folderPath + "/config.json");
+        if(configJSON.exists()) {
+            JSONObject configData = readJSONFile(configJSON);
+            StaticEnvVariable.zoomRange = configData.getInt("amplitude");
+        } else {
+            JSONObject json = new JSONObject();
+            json.put("amplitude", 200);
+            try {
+                FileWriter file = new FileWriter(this.folderPath + "/config.json");
+                file.write(json.toString());
+                file.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            StaticEnvVariable.zoomRange = 200;
+        }
+    }
+
+    public void setAudioZoomRange(int zoomRange) {
+        File configJSON = new File(this.folderPath + "/config.json");
+        JSONObject json = new JSONObject();
+        json.put("amplitude", zoomRange);
+        try {
+            FileWriter file = new FileWriter(this.folderPath + "/config.json");
+            file.write(json.toString());
+            file.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        StaticEnvVariable.zoomRange = zoomRange;
     }
 
     /**
@@ -238,8 +271,10 @@ public class FileManager {
     }
 
     // Download file from url
-    private void downloadFileFromURL(String urlStr, String path) throws IOException {
+    private void downloadFileFromURL(String urlStr, String path) throws IOException, URISyntaxException {
         URL url = new URL(urlStr);
+        URI uri = new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(), url.getQuery(), url.getRef());
+        url = uri.toURL();
         ReadableByteChannel rbc = Channels.newChannel(url.openStream());
         FileOutputStream fos = new FileOutputStream(folderPath + "/" + path);
         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
@@ -247,7 +282,7 @@ public class FileManager {
         rbc.close();
     }
 
-    public void downloadAnnotation(String corpusName, String docName, String fileName) throws IOException {
+    public void downloadAnnotation(String corpusName, String docName, String fileName) throws IOException, URISyntaxException {
         String path = corpusName + "/" + Corpus.folderNameAnnotation + "/" + docName;
         FileManager.getFileManager().createFolder(path, fileName);
 
@@ -262,10 +297,22 @@ public class FileManager {
         downloadFileFromURL(HttpRequestManager.servURL + "/corpus/" + pathJson, pathJson);
     }
 
-    public void downloadDocument(String typeDoc, String corpusName, String fileName) throws IOException {
+    public void downloadDocument(String typeDoc, String corpusName, String fileName) throws IOException, URISyntaxException {
         String path = corpusName + "/" + typeDoc + "/" + fileName;
         downloadFileFromURL(HttpRequestManager.servURL + "/corpus/" + path, path);
         FileManager.getFileManager().createFolder(corpusName + "/" + Corpus.folderNameAnnotation, fileName);
+    }
+
+    public boolean downloadVersion(String corpusName, Integer version){
+        String pathServer = corpusName + "/" + corpusName + "-" + version + ".zip";
+        String pathLocal = corpusName + "/Versions/" + corpusName + "-" + version + ".zip";
+        try {
+            downloadFileFromURL(HttpRequestManager.servURL + "/versions/" + pathServer, pathLocal);
+            JSONObject response = null;
+        } catch (IOException | URISyntaxException e) {
+            return false;
+        }
+        return true;
     }
 
     public JSONObject createCorpusModifFile(String corpusName) {

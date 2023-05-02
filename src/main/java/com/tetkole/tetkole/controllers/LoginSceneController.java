@@ -27,11 +27,26 @@ public class LoginSceneController implements Initializable {
     private HBox header;
     @FXML
     private StackPane rootPane;
+    private ResourceBundle resources;
+
+    @FXML
+    public void initialize(URL location, ResourceBundle resources) {
+        this.resources = resources;
+        // get the children of header component
+        ObservableList<Node> childrenOfHeader = this.header.getChildren();
+        // search for the btnHome and add a new onMouseClickListener
+        for (var child : childrenOfHeader) {
+            if (child.getId() != null && child.getId().equals("btnHome")) {
+                child.setOnMouseClicked(event -> SceneManager.getSceneManager().changeScene("HomeScene.fxml"));
+            } else if (child.getId() != null && child.getId().equals("btnFolder")) {
+                child.setVisible(false);
+            }
+        }
+    }
 
     @FXML
     public void onLogin() {
         if (!mailInput.getText().isEmpty() && !passwordInput.getText().isEmpty())  {
-            System.out.println("Start Login");
             LoadingManager.getLoadingManagerInstance().displayLoading(this.rootPane);
 
             new Thread(() -> {
@@ -45,17 +60,15 @@ public class LoginSceneController implements Initializable {
                 if (!response.isEmpty() && response.getBoolean("success")) {
                     Platform.runLater(() -> {
                                 SceneManager.getSceneManager().changeScene("HomeScene.fxml");
-                                SceneManager.getSceneManager().sendToast("Login Successful", ToastTypes.SUCCESS);
+                                SceneManager.getSceneManager().sendToast(resources.getString("LoginSuccessful"), ToastTypes.SUCCESS);
                             }
                     );
                 } else {
-                    System.out.println("Login Failed");
                     String wrongCredentialsText = SceneManager.getSceneManager().getResourceString("ToastWrongUserCredentials");
                     SceneManager.getSceneManager().sendToast(wrongCredentialsText, ToastTypes.ERROR);
                 }
 
                 LoadingManager.getLoadingManagerInstance().hideLoading(this.rootPane);
-                System.out.println("Login Done");
 
             }).start();
         }
@@ -64,20 +77,6 @@ public class LoginSceneController implements Initializable {
     @FXML
     public void onGoToRegister() {
         SceneManager.getSceneManager().changeScene("RegisterScene.fxml");
-    }
-
-    @FXML
-    public void initialize(URL location, ResourceBundle resources) {
-        // get the children of header component
-        ObservableList<Node> childrenOfHeader = this.header.getChildren();
-        // search for the btnHome and add a new onMouseClickListener
-        for (var child : childrenOfHeader) {
-            if (child.getId() != null && child.getId().equals("btnHome")) {
-                child.setOnMouseClicked(event -> SceneManager.getSceneManager().changeScene("HomeScene.fxml"));
-            } else if (child.getId() != null && child.getId().equals("btnFolder")) {
-                child.setVisible(false);
-            }
-        }
     }
 
 }

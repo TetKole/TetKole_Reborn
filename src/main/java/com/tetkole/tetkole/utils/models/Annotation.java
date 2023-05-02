@@ -102,7 +102,6 @@ public class Annotation {
     public int getId() {
         File file = new File(FileManager.getFileManager().getFolderPath() + "/" + corpusName + "/corpus_state.json");
         if (!file.exists()) {
-            System.out.println("corpus state doesn't exist on your computer");
             return -1;
         }
         JSONObject corpus_state = FileManager.getFileManager().readJSONFile(file);
@@ -120,7 +119,6 @@ public class Annotation {
             JSONArray documentsUpdated = corpus_modif.getJSONObject("updated").getJSONArray("documents");
             for (int i = 0; i < documentsUpdated.length(); i++) {
                 JSONObject document = documentsUpdated.getJSONObject(i);
-                System.out.println(documentsUpdated);
                 if(document.getString("newName").equals(this.fieldAudioName)) {
                     docId = document.getInt("id");
                     break;
@@ -134,7 +132,6 @@ public class Annotation {
                 JSONArray annotations = document.getJSONArray("annotations");
                 for (int j=0; j< annotations.length(); j++) {
                     JSONObject annotation = annotations.getJSONObject(j);
-                    System.out.println("Record :" + recordName + " JSON : " + annotation.get("name"));
                     if(annotation.get("name").equals(recordName)) {
                         return annotation.getInt("annotationId");
                     }
