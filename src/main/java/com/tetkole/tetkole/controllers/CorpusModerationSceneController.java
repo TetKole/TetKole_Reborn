@@ -129,7 +129,7 @@ public class CorpusModerationSceneController implements Initializable {
             VBox emailVbox = new VBox(email);
             emailVbox.setAlignment(Pos.CENTER);
 
-            Label roleLabel = new Label(role);
+            Label roleLabel = new Label(resources.getString(role));
             roleLabel.setStyle("-fx-text-fill: white;");
             VBox roleVbox = new VBox(roleLabel);
             roleVbox.setAlignment(Pos.CENTER);
