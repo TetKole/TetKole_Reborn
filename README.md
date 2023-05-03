@@ -2,16 +2,20 @@
 
 ## Sommaire
 
- - [Dépendances](#dépendances)
-   - [Windows](#windows)
-   - [Linux](#linux)
-     - [Ubuntu / Debian](#ubuntu--debian)
-     - [Arch](#arch)
-     - [Autres](#autres)
- - [Installation](#installation)
- - [Lancement](#lancement)
-   - [Windows](#windows-1)
-   - [Linux](#linux)
+- [Tetkole](#tetkole)
+  - [Sommaire](#sommaire)
+  - [Dépendances](#dépendances)
+    - [Windows](#windows)
+    - [Linux](#linux)
+      - [Ubuntu / Debian](#ubuntu--debian)
+      - [Arch](#arch)
+      - [Autres](#autres)
+  - [Installation](#installation)
+  - [Lancement](#lancement)
+    - [Windows](#windows-1)
+    - [Linux](#linux-1)
+  - [Serveur](#serveur)
+    - [Equipe des développeurs](#equipe-des-développeurs)
 
 
 ## Dépendances
@@ -56,3 +60,11 @@ Il vous suffit d'éxécuter le fichier `Tetkole` contenu dans **bin**
 ## Serveur
 
 Pour configurer l'url du serveur, vous devez modifier la variable "servURL" contenu dans src/main/java/com.tetkole.tetkole.Main.java
+
+### Equipe des développeurs
+
+- Rémi CHAVANCE
+- Antoine DEPOISIER
+- Volodia FERNANDEZ
+- Mathis TANGHE
+- Irilind SALIHI
