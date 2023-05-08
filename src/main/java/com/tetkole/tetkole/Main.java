@@ -9,7 +9,7 @@ import java.awt.Toolkit;
 
 public class Main extends Application {
 
-    private String servURL = "http://localhost:8000";
+    private String servURL = "http://54.37.15.209:8000";
 
     @Override
     public void start(Stage stage) {
